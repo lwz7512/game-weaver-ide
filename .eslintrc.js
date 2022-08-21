@@ -1,5 +1,10 @@
 module.exports = {
-  extends: 'erb',
+  extends: [
+    'erb',
+    'eslint:recommended',
+    'plugin:import/typescript',
+    'plugin:@typescript-eslint/recommended',
+  ],
   rules: {
     // A temporary hack related to IDE not resolving correct package.json
     'import/no-extraneous-dependencies': 'off',
@@ -7,6 +12,8 @@ module.exports = {
     // Since React 17 and typescript 4.1 you can safely disable the rule
     'react/react-in-jsx-scope': 'off',
     'prettier/prettier': ['off', { singleQuote: true, trailingComma: 'all' }],
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': 'off',
   },
   parserOptions: {
     ecmaVersion: 2020,

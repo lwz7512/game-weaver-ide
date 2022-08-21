@@ -27,7 +27,7 @@ body {
   align-items: center;
 }
 
-button {
+button.large {
   background-color: white;
   padding: 10px 20px;
   border-radius: 10px;
