@@ -13,16 +13,31 @@ const WelcomePage = () => {
   };
 
   return (
-    <div className="w-full h-screen flex">
+    <div className="welcome-page w-full h-screen flex">
       <div className="left-sidepanel flex">
         <LeftSideBar
           activeModule={MODULETYPES.WELCOME}
           onModuleChanged={onModuleChanged}
         />
-        {/* <div className="file-explorer bg-gray-300 w-60 p-2">file explorer</div> */}
       </div>
       <div className="flex-1">
-        <h1 className=" text-center p-8">Welcome to Game Weaver!</h1>
+        <div className="hero-banner bg-slate-300 h-64">
+          <h1 className="text-lg text-center p-8">Welcome to Game Weaver!</h1>
+        </div>
+        <div className="four-section-grid">
+          <div className="section">
+            <h2 className="text-base">New...</h2>
+          </div>
+          <div className="section">
+            <h2 className="text-base">Tutorials</h2>
+          </div>
+          <div className="section">
+            <h2 className="text-base">Recent</h2>
+          </div>
+          <div className="section">
+            <h2 className="text-base">Projects</h2>
+          </div>
+        </div>
       </div>
     </div>
   );

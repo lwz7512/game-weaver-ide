@@ -1,0 +1,17 @@
+.welcome-page {
+
+}
+
+.welcome-page .four-section-grid {
+  background-color:white;
+  display: flex;
+  flex-wrap: wrap;
+  height: calc(100% - 256px);
+}
+
+.welcome-page .section {
+  width: 50%;
+  min-height: 100px;
+  border: 1px solid #eee;
+  padding: 12px;
+}
