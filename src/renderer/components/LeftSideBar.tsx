@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { useState } from 'react';
 import { Icon, IconName } from '@blueprintjs/core';
-import { MODULETYPES } from 'renderer/config';
+import { MODULETYPES } from '../config';
 
 type SidebarProps = {
   activeModule: string;

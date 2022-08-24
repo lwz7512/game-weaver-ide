@@ -2,8 +2,8 @@
 // import { useState, useEffect } from 'react';
 
 import { useNavigate } from 'react-router-dom';
-import LeftSideBar from 'renderer/components/LeftSideBar';
-import { MODULETYPES, MODULEROUTES } from 'renderer/config';
+import LeftSideBar from '../components/LeftSideBar';
+import { MODULETYPES, MODULEROUTES } from '../config';
 
 const ProjectsPage = () => {
   const navigate = useNavigate();

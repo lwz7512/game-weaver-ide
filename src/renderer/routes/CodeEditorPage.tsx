@@ -1,7 +1,7 @@
 // import { Button } from '@blueprintjs/core';
 import { useNavigate } from 'react-router-dom';
-import LeftSideBar from 'renderer/components/LeftSideBar';
-import { MODULETYPES, MODULEROUTES } from 'renderer/config';
+import LeftSideBar from '../components/LeftSideBar';
+import { MODULETYPES, MODULEROUTES } from '../config';
 import PreviewPanelHandleBar from '../components/PreviewPanelHandleBar';
 
 const CodeEditorPage = () => {
