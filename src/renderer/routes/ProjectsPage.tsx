@@ -19,9 +19,11 @@ const ProjectsPage = () => {
           activeModule={MODULETYPES.PROJECTS}
           onModuleChanged={onModuleChanged}
         />
-        {/* <div className="file-explorer bg-gray-300 w-60 p-2">file explorer</div> */}
+        <div className="file-explorer bg-gray-300 w-60 p-2">
+          Project explorer
+        </div>
       </div>
-      <div className="flex-1">
+      <div className="flex-1 bg-white">
         <h1 className=" text-center p-8">Welcome to projects page!</h1>
       </div>
     </div>

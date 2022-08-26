@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const useResizeHandleBar = (targeSelector: string) => {
+const useResizeHandleBar = (targeSelector: string, direction = 'v') => {
   useEffect(() => {
     // Query the element
     const ele = document.querySelector(targeSelector) as HTMLElement;
@@ -13,15 +13,26 @@ const useResizeHandleBar = (targeSelector: string) => {
     // The dimension of the element
     let w = 0;
     let h = 0;
+    const clamp = (num: number, min: number, max: number) =>
+      Math.min(Math.max(num, min), max);
 
     const mouseMoveHandler = (e: MouseEvent) => {
       // How far the mouse has been moved
-      // const dx = e.clientX - x;
+      const dx = e.clientX - x;
       const dy = e.clientY - y;
 
+      const min = 200;
+      const max = 400;
+
       // Adjust the dimension of element
-      // ele.style.width = `${w + dx}px`;
-      ele.style.height = `${h - dy}px`;
+      if (direction === 'h') {
+        const clampW = clamp(min, w - dx, max);
+        ele.style.width = `${clampW}px`;
+      }
+      if (direction === 'v') {
+        const clamH = clamp(min, h - dy, max);
+        ele.style.height = `${clamH}px`;
+      }
     };
 
     const mouseUpHandler = () => {
@@ -49,7 +60,7 @@ const useResizeHandleBar = (targeSelector: string) => {
 
     // add mousedown to handle bar
     handleBar.addEventListener('mousedown', mouseDownHandler);
-  }, [targeSelector]);
+  }, [targeSelector, direction]);
 };
 
 export default useResizeHandleBar;

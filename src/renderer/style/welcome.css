@@ -3,15 +3,29 @@
 }
 
 .welcome-page .four-section-grid {
-  background-color:white;
-  display: flex;
-  flex-wrap: wrap;
+  /* background-color:white; */
   height: calc(100% - 256px);
 }
 
 .welcome-page .section {
-  width: 50%;
   min-height: 100px;
-  border: 1px solid #eee;
+  border-right: 1px solid #666;
+  border-bottom: 1px solid #666;
   padding: 12px;
+  color: wheat;
+  /* bg-slate-600 */
+  background-color:var(--gw-dark-slate);
+}
+
+.section.right-cell {
+  border-right: none;
+}
+
+@media only screen and (min-width: 1280px) {
+
+  .welcome-page .four-section-grid {
+    height: calc(100% - 320px);
+  }
+
+
 }

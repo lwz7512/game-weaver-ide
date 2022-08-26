@@ -7,6 +7,12 @@
 
 @import './style/welcome.css';
 
+:root {
+  --gw-wheat: rgb(241, 222, 184); /* wheat */
+  --gw-yellow: rgb(215, 198, 160);
+  --gw-dark-slate: rgb(71 85 105);
+}
+
 /*
  * @NOTE: Prepend a `~` to css file paths that are in your node_modules
  *        See https://github.com/webpack-contrib/sass-loader#imports

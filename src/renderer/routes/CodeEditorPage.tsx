@@ -2,7 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import LeftSideBar from '../components/LeftSideBar';
 import { MODULETYPES, MODULEROUTES } from '../config';
-import PreviewPanelHandleBar from '../components/PreviewPanelHandleBar';
+import { PreviewPanelHandleBar } from '../components/PreviewPanelHandleBar';
 
 const CodeEditorPage = () => {
   const navigate = useNavigate();
@@ -23,9 +23,9 @@ const CodeEditorPage = () => {
       <div className="main-part flex-1 text-black flex flex-col">
         <div className="tabs-bar h-8 bg-gray-200 p-1">tabs bar</div>
         <div className="code-editors bg-white flex-1 p-2">code editors</div>
-        <div className="preview-output-panels bg-gray-200 h-60 select-none">
+        <div className="preview-output-panels bg-gray-200 h-60 ">
           <PreviewPanelHandleBar targeSelector=".preview-output-panels" />
-          <span className=" text-xs">Game Preview Area</span>
+          <span className="select-none text-xs">Game Preview Area</span>
         </div>
       </div>
       <div className="right-toolbar w-14 bg-gray-700 text-white p-2">tools</div>

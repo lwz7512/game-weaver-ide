@@ -1,5 +1,8 @@
 {
-  "description": "A foundation for scalable desktop apps",
+  "name": "electoron-game-weaver",
+  "productName": "GameWeaver",
+  "version": "1.0.0",
+  "description": "All-in-one Javascript Game IDE",
   "keywords": [
     "electron",
     "boilerplate",
@@ -189,8 +192,8 @@
     "webpack-merge": "^5.8.0"
   },
   "build": {
-    "productName": "ElectronReact",
-    "appId": "org.erb.ElectronReact",
+    "productName": "GameWeaver",
+    "appId": "com.rainbowcoding.GameWeaver",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
