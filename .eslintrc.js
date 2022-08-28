@@ -14,7 +14,9 @@ module.exports = {
     'prettier/prettier': ['off', { singleQuote: true, trailingComma: 'all' }],
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': 'off',
-    '@typescript-eslint/no-var-requires': 0,
+    '@typescript-eslint/no-var-requires': 'off',
+    'import/prefer-default-export': 'off',
+    'no-console': 'off',
   },
   parserOptions: {
     ecmaVersion: 2020,
