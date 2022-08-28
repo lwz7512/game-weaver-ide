@@ -1,7 +1,8 @@
 // ==================  MESSAGE HANDLING  ==========================
 import { ipcMain, dialog } from 'electron';
 import { browserWindows } from './createWindow';
-import { showOpenDialog } from './dialogs';
+import { showOpenDialog, showSaveDialog } from './dialogs';
+import { IpcEvents } from '../ipc-events';
 
 export const setupIpcMainHandler = () => {
   ipcMain.on('ipc-example', async (event, arg) => {
@@ -18,7 +19,11 @@ export const setupIpcMainHandler = () => {
   });
 
   ipcMain.handle('showDialog', (e, message) => {
-    return showOpenDialog();
+    return showOpenDialog(message);
+  });
+
+  ipcMain.handle(IpcEvents.OPEN_SETTINGS, (e, message) => {
+    return showSaveDialog(message);
   });
 };
 // ================== END OF MESSAGE HANDLING  ====================
