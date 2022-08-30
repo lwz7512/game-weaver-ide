@@ -1,11 +1,14 @@
 /**
  * Created @2022/08/19
  */
+// import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { MODULETYPES, MODULEROUTES } from '../config';
 import LeftSideBar from '../components/LeftSideBar';
+import { HeroBanner } from '../components/HeroBanner';
+import placeHolderImg from '../assets/global-preloader.jpg';
 
-import spaceGameImg from '../assets/space-game-level-banner-with-platforms-flying-spaceship_md.jpg';
+import appCfg from '../assets/app.json';
 
 const WelcomePage = () => {
   const navigate = useNavigate();
@@ -13,6 +16,8 @@ const WelcomePage = () => {
     // console.log(module);
     navigate(MODULEROUTES[module]);
   };
+
+  // console.log(appCfg);
 
   return (
     <div className="welcome-page w-full h-screen flex">
@@ -23,16 +28,11 @@ const WelcomePage = () => {
         />
       </div>
       <div className="flex-1">
-        <div className="hero-banner relative bg-slate-300 h-64 xl:h-80">
-          <img
-            src={spaceGameImg}
-            alt="banner"
-            className="absolute top-0 left-0 w-full object-cover z-0 h-full"
-          />
-          <h1 className="text-2xl top-10 left-10 text-center p-8 absolute z-10 text-white">
-            Welcome to Game Weaver!
-          </h1>
-        </div>
+        <HeroBanner
+          title={appCfg.heroTitle}
+          heroURL={appCfg.baseURL + appCfg.heroImage}
+          placeHolder={placeHolderImg}
+        />
         <div className="four-section-grid grid grid-cols-3 grid-rows-2">
           <div className="section">
             <h2 className="text-lg font-semibold">New...</h2>

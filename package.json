@@ -1,7 +1,7 @@
 {
   "name": "electoron-game-weaver",
   "productName": "GameWeaver",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "All-in-one Javascript Game IDE",
   "keywords": [
     "electron",

@@ -23,7 +23,7 @@ const IconToolButton = ({
 }: IconButtonProps) => (
   <div
     className={clsx('btn-box py-3 pl-3 pr-4', {
-      'border-l-2': currentModule === module,
+      'border-l-2 mr-0.5': currentModule === module,
     })}
   >
     <button

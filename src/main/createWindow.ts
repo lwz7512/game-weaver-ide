@@ -6,6 +6,10 @@ import log from 'electron-log';
 import { resolveHtmlPath } from './util';
 import MenuBuilder from './menu';
 
+// Keep a global reference of the window objects, if we don't, the window will
+// be closed automatically when the JavaScript object is garbage collected.
+export const browserWindows: Array<BrowserWindow | null> = [];
+
 class AppUpdater {
   constructor() {
     log.transports.file.level = 'info';
@@ -27,10 +31,6 @@ const installExtensions = async () => {
     .catch(console.log);
 };
 
-// Keep a global reference of the window objects, if we don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-export const browserWindows: Array<BrowserWindow | null> = [];
-
 export const createWindow = async (isDebug: boolean) => {
   if (isDebug) {
     await installExtensions();
@@ -50,7 +50,7 @@ export const createWindow = async (isDebug: boolean) => {
     height: 760,
     minWidth: 1024,
     minHeight: 640,
-    // icon: getAssetPath('icon.png'),
+    icon: getAssetPath('icon.png'),
     webPreferences: {
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
