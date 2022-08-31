@@ -1,7 +1,8 @@
 // import { Button } from '@blueprintjs/core';
 import { useNavigate } from 'react-router-dom';
+import MonacoEditor from '@monaco-editor/react';
 import LeftSideBar from '../components/LeftSideBar';
-import { MODULETYPES, MODULEROUTES } from '../config';
+import { MODULETYPES, MODULEROUTES, codeEditorOptions } from '../config';
 import { PreviewPanelHandleBar } from '../components/PreviewPanelHandleBar';
 
 const CodeEditorPage = () => {
@@ -22,7 +23,16 @@ const CodeEditorPage = () => {
       </div>
       <div className="main-part flex-1 text-black flex flex-col">
         <div className="tabs-bar h-8 bg-gray-200 p-1">tabs bar</div>
-        <div className="code-editors bg-white flex-1 p-2">code editors</div>
+        <div className="code-editors bg-white flex-1 p-2">
+          <MonacoEditor
+            height="99%"
+            width="99%"
+            theme="vs-dark"
+            options={codeEditorOptions}
+            defaultLanguage="javascript"
+            defaultValue="// some comment"
+          />
+        </div>
         <div className="preview-output-panels bg-gray-200 h-60 ">
           <PreviewPanelHandleBar targeSelector=".preview-output-panels" />
           <span className="select-none text-xs">Game Preview Area</span>

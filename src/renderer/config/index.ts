@@ -32,3 +32,13 @@ export const MODULEROUTES = {
   [MODULETYPES.USER as string]: ROUTES.USER,
   [MODULETYPES.SETTING as string]: ROUTES.SETTING,
 };
+
+export const codeEditorOptions = {
+  fontSize: 14,
+  minimap: {
+    enabled: false, // TODO: config on global settings
+  },
+  lineDecorationsWidth: 0,
+  lineNumbersMinChars: 3, // default is 5
+  // contextmenu: false,
+};

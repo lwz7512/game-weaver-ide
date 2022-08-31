@@ -112,6 +112,7 @@
   },
   "dependencies": {
     "@blueprintjs/core": "^4.8.0",
+    "@monaco-editor/react": "^4.4.5",
     "clsx": "^1.2.1",
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.7",
@@ -119,7 +120,9 @@
     "fs-extra": "^10.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.3.0"
+    "react-router-dom": "^6.3.0",
+    "react-toastify": "^9.0.8",
+    "zustand": "^4.1.1"
   },
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.6",

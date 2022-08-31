@@ -2,11 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+@import './style/utilities.css';
+@import './style/welcome.css';
+
 @import "~@blueprintjs/core/lib/css/blueprint.css";
 @import "~@blueprintjs/icons/lib/css/blueprint-icons.css";
 
-@import './style/utilities.css';
-@import './style/welcome.css';
+@layer components {
+  .panel {
+    @apply p-4 shadow-md border rounded-md m-2 bg-slate-50;
+  }
+}
 
 :root {
   --gw-wheat: rgb(241, 222, 184); /* wheat */
@@ -16,7 +22,7 @@
 
 /*
  * @NOTE: Prepend a `~` to css file paths that are in your node_modules
- *        See https://github.com/webpack-contrib/sass-loader#imports
+ * See https://github.com/webpack-contrib/sass-loader#imports
  */
 body {
   position: relative;

@@ -24,7 +24,8 @@ const SettingsPage = () => {
       IpcEvents.OPEN_SETTINGS,
       'gmspace'
     )) as string[];
-    // display and allow user to change.
+    // console.log(paths);
+    if (paths.length === 0) return;
     setSpacePath(paths[0]);
     saveWorkspacePath(paths[0]);
   };
@@ -46,19 +47,21 @@ const SettingsPage = () => {
         </div>
       </div>
       <div className="flex-1 py-2 px-4 bg-white">
-        <h1 className="text-lg text-center p-8 border-b-2">
+        <h1 className="text-lg text-center p-8 border-b-2 mb-8 font-semibold text-slate-600">
           Welcome to setting page!
         </h1>
-        <h2 className="my-4 text-base text-slate-500 pl-4 border-l-4 border-green-600">
-          Workspace Path: {spacePath}
-        </h2>
-        <Button
-          icon="folder-new"
-          intent="primary"
-          text={`${spacePath ? 'Reset' : 'Create'} Workspace Directory`}
-          className="focus:outline-none"
-          onClick={openNativeDialog}
-        />
+        <div className="panel">
+          <h2 className="my-2 text-base text-slate-500 pl-4 border-l-4 border-green-600">
+            Workspace Path: {spacePath}
+          </h2>
+          <Button
+            icon="folder-new"
+            intent="primary"
+            text={`${spacePath ? 'Reset' : 'Create'} Workspace Directory`}
+            className="focus:outline-none my-4"
+            onClick={openNativeDialog}
+          />
+        </div>
       </div>
     </div>
   );
