@@ -4,12 +4,23 @@
 
 Created @2022/08/16
 
+## Based on boilerplate
+
+[Electron React Boilerplate](https://github.com/electron-react-boilerplate/electron-react-boilerplate)
+
 ## Main Building Bocks
 
-- ReactJS
-- blueprintjs;
-- monaco-editor/react;
-- tailwindcss;
-- zustand;
+- [ReactJS](https://reactjs.org/)
+- [blueprintjs](https://blueprintjs.com/);
+- [monaco-editor/react](https://github.com/suren-atoyan/monaco-react);
+- [Live Preview - VS Code Extension](https://github.com/microsoft/vscode-livepreview);
+- [tailwindcss](https://tailwindcss.com/);
+- [zustand](https://github.com/pmndrs/zustand);
 
-## ...
+## Main features
+
+- HTML5 2D game developement based on phaserjs game template(and pixijs);
+- Tilemap form phaserjs game engine authoring;
+- Running game with live preview;
+
+## More...

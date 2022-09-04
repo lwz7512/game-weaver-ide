@@ -1,0 +1,12 @@
+.editor-page {
+
+}
+
+.editor-page .bp4-tab {
+  color: #666;
+}
+
+.editor-page .bp4-tab[aria-selected=true], 
+.editor-page .bp4-tab:not([aria-disabled=true]):hover {
+  color: #215db0;
+}

@@ -1,23 +1,17 @@
 // import * as React from 'react';
 import { useState, useEffect } from 'react';
-
-import { useNavigate } from 'react-router-dom';
 import { Button } from '@blueprintjs/core';
-
 import { IpcEvents } from '../../ipc-events';
 import LeftSideBar from '../components/LeftSideBar';
-import { MODULETYPES, MODULEROUTES } from '../config';
+import { MODULETYPES,  } from '../config';
 import { saveWorkspacePath, checkWorkspacePath } from '../state/storage';
+import useLeftSideBar from '../hooks/useLeftSideBar';
 
 const SettingsPage = () => {
   const { ipcRenderer } = window.electron;
   const [spacePath, setSpacePath] = useState('');
 
-  const navigate = useNavigate();
-  const onModuleChanged = (module: string) => {
-    // console.log(module);
-    navigate(MODULEROUTES[module]);
-  };
+  const { onModuleChanged } = useLeftSideBar();
 
   const openNativeDialog = async () => {
     const paths = (await ipcRenderer.invoke(

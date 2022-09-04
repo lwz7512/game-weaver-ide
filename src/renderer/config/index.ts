@@ -1,4 +1,4 @@
-export default {};
+import { TabId } from '@blueprintjs/core';
 
 export enum MODULETYPES {
   WELCOME = 'Welcome',

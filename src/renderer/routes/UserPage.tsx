@@ -1,16 +1,9 @@
-// import * as React from 'react';
-// import { useState, useEffect } from 'react';
-
-import { useNavigate } from 'react-router-dom';
 import LeftSideBar from '../components/LeftSideBar';
-import { MODULETYPES, MODULEROUTES } from '../config';
+import { MODULETYPES } from '../config';
+import useLeftSideBar from '../hooks/useLeftSideBar';
 
 const UserPage = () => {
-  const navigate = useNavigate();
-  const onModuleChanged = (module: string) => {
-    // console.log(module);
-    navigate(MODULEROUTES[module]);
-  };
+  const { onModuleChanged } = useLeftSideBar();
 
   return (
     <div className="w-full h-screen flex">

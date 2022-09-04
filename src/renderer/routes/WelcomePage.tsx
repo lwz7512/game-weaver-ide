@@ -1,23 +1,16 @@
 /**
  * Created @2022/08/19
  */
-// import { useState } from "react";
-import { useNavigate } from 'react-router-dom';
-import { MODULETYPES, MODULEROUTES } from '../config';
+import { MODULETYPES } from '../config';
 import LeftSideBar from '../components/LeftSideBar';
 import { HeroBanner } from '../components/HeroBanner';
+import useLeftSideBar from '../hooks/useLeftSideBar';
 import placeHolderImg from '../assets/global-preloader.jpg';
 
 import appCfg from '../assets/app.json';
 
 const WelcomePage = () => {
-  const navigate = useNavigate();
-  const onModuleChanged = (module: string) => {
-    // console.log(module);
-    navigate(MODULEROUTES[module]);
-  };
-
-  // console.log(appCfg);
+  const { onModuleChanged } = useLeftSideBar();
 
   return (
     <div className="welcome-page w-full h-screen flex">
