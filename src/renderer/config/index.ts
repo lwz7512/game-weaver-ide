@@ -1,5 +1,16 @@
 import { TabId } from '@blueprintjs/core';
 
+export const libUri = 'ts:filename/facts.d.ts';
+
+export const libSource = [
+  'declare class Facts {',
+  '    /**',
+  '     * Returns the next fact',
+  '     */',
+  '    static next():string',
+  '}',
+].join('\n');
+
 export enum MODULETYPES {
   WELCOME = 'Welcome',
   CODE = 'CodeEditor',

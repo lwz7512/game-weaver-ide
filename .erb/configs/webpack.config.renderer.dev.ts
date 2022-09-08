@@ -117,7 +117,7 @@ const configuration: webpack.Configuration = {
       },
       // Source code resource
       {
-        resourceQuery: /raw/,
+        test: /\.(txt)$/i,
         type: 'asset/source',
       },
     ],

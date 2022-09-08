@@ -2,33 +2,11 @@
 import { useEffect, useRef } from 'react';
 import * as monaco from 'monaco-editor';
 import { TabId } from '@blueprintjs/core';
-import { MODULETYPES, codeEditorOptions } from '../config';
+import { codeEditorOptions, libUri, libSource } from '../config';
 
-monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
-  target: monaco.languages.typescript.ScriptTarget.ES2015,
-  allowNonTsExtensions: true,
-});
-
-// compiler options
-monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
-  target: monaco.languages.typescript.ScriptTarget.ES2015,
-  allowNonTsExtensions: true,
-});
-
-// ****** add extra libraries  ******
-const libSource = [
-  'declare class Facts {',
-  '    /**',
-  '     * Returns the next fact',
-  '     */',
-  '    static next():string',
-  '}',
-].join('\n');
-const libUri = 'ts:filename/facts.d.ts';
-monaco.languages.typescript.javascriptDefaults.addExtraLib(libSource, libUri);
-// TODO: add phaser library:
-
-// ****** end of libraries addition ******
+import p2Source from '../assets/phaser/p2.d.txt';
+import pixiSource from '../assets/phaser/pixi.comments.d.txt';
+import phaserCESource from '../assets/phaser/phaser.comments.d.txt';
 
 /**
  * **************************************************
@@ -89,6 +67,39 @@ const useMonocaEditor = (navbarTabId: TabId) => {
       monaco.Uri.parse(libUri)
     );
   }, [navbarTabId]);
+
+  useEffect(() => {
+    console.log('>>> hacking monaco languages....');
+
+    // apply compiler options as typescript sensible!
+    // monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+    //   target: monaco.languages.typescript.ScriptTarget.ES2015,
+    //   allowNonTsExtensions: true,
+    // });
+
+    // ****** add extra libraries for test ******
+    monaco.languages.typescript.javascriptDefaults.addExtraLib(
+      libSource,
+      libUri
+    );
+
+    // add phaser-ce library:
+    // https://github.com/photonstorm/phaser-ce/tree/master/typescript
+    monaco.languages.typescript.javascriptDefaults.addExtraLib(
+      p2Source,
+      'ts:phaser/p2.d.txt'
+    );
+    monaco.languages.typescript.javascriptDefaults.addExtraLib(
+      pixiSource,
+      'ts:phaser/pixi.comments.d.txt'
+    );
+    monaco.languages.typescript.javascriptDefaults.addExtraLib(
+      phaserCESource,
+      'ts:phaser/phaser.comments.d.txt'
+    );
+
+    // ****** end of libraries addition ******
+  }, []);
 
   return {
     codeEitorWillMountHandler,
