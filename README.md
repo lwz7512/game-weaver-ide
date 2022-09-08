@@ -14,6 +14,7 @@ Created @2022/08/16
 - [blueprintjs](https://blueprintjs.com/);
 - [monaco-editor/react](https://github.com/suren-atoyan/monaco-react);
 - [Live Preview - VS Code Extension](https://github.com/microsoft/vscode-livepreview);
+- [Phaser](https://phaser.io/);
 - [tailwindcss](https://tailwindcss.com/);
 - [zustand](https://github.com/pmndrs/zustand);
 

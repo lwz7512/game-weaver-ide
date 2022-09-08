@@ -11,6 +11,7 @@ module.exports = {
     'import/no-unresolved': 'error',
     // Since React 17 and typescript 4.1 you can safely disable the rule
     'react/react-in-jsx-scope': 'off',
+    'react/require-default-props': 'off',
     'prettier/prettier': ['off', { singleQuote: true, trailingComma: 'all' }],
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': 'off',

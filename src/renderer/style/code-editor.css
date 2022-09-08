@@ -10,3 +10,8 @@
 .editor-page .bp4-tab:not([aria-disabled=true]):hover {
   color: #215db0;
 }
+
+.editor-page .code-editors {
+  width: 99%;
+  height: 99%;
+}

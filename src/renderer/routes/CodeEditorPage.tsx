@@ -1,4 +1,5 @@
-import MonacoEditor from '@monaco-editor/react';
+// import { useRef, useEffect } from 'react';
+// import * as monaco from 'monaco-editor';
 import { Button, Tab, Tabs } from '@blueprintjs/core';
 import LeftSideBar from '../components/LeftSideBar';
 import { MODULETYPES, codeEditorOptions } from '../config';
@@ -7,11 +8,19 @@ import useLeftSideBar from '../hooks/useLeftSideBar';
 import useMonocaEditor from '../hooks/useMonocaEditor';
 import useTabsBar from '../hooks/useTabsBar';
 
+/**
+ * code editor page
+ * @returns code page
+ */
 const CodeEditorPage = () => {
   const { onModuleChanged } = useLeftSideBar();
   const { navbarTabId, handleNavbarTabChange } = useTabsBar();
-  const { defaultCode, codeEditorMountHandler, codeEditorValueHandler } =
-    useMonocaEditor(navbarTabId);
+  const {
+    defaultCode,
+    codeEditorMountHandler,
+    codeEditorValueHandler,
+    codeEitorWillMountHandler,
+  } = useMonocaEditor(navbarTabId);
 
   return (
     <div className="editor-page w-full h-screen flex ">
@@ -50,17 +59,9 @@ const CodeEditorPage = () => {
             />
           </Tabs>
         </div>
-        <div className="code-editors bg-white flex-1 p-2">
-          <MonacoEditor
-            height="99%"
-            width="99%"
-            theme="vs-dark"
-            options={codeEditorOptions}
-            defaultLanguage="javascript"
-            defaultValue={defaultCode}
-            onMount={codeEditorMountHandler}
-            onChange={codeEditorValueHandler}
-          />
+        {/* code editor container */}
+        <div className="bg-white flex-1 p-1">
+          <div id="code-editors" className="code-editors bg-slate-100" />
         </div>
         <div className="preview-output-panels bg-gray-200 h-60 ">
           <PreviewPanelHandleBar targeSelector=".preview-output-panels" />

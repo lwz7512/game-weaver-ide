@@ -1,6 +1,10 @@
 import { useEffect } from 'react';
 
-const useResizeHandleBar = (targeSelector: string, direction = 'v') => {
+const useResizeHandleBar = (
+  targeSelector: string,
+  direction = 'v',
+  onVerticalMove?: (deltaH: number) => void
+) => {
   useEffect(() => {
     // Query the element
     const ele = document.querySelector(targeSelector) as HTMLElement;
@@ -32,6 +36,7 @@ const useResizeHandleBar = (targeSelector: string, direction = 'v') => {
       if (direction === 'v') {
         const clamH = clamp(min, h - dy, max);
         ele.style.height = `${clamH}px`;
+        if (onVerticalMove) onVerticalMove(dy);
       }
     };
 
@@ -60,7 +65,7 @@ const useResizeHandleBar = (targeSelector: string, direction = 'v') => {
 
     // add mousedown to handle bar
     handleBar.addEventListener('mousedown', mouseDownHandler);
-  }, [targeSelector, direction]);
+  }, [targeSelector, direction, onVerticalMove]);
 };
 
 export default useResizeHandleBar;
