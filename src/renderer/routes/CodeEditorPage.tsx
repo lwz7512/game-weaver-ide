@@ -2,7 +2,7 @@
 // import * as monaco from 'monaco-editor';
 import { Button, Tab, Tabs } from '@blueprintjs/core';
 import LeftSideBar from '../components/LeftSideBar';
-import { MODULETYPES, codeEditorOptions } from '../config';
+import { MODULETYPES } from '../config';
 import { PreviewPanelHandleBar } from '../components/PreviewPanelHandleBar';
 import useLeftSideBar from '../hooks/useLeftSideBar';
 import useMonocaEditor from '../hooks/useMonocaEditor';
@@ -15,12 +15,7 @@ import useTabsBar from '../hooks/useTabsBar';
 const CodeEditorPage = () => {
   const { onModuleChanged } = useLeftSideBar();
   const { navbarTabId, handleNavbarTabChange } = useTabsBar();
-  const {
-    defaultCode,
-    codeEditorMountHandler,
-    codeEditorValueHandler,
-    codeEitorWillMountHandler,
-  } = useMonocaEditor(navbarTabId);
+  const { defaultCode } = useMonocaEditor('#code-editors', navbarTabId);
 
   return (
     <div className="editor-page w-full h-screen flex ">
