@@ -12,86 +12,57 @@ import {
   phaserFile,
 } from '../config';
 
-// import p2Source from '../assets/phaser/p2.d.txt';
-// import pixiSource from '../assets/phaser/pixi.comments.d.txt';
-// import phaserCESource from '../assets/phaser/phaser.comments.d.txt';
-
-/**
- * **************************************************
- */
-export const mockCodeForScene: { [key: TabId]: string } = {
-  main: '// main scene code',
-  success: '// sucess scene code',
-  failure: '// failure scene code',
-};
+import { templetCode } from '../state/templete';
 
 /**
  * language switch hook by tab
  * @param navbarTabId
  * @returns state and callbacks
  */
-const useMonocaEditor = (containerSelector: string, navbarTabId: TabId) => {
+const useMonocaEditor = (
+  containerSelector: string,
+  navbarTabId: TabId,
+  onValueChange: (code: string, eol: string) => void
+) => {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
 
-  // build editor
+  // build editor & observe container resize
   useEffect(() => {
     const editorContainer = document.querySelector(
       containerSelector
     ) as HTMLElement;
+
+    const options = {
+      value: templetCode[navbarTabId],
+      ...codeEditorOptions,
+    };
+
+    const onChange = (evt: monaco.editor.IModelContentChangedEvent) => {
+      const currentValue = editorRef.current?.getValue() || '';
+      onValueChange(currentValue, evt.eol);
+      templetCode[navbarTabId] = currentValue; // keep a internal value
+    };
+
     const recreateEditor = () => {
+      // console.log('>>> Dispose editor...');
       editorRef.current?.dispose();
-      editorRef.current = monaco.editor.create(editorContainer, {
-        value: mockCodeForScene[navbarTabId],
-        language: 'javascript',
-        ...codeEditorOptions,
-      });
+      console.log('>>> To create editor...');
+      editorRef.current = monaco.editor.create(editorContainer, options);
+      editorRef.current.onDidChangeModelContent(onChange);
       editorRef.current.focus();
     };
     const observer = new ResizeObserver(recreateEditor);
     observer.observe(editorContainer);
-    // clearup when destroy
-    return () => observer.unobserve(editorContainer);
-  }, [navbarTabId, containerSelector]);
 
-  // build model
-  useEffect(() => {
-    const defaultCode = mockCodeForScene[navbarTabId];
-    if (editorRef.current) {
-      editorRef.current.setValue(defaultCode);
-      editorRef.current.focus();
-      return; // stop here!
-    }
-    // create model, call only once!
-    monaco.editor.createModel(
-      mockCodeForScene[navbarTabId],
-      'typescript',
-      monaco.Uri.parse(libUri)
-    );
-  }, [navbarTabId]);
+    // clearup when destroy
+    return () => {
+      observer.unobserve(editorContainer);
+    };
+  }, [navbarTabId, containerSelector, onValueChange]);
 
   // build phaser source lib
   useEffect(() => {
     console.log('>>> Hacking monaco languages....');
-    // apply compiler options as typescript sensible!
-    // monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
-    //   target: monaco.languages.typescript.ScriptTarget.ES2015,
-    //   allowNonTsExtensions: true,
-    // });
-    // add phaser-ce library:
-    // https://github.com/photonstorm/phaser-ce/tree/master/typescript
-    // monaco.languages.typescript.javascriptDefaults.addExtraLib(
-    //   p2Source,
-    //   'ts:phaser/p2.d.txt'
-    // );
-    // monaco.languages.typescript.javascriptDefaults.addExtraLib(
-    //   pixiSource,
-    //   'ts:phaser/pixi.comments.d.txt'
-    // );
-    // monaco.languages.typescript.javascriptDefaults.addExtraLib(
-    //   phaserCESource,
-    //   'ts:phaser/phaser.comments.d.txt'
-    // );
-
     // ****** add extra libraries for test ******
     monaco.languages.typescript.javascriptDefaults.addExtraLib(
       libSource,
@@ -105,6 +76,8 @@ const useMonocaEditor = (containerSelector: string, navbarTabId: TabId) => {
         `ts:${fileName}`
       );
     }
+    // TODO: fetch game code template ...
+
     async function fetchAll() {
       console.log('>>> fetching phaser lib...');
       await fetchPhaserLib(p2File);
@@ -131,7 +104,7 @@ const useMonocaEditor = (containerSelector: string, navbarTabId: TabId) => {
     codeEditorMountHandler,
     codeEditorValueHandler,
     verticalHandleBarMoveHandler,
-    defaultCode: mockCodeForScene[navbarTabId],
+    defaultCode: '//',
   };
 };
 

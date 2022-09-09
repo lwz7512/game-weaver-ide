@@ -12,7 +12,7 @@ Created @2022/08/16
 
 - [ReactJS](https://reactjs.org/)
 - [blueprintjs](https://blueprintjs.com/);
-- [monaco-editor/react](https://github.com/suren-atoyan/monaco-react);
+- [monaco-editor](https://microsoft.github.io/monaco-editor/);
 - [Live Preview - VS Code Extension](https://github.com/microsoft/vscode-livepreview);
 - [Phaser CE](https://github.com/photonstorm/phaser-ce);
 - [tailwindcss](https://tailwindcss.com/);

@@ -52,6 +52,7 @@ export const MODULEROUTES = {
 
 export const codeEditorOptions = {
   fontSize: 14,
+  language: 'javascript',
   minimap: {
     enabled: false, // TODO: config on global settings
   },
