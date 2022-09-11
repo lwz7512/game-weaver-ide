@@ -1,6 +1,6 @@
 // import { useRef, useEffect } from 'react';
 // import * as monaco from 'monaco-editor';
-import { Button, Tab, Tabs, TabId } from '@blueprintjs/core';
+import { Button, Tab, Tabs } from '@blueprintjs/core';
 import LeftSideBar from '../components/LeftSideBar';
 import { MODULETYPES } from '../config';
 import { PreviewPanelHandleBar } from '../components/PreviewPanelHandleBar';
@@ -67,7 +67,11 @@ const CodeEditorPage = () => {
         </div>
         <div className="preview-output-panels bg-gray-200 h-60 ">
           <PreviewPanelHandleBar targeSelector=".preview-output-panels" />
-          <span className="select-none text-xs">Game Preview Area</span>
+          <webview
+            id="foo"
+            src="https://www.github.com/"
+            className=" inline-flex w-full h-full"
+          />
         </div>
       </div>
       <div className="right-toolbar w-14 bg-gray-700 text-white p-2">tools</div>

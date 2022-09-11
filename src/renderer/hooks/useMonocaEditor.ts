@@ -1,18 +1,14 @@
-/* eslint-disable import/extensions */
+/**
+ * Ready to use:
+ *
+ * @2022/09/09
+ */
 import { useEffect, useRef } from 'react';
 import * as monaco from 'monaco-editor';
 import { TabId } from '@blueprintjs/core';
-import {
-  codeEditorOptions,
-  libUri,
-  libSource,
-  sourceRepo,
-  p2File,
-  pixiFile,
-  phaserFile,
-} from '../config';
+import { codeEditorOptions, libSource, sourceRepo, TSLIB } from '../config';
 
-import { templetCode } from '../state/templete';
+import { templetCode } from '../state/template';
 
 /**
  * language switch hook by tab
@@ -33,14 +29,14 @@ const useMonocaEditor = (
     ) as HTMLElement;
 
     const options = {
-      value: templetCode[navbarTabId],
+      value: templetCode[navbarTabId as string],
       ...codeEditorOptions,
     };
 
     const onChange = (evt: monaco.editor.IModelContentChangedEvent) => {
       const currentValue = editorRef.current?.getValue() || '';
       onValueChange(currentValue, evt.eol);
-      templetCode[navbarTabId] = currentValue; // keep a internal value
+      templetCode[navbarTabId as string] = currentValue; // keep a internal value
     };
 
     const recreateEditor = () => {
@@ -66,7 +62,7 @@ const useMonocaEditor = (
     // ****** add extra libraries for test ******
     monaco.languages.typescript.javascriptDefaults.addExtraLib(
       libSource,
-      libUri
+      TSLIB.FACTS
     );
     async function fetchPhaserLib(fileName: string) {
       const response = await fetch(sourceRepo + fileName);
@@ -80,11 +76,11 @@ const useMonocaEditor = (
 
     async function fetchAll() {
       console.log('>>> fetching phaser lib...');
-      await fetchPhaserLib(p2File);
+      await fetchPhaserLib(TSLIB.P2);
       console.log('## p2.d done!');
-      await fetchPhaserLib(pixiFile);
+      await fetchPhaserLib(TSLIB.PIXI);
       console.log('## pixi.d done!');
-      await fetchPhaserLib(phaserFile);
+      await fetchPhaserLib(TSLIB.PHASER);
       console.log('## phaser.d done!');
     }
     // fetching remote phaser lib..
@@ -92,18 +88,7 @@ const useMonocaEditor = (
     // ****** end of libraries addition ******
   }, []);
 
-  const verticalHandleBarMoveHandler = (diffH: number) => {};
-  // TODO: add extra lib ...
-  const codeEitorWillMountHandler = () => {};
-  const codeEditorMountHandler = () => {};
-  // TODO: save the current code to file
-  const codeEditorValueHandler = () => true;
-
   return {
-    codeEitorWillMountHandler,
-    codeEditorMountHandler,
-    codeEditorValueHandler,
-    verticalHandleBarMoveHandler,
     defaultCode: '//',
   };
 };

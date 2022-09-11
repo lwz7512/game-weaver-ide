@@ -3,10 +3,12 @@ import { TabId } from '@blueprintjs/core';
 export const sourceRepo =
   'https://raw.githubusercontent.com/lwz7512/game-weaver-ast/master/';
 
-export const p2File = 'phaser/p2.d.txt';
-export const pixiFile = 'phaser/pixi.comments.d.txt';
-export const phaserFile = 'phaser/phaser.comments.d.txt';
-export const libUri = 'ts:filename/facts.d.ts';
+export enum TSLIB {
+  P2 = 'phaser/p2.d.txt',
+  PIXI = 'phaser/pixi.comments.d.txt',
+  PHASER = 'phaser/phaser.comments.d.txt',
+  FACTS = 'ts:filename/facts.d.ts',
+}
 
 export const libSource = [
   'declare class Facts {',

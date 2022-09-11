@@ -27,7 +27,7 @@ import { TabId } from '@blueprintjs/core';
 /**
  * ************* TEMPORAL CODE STORE ***********************
  */
-export const templetCode: { [key: TabId]: string } = {
+export const templetCode: { [key: string]: string } = {
   main: '// main scene code',
   success: '// sucess scene code',
   failure: '// failure scene code',

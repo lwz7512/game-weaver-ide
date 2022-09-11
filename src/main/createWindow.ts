@@ -52,6 +52,7 @@ export const createWindow = async (isDebug: boolean) => {
     minHeight: 640,
     icon: getAssetPath('icon.png'),
     webPreferences: {
+      webviewTag: true, // allow for webview tag, disabled by default
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),

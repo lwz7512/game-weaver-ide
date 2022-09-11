@@ -1,14 +1,29 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-const useResizeHandleBar = (
-  targeSelector: string,
-  direction = 'v',
-  onVerticalMove?: (deltaH: number) => void
-) => {
+const useResizeHandleBar = (targeSelector: string, direction = 'v') => {
+  const minSize = 200;
+  const maxSize = 400;
+
+  const [size, setSize] = useState('min');
+
+  const switchHeightHandler = () => {
+    const ele = document.querySelector(targeSelector) as HTMLElement;
+    if (size === 'min') {
+      setSize('max');
+      ele.style.height = `${maxSize}px`;
+    } else {
+      setSize('min');
+      ele.style.height = `${minSize}px`;
+    }
+  };
+
   useEffect(() => {
     // Query the element
     const ele = document.querySelector(targeSelector) as HTMLElement;
     const handleBar = document.querySelector('.handle-bar') as HTMLElement;
+    const handleBarRow = document.querySelector(
+      '.handle-bar-section'
+    ) as HTMLElement;
 
     // The current position of mouse
     let x = 0;
@@ -25,18 +40,15 @@ const useResizeHandleBar = (
       const dx = e.clientX - x;
       const dy = e.clientY - y;
 
-      const min = 200;
-      const max = 400;
-
       // Adjust the dimension of element
       if (direction === 'h') {
-        const clampW = clamp(min, w - dx, max);
+        const clampW = clamp(minSize, w - dx, maxSize);
         ele.style.width = `${clampW}px`;
       }
       if (direction === 'v') {
-        const clamH = clamp(min, h - dy, max);
+        const clamH = clamp(minSize, h - dy, maxSize);
         ele.style.height = `${clamH}px`;
-        if (onVerticalMove) onVerticalMove(dy);
+        // if (onVerticalMove) onVerticalMove(dy);
       }
     };
 
@@ -65,7 +77,13 @@ const useResizeHandleBar = (
 
     // add mousedown to handle bar
     handleBar.addEventListener('mousedown', mouseDownHandler);
-  }, [targeSelector, direction, onVerticalMove]);
+    handleBarRow.addEventListener('mouseleave', mouseUpHandler);
+  }, [targeSelector, direction]);
+
+  return {
+    size,
+    switchHeightHandler,
+  };
 };
 
 export default useResizeHandleBar;
