@@ -1,6 +1,5 @@
-// import { useRef, useEffect } from 'react';
-// import * as monaco from 'monaco-editor';
-import { Button, Tab, Tabs } from '@blueprintjs/core';
+import { Tab, Tabs, Icon, IconName } from '@blueprintjs/core';
+import { IpcEvents } from '../../ipc-events';
 import LeftSideBar from '../components/LeftSideBar';
 import { MODULETYPES } from '../config';
 import { PreviewPanelHandleBar } from '../components/PreviewPanelHandleBar';
@@ -13,6 +12,7 @@ import useTabsBar from '../hooks/useTabsBar';
  * @returns code page
  */
 const CodeEditorPage = () => {
+  const { ipcRenderer } = window.electron;
   const { onModuleChanged } = useLeftSideBar();
   const { navbarTabId, handleNavbarTabChange } = useTabsBar();
 
@@ -21,8 +21,19 @@ const CodeEditorPage = () => {
     // console.log('saving...');
     // console.log(value);
   };
-
   useMonocaEditor('#code-editors', navbarTabId, codeValueChangeHandler);
+
+  const fullScreenOpenHandler = () => {
+    const domRect = document.body.getBoundingClientRect();
+    ipcRenderer.sendMessage(IpcEvents.OPEN_GAME_VIEW, [
+      'https://www.github.com/',
+      { width: domRect.width - 56, height: domRect.height },
+    ]);
+  };
+
+  const closeFullscreenGameHandler = () => {
+    ipcRenderer.sendMessage(IpcEvents.CLOSE_GAME_VIEW, []);
+  };
 
   return (
     <div className="editor-page w-full h-screen flex ">
@@ -66,15 +77,31 @@ const CodeEditorPage = () => {
           <div id="code-editors" className="code-editors bg-slate-100" />
         </div>
         <div className="preview-output-panels bg-gray-200 h-60 ">
-          <PreviewPanelHandleBar targeSelector=".preview-output-panels" />
+          <PreviewPanelHandleBar
+            targeSelector=".preview-output-panels"
+            onFullScreen={fullScreenOpenHandler}
+          />
           <webview
-            id="foo"
+            id="gwpreview"
             src="https://www.github.com/"
-            className=" inline-flex w-full h-full"
+            className="inline-flex w-full h-full"
           />
         </div>
       </div>
-      <div className="right-toolbar w-14 bg-gray-700 text-white p-2">tools</div>
+      {/* side buttons bar */}
+      <div className="right-toolbar w-14 bg-gray-700 text-white px-2">
+        {/* delet or close view */}
+        <div className="btn-box py-3 px-2">
+          <button
+            type="button"
+            className="focus:outline-none"
+            onClick={closeFullscreenGameHandler}
+          >
+            <Icon icon="delete" size={24} color="white" />
+          </button>
+        </div>
+        {/* ... */}
+      </div>
     </div>
   );
 };

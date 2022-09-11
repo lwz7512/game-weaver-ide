@@ -1,6 +1,6 @@
 /* eslint-disable global-require */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
+import { app, BrowserWindow, shell, BrowserView } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import { resolveHtmlPath } from './util';
@@ -9,6 +9,8 @@ import MenuBuilder from './menu';
 // Keep a global reference of the window objects, if we don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 export const browserWindows: Array<BrowserWindow | null> = [];
+
+const gameViews: Array<BrowserView | null> = [];
 
 class AppUpdater {
   constructor() {
@@ -91,4 +93,34 @@ export const createWindow = async (isDebug: boolean) => {
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
   new AppUpdater();
+};
+
+/**
+ * Create Game view
+ * @param url
+ * @param width
+ * @param height
+ */
+export const createView = (url: string, width = 400, height = 300) => {
+  const win = browserWindows[0];
+  if (win) {
+    const view = new BrowserView();
+    win.addBrowserView(view);
+    view.setBounds({
+      x: 0,
+      y: 0,
+      width,
+      height,
+    });
+    view.webContents.loadURL(url);
+    gameViews.push(view);
+  }
+};
+
+export const closeView = () => {
+  const win = browserWindows[0];
+  const view = gameViews.shift();
+  if (win && view) {
+    win.removeBrowserView(view);
+  }
 };

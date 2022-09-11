@@ -42,7 +42,7 @@ const useMonocaEditor = (
     const recreateEditor = () => {
       // console.log('>>> Dispose editor...');
       editorRef.current?.dispose();
-      console.log('>>> To create editor...');
+      // console.log('>>> To create editor...');
       editorRef.current = monaco.editor.create(editorContainer, options);
       editorRef.current.onDidChangeModelContent(onChange);
       editorRef.current.focus();

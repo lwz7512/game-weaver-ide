@@ -89,3 +89,13 @@ a:hover {
   width: 100%;
   height: 100%;
 }
+
+.flying-bar {
+  /* background-color: #337FCE; */
+  /* height: 6px; */
+  background-color: rgb(37 99 235);
+  position: absolute;
+  z-index: 10;
+  opacity: 0.8;
+  pointer-events: none;
+}

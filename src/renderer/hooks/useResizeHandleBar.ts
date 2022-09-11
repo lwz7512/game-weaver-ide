@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 
-const useResizeHandleBar = (targeSelector: string, direction = 'v') => {
+const useResizeHandleBar = (
+  targeSelector: string,
+  direction = 'v',
+  useHanleBar = true
+) => {
   const minSize = 200;
   const maxSize = 400;
 
@@ -21,9 +25,6 @@ const useResizeHandleBar = (targeSelector: string, direction = 'v') => {
     // Query the element
     const ele = document.querySelector(targeSelector) as HTMLElement;
     const handleBar = document.querySelector('.handle-bar') as HTMLElement;
-    const handleBarRow = document.querySelector(
-      '.handle-bar-section'
-    ) as HTMLElement;
 
     // The current position of mouse
     let x = 0;
@@ -75,10 +76,39 @@ const useResizeHandleBar = (targeSelector: string, direction = 'v') => {
       document.addEventListener('mouseup', mouseUpHandler);
     };
 
+    // const mouseDownFreeBarHandler = (e: MouseEvent) => {
+    //   // Get the current mouse position
+    //   x = e.clientX;
+    //   y = e.clientY;
+
+    //   const targetRect = handleBarRow.getBoundingClientRect();
+    //   // console.log(targetRect);
+    //   const fbW = `width:${targetRect.width}px;`;
+    //   const fbH = `height:${targetRect.height / 2}px;`;
+    //   const fbT = `top:${targetRect.top + 2}px;`;
+    //   const fbL = `left:${targetRect.left}px`;
+    //   const flyingBar = document.createElement('div');
+    //   flyingBar.classList.add('flying-bar'); // add `flying-bar`
+    //   flyingBar.setAttribute('style', fbW + fbH + fbT + fbL);
+    //   const root = document.getElementById('root') as HTMLElement;
+    //   root.appendChild(flyingBar);
+    //   // prepare to destroy
+    //   document.addEventListener('mouseup', mouseUpHandler);
+    //   // prepare to move flyingbar
+    //   document.addEventListener('mousemove', mouseMoveFreeBarHandler);
+    // };
+
     // add mousedown to handle bar
-    handleBar.addEventListener('mousedown', mouseDownHandler);
-    handleBarRow.addEventListener('mouseleave', mouseUpHandler);
-  }, [targeSelector, direction]);
+    if (useHanleBar) {
+      handleBar.addEventListener('mousedown', mouseDownHandler);
+    }
+
+    return () => {
+      if (useHanleBar) {
+        handleBar.removeEventListener('mousedown', mouseDownHandler);
+      }
+    };
+  }, [targeSelector, direction, useHanleBar]);
 
   return {
     size,

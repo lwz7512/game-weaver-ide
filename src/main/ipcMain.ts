@@ -1,6 +1,6 @@
 // ==================  MESSAGE HANDLING  ==========================
 import { ipcMain, dialog } from 'electron';
-import { browserWindows } from './createWindow';
+import { browserWindows, createView, closeView } from './createWindow';
 import { showOpenDialog, showSaveDialog } from './dialogs';
 import { IpcEvents } from '../ipc-events';
 
@@ -25,5 +25,13 @@ export const setupIpcMainHandler = () => {
   ipcMain.handle(IpcEvents.OPEN_SETTINGS, (e, message) => {
     return showSaveDialog(message);
   });
+
+  ipcMain.on(IpcEvents.OPEN_GAME_VIEW, (e, args: unknown[]) => {
+    const url = args[0] as string;
+    const size = args[1] as { [key: string]: number };
+    createView(url, size.width, size.height);
+  });
+
+  ipcMain.on(IpcEvents.CLOSE_GAME_VIEW, closeView);
 };
 // ================== END OF MESSAGE HANDLING  ====================
