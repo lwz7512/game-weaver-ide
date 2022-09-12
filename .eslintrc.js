@@ -18,6 +18,7 @@ module.exports = {
     '@typescript-eslint/no-var-requires': 'off',
     'import/prefer-default-export': 'off',
     'no-console': 'off',
+    'consistent-return': 'off',
   },
   parserOptions: {
     ecmaVersion: 2020,

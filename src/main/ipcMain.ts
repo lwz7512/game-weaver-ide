@@ -3,6 +3,7 @@ import { ipcMain, dialog } from 'electron';
 import { browserWindows, createView, closeView } from './createWindow';
 import { showOpenDialog, showSaveDialog } from './dialogs';
 import { IpcEvents } from '../ipc-events';
+import { createServer } from './createServer';
 
 export const setupIpcMainHandler = () => {
   ipcMain.on('ipc-example', async (event, arg) => {
@@ -33,5 +34,12 @@ export const setupIpcMainHandler = () => {
   });
 
   ipcMain.on(IpcEvents.CLOSE_GAME_VIEW, closeView);
+
+  ipcMain.on(IpcEvents.START_HTTP_SERVER, (e, args: unknown[]) => {
+    const port = args[0] as number;
+    const gmPath = args[1] as string;
+    console.log(`>>> prepare to start server from path: ${gmPath} at ${port}`);
+    createServer(port, gmPath);
+  });
 };
 // ================== END OF MESSAGE HANDLING  ====================

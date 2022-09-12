@@ -10,6 +10,7 @@
  */
 import { app } from 'electron';
 import { createWindow, browserWindows } from './createWindow';
+import { stopServer } from './createServer';
 import { setupIpcMainHandler } from './ipcMain';
 
 if (process.env.NODE_ENV === 'production') {
@@ -29,6 +30,7 @@ if (isDebug) {
  */
 // app.on('before-quit', onBeforeQuit);
 app.on('window-all-closed', () => {
+  stopServer();
   // Respect the OSX convention of having the application in memory even
   // after all windows have been closed
   if (process.platform !== 'darwin') {
@@ -36,16 +38,18 @@ app.on('window-all-closed', () => {
   }
 });
 
+/**
+ * available only in Mac os
+ */
+app.on('activate', () => {
+  console.log('>>> app ReActivated, window count: ');
+  if (!browserWindows.length) createWindow(isDebug);
+});
+
 app
   .whenReady()
   .then(() => {
     createWindow(isDebug);
     setupIpcMainHandler();
-    app.on('activate', () => {
-      // console.log('### reopen mainwindow!');
-      // On macOS it's common to re-create a window in the app when the
-      // dock icon is clicked and there are no other windows open.
-      if (!browserWindows.length) createWindow(isDebug);
-    });
   })
   .catch(console.log);

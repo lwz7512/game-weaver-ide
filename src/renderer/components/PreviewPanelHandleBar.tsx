@@ -30,6 +30,7 @@ export const PreviewPanelHandleBar = ({
   return (
     <div className="handle-bar-section flex justify-between bg-gray-200">
       <div className="w-5 h-3" />
+      {/* switch height button */}
       <button
         type="button"
         className="w-3 h-3 focus:outline-none hover:bg-white"
@@ -42,6 +43,7 @@ export const PreviewPanelHandleBar = ({
           className="block leading-3"
         />
       </button>
+      {/* full screen button */}
       <button
         type="button"
         className="mx-1 w-3 h-3 focus:outline-none hover:bg-white"
