@@ -1,39 +1,40 @@
-import { Tab, Tabs, Icon, IconName } from '@blueprintjs/core';
-import { IpcEvents } from '../../ipc-events';
-import LeftSideBar from '../components/LeftSideBar';
+import { Tab, Tabs } from '@blueprintjs/core';
+
 import { MODULETYPES, gamePreviewDefaultURL } from '../config';
+import LeftSideBar from '../components/LeftSideBar';
+import { IconToolButton } from '../components/Buttons';
 import { PreviewPanelHandleBar } from '../components/PreviewPanelHandleBar';
 import useLeftSideBar from '../hooks/useLeftSideBar';
 import useMonocaEditor from '../hooks/useMonocaEditor';
 import useTabsBar from '../hooks/useTabsBar';
+import useFullscreenButton from '../hooks/useFullscreenButton';
+import { useWorkspaceMainJS } from '../hooks/useWorkspaceFile';
 
 /**
  * code editor page
  * @returns code page
  */
 const CodeEditorPage = () => {
-  const { ipcRenderer } = window.electron;
   const { onModuleChanged } = useLeftSideBar();
   const { navbarTabId, handleNavbarTabChange } = useTabsBar();
+  // TODO: read main.js under selected game folder
+  // default use gmspace/main.js
+  const { mainJSCode } = useWorkspaceMainJS();
 
-  // TODO: save the code...
+  // TODO: the code changed, but would be better to save manaully and refresh!
   const codeValueChangeHandler = (value: string, eol: string) => {
     // console.log('saving...');
     // console.log(value);
   };
-  useMonocaEditor('#code-editors', navbarTabId, codeValueChangeHandler);
+  useMonocaEditor(
+    '#code-editors',
+    navbarTabId,
+    mainJSCode,
+    codeValueChangeHandler
+  );
 
-  const fullScreenOpenHandler = () => {
-    const domRect = document.body.getBoundingClientRect();
-    ipcRenderer.sendMessage(IpcEvents.OPEN_GAME_VIEW, [
-      gamePreviewDefaultURL,
-      { width: domRect.width - 56, height: domRect.height },
-    ]);
-  };
-
-  const closeFullscreenGameHandler = () => {
-    ipcRenderer.sendMessage(IpcEvents.CLOSE_GAME_VIEW, []);
-  };
+  const { isWVFullscreen, fullScreenOpenHandler, closeFullscreenGameHandler } =
+    useFullscreenButton(gamePreviewDefaultURL);
 
   return (
     <div className="editor-page w-full h-screen flex ">
@@ -91,15 +92,9 @@ const CodeEditorPage = () => {
       {/* side buttons bar */}
       <div className="right-toolbar w-14 bg-gray-700 text-white px-2">
         {/* delet or close view */}
-        <div className="btn-box py-3 px-2">
-          <button
-            type="button"
-            className="focus:outline-none"
-            onClick={closeFullscreenGameHandler}
-          >
-            <Icon icon="delete" size={24} color="white" />
-          </button>
-        </div>
+        {isWVFullscreen && (
+          <IconToolButton icon="delete" onClick={closeFullscreenGameHandler} />
+        )}
         {/* ... */}
       </div>
     </div>

@@ -9,7 +9,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import { app } from 'electron';
-import { createWindow, browserWindows } from './createWindow';
+import { createWindow } from './createWindow';
 import { stopServer } from './createServer';
 import { setupIpcMainHandler } from './ipcMain';
 
@@ -31,23 +31,18 @@ if (isDebug) {
 // app.on('before-quit', onBeforeQuit);
 app.on('window-all-closed', () => {
   stopServer();
-  // FIXME: for the sake of kill http server immediately after closed window,
+  // FIXME: In order to kill http server immediately after closed window,
   // here we need quit main process after the `stopServer`.
   app.quit();
-  // Respect the OSX convention of having the application in memory even
-  // after all windows have been closed
-  // if (process.platform !== 'darwin') {
-  //   app.quit();
-  // }
 });
 
 /**
  * available only in Mac os
  */
-app.on('activate', () => {
-  console.log('>>> app ReActivated, window count: ');
-  if (!browserWindows.length) createWindow(isDebug);
-});
+// app.on('activate', () => {
+//   console.log('>>> app ReActivated, window count: ');
+//   if (!browserWindows.length) createWindow(isDebug);
+// });
 
 app
   .whenReady()

@@ -4,6 +4,7 @@ import { browserWindows, createView, closeView } from './createWindow';
 import { showOpenDialog, showSaveDialog } from './dialogs';
 import { IpcEvents } from '../ipc-events';
 import { createServer } from './createServer';
+import { readFile } from './readFile';
 
 export const setupIpcMainHandler = () => {
   ipcMain.on('ipc-example', async (event, arg) => {
@@ -23,8 +24,12 @@ export const setupIpcMainHandler = () => {
     return showOpenDialog(message);
   });
 
-  ipcMain.handle(IpcEvents.OPEN_SETTINGS, (e, message) => {
+  ipcMain.handle(IpcEvents.OPEN_SETTINGS, (_, message) => {
     return showSaveDialog(message);
+  });
+
+  ipcMain.handle(IpcEvents.LOAD_GAME_MAINJS, (_, path) => {
+    return readFile(path);
   });
 
   ipcMain.on(IpcEvents.OPEN_GAME_VIEW, (e, args: unknown[]) => {

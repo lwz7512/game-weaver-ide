@@ -18,9 +18,20 @@ import { templetCode } from '../state/template';
 const useMonocaEditor = (
   containerSelector: string,
   navbarTabId: TabId,
+  mainJSCode: string,
   onValueChange: (code: string, eol: string) => void
 ) => {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+
+  // load main.js content
+  useEffect(() => {
+    if (!mainJSCode) return;
+    // save to main scene
+    templetCode.main = mainJSCode;
+    if (editorRef.current) {
+      editorRef.current.setValue(mainJSCode);
+    }
+  }, [mainJSCode]);
 
   // build editor & observe container resize
   useEffect(() => {
