@@ -31,11 +31,14 @@ if (isDebug) {
 // app.on('before-quit', onBeforeQuit);
 app.on('window-all-closed', () => {
   stopServer();
+  // FIXME: for the sake of kill http server immediately after closed window,
+  // here we need quit main process after the `stopServer`.
+  app.quit();
   // Respect the OSX convention of having the application in memory even
   // after all windows have been closed
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+  // if (process.platform !== 'darwin') {
+  //   app.quit();
+  // }
 });
 
 /**

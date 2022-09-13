@@ -1,4 +1,4 @@
-import { TabId } from '@blueprintjs/core';
+export const gamePreviewDefaultURL = 'http://localhost:8080';
 
 export const sourceRepo =
   'https://raw.githubusercontent.com/lwz7512/game-weaver-ast/master/';

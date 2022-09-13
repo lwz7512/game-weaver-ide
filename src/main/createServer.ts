@@ -39,9 +39,6 @@ export const createServer = (
           file.serve(req, res);
         })
         .resume();
-      // res.writeHead(200, { 'Content-Type': 'text/plain' });
-      // res.write('Hello World!');
-      // res.end();
     })
     .listen(port)
     .addListener('listening', () => onListening(server, port))

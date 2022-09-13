@@ -1,7 +1,7 @@
 import { Tab, Tabs, Icon, IconName } from '@blueprintjs/core';
 import { IpcEvents } from '../../ipc-events';
 import LeftSideBar from '../components/LeftSideBar';
-import { MODULETYPES } from '../config';
+import { MODULETYPES, gamePreviewDefaultURL } from '../config';
 import { PreviewPanelHandleBar } from '../components/PreviewPanelHandleBar';
 import useLeftSideBar from '../hooks/useLeftSideBar';
 import useMonocaEditor from '../hooks/useMonocaEditor';
@@ -26,7 +26,7 @@ const CodeEditorPage = () => {
   const fullScreenOpenHandler = () => {
     const domRect = document.body.getBoundingClientRect();
     ipcRenderer.sendMessage(IpcEvents.OPEN_GAME_VIEW, [
-      'https://www.github.com/',
+      gamePreviewDefaultURL,
       { width: domRect.width - 56, height: domRect.height },
     ]);
   };
@@ -83,7 +83,7 @@ const CodeEditorPage = () => {
           />
           <webview
             id="gwpreview"
-            src="https://www.github.com/"
+            src={gamePreviewDefaultURL}
             className="inline-flex w-full h-full"
           />
         </div>
