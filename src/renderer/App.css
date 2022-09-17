@@ -13,12 +13,16 @@
   .panel {
     @apply p-4 shadow-md border rounded-md m-2 bg-slate-50;
   }
+  .game-item {
+    @apply text-white py-4 pl-2 pr-6 text-center w-full no-transform bg-slate-600 hover:bg-sky-600 focus:outline-none;
+  }
 }
 
 :root {
   --gw-wheat: rgb(241, 222, 184); /* wheat */
   --gw-yellow: rgb(215, 198, 160);
   --gw-dark-slate: rgb(71 85 105);
+  --gw-logo-silver: rgb(167, 192, 217);
 }
 
 /*
@@ -60,6 +64,14 @@ button.large {
 button:hover {
   transform: scale(1.05);
   opacity: 1;
+}
+
+button.no-transform:hover {
+  transform: none;
+}
+
+button.selected, button.selected:hover {
+  background-color: rgb(3 105 161); /* bg-sky-700 */
 }
 
 li {

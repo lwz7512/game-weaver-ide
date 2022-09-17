@@ -13,7 +13,6 @@ Created @2022/08/16
 - [ReactJS](https://reactjs.org/)
 - [blueprintjs](https://blueprintjs.com/);
 - [monaco-editor](https://microsoft.github.io/monaco-editor/);
-- [Live Preview - VS Code Extension](https://github.com/microsoft/vscode-livepreview);
 - [Phaser CE](https://github.com/photonstorm/phaser-ce);
 - [tailwindcss](https://tailwindcss.com/);
 - [zustand](https://github.com/pmndrs/zustand);
@@ -22,6 +21,6 @@ Created @2022/08/16
 
 - HTML5 2D game developement based on phaserjs game template(and pixijs);
 - Tilemap form phaserjs game engine authoring;
-- Running game with live preview;
+- Game development with live preview;
 
 ## More...

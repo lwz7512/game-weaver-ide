@@ -1,1 +1,5 @@
 /* TODO: add more... */
+
+.bg-sliver {
+  background-color: var(--gw-logo-silver);
+}

@@ -1,17 +1,16 @@
-// import * as React from 'react';
-import { useState, useEffect } from 'react';
 import { Button } from '@blueprintjs/core';
+
 import { IpcEvents } from '../../ipc-events';
 import LeftSideBar from '../components/LeftSideBar';
-import { MODULETYPES,  } from '../config';
-import { saveWorkspacePath, checkWorkspacePath } from '../state/storage';
+import { MODULETYPES } from '../config';
 import useLeftSideBar from '../hooks/useLeftSideBar';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 const SettingsPage = () => {
   const { ipcRenderer } = window.electron;
-  const [spacePath, setSpacePath] = useState('');
 
   const { onModuleChanged } = useLeftSideBar();
+  const { spacePath, initGMSpacePath } = useLocalStorage();
 
   const openNativeDialog = async () => {
     const paths = (await ipcRenderer.invoke(
@@ -20,14 +19,8 @@ const SettingsPage = () => {
     )) as string[];
     // console.log(paths);
     if (paths.length === 0) return;
-    setSpacePath(paths[0]);
-    saveWorkspacePath(paths[0]);
+    initGMSpacePath(paths[0]);
   };
-
-  useEffect(() => {
-    const workspace = checkWorkspacePath();
-    if (workspace) setSpacePath(workspace);
-  }, []);
 
   return (
     <div className="w-full h-screen flex">

@@ -1,14 +1,19 @@
 import { Tab, Tabs } from '@blueprintjs/core';
-
-import { MODULETYPES, gamePreviewDefaultURL } from '../config';
+import appCfg from '../assets/app.json';
+import { MODULETYPES } from '../config';
 import LeftSideBar from '../components/LeftSideBar';
 import { IconToolButton } from '../components/Buttons';
+import { WorkspaceGames } from '../components/WorkspaceGames';
 import { PreviewPanelHandleBar } from '../components/PreviewPanelHandleBar';
 import useLeftSideBar from '../hooks/useLeftSideBar';
 import useMonocaEditor from '../hooks/useMonocaEditor';
 import useTabsBar from '../hooks/useTabsBar';
 import useFullscreenButton from '../hooks/useFullscreenButton';
-import { useWorkspaceMainJS } from '../hooks/useWorkspaceFile';
+import {
+  useWorkspaceMainJS,
+  useGMSpaceFolders,
+} from '../hooks/useWorkspaceFile';
+import { useWorkspaceGames } from '../hooks/useWorkspaceGames';
 
 /**
  * code editor page
@@ -17,10 +22,17 @@ import { useWorkspaceMainJS } from '../hooks/useWorkspaceFile';
 const CodeEditorPage = () => {
   const { onModuleChanged } = useLeftSideBar();
   const { navbarTabId, handleNavbarTabChange } = useTabsBar();
-  // TODO: read main.js under selected game folder
-  // default use gmspace/main.js
-  const { mainJSCode } = useWorkspaceMainJS();
-
+  // read folders under selected gmspace folder
+  const { gameFolders } = useGMSpaceFolders(appCfg);
+  const {
+    games,
+    selectedGame,
+    gameLocalURL,
+    gameSelectedHandler,
+    openWorkspaceFolder,
+  } = useWorkspaceGames(gameFolders);
+  // display main.js in editor
+  const { mainJSCode } = useWorkspaceMainJS(games[0]);
   // TODO: the code changed, but would be better to save manaully and refresh!
   const codeValueChangeHandler = (value: string, eol: string) => {
     // console.log('saving...');
@@ -34,7 +46,7 @@ const CodeEditorPage = () => {
   );
 
   const { isWVFullscreen, fullScreenOpenHandler, closeFullscreenGameHandler } =
-    useFullscreenButton(gamePreviewDefaultURL);
+    useFullscreenButton(gameLocalURL);
 
   return (
     <div className="editor-page w-full h-screen flex ">
@@ -43,10 +55,12 @@ const CodeEditorPage = () => {
           activeModule={MODULETYPES.CODE}
           onModuleChanged={onModuleChanged}
         />
-        <div className="file-explorer bg-gray-300 w-60 p-2">
-          <p>file explorer</p>
-          <h1>to load game files under gmspace</h1>
-        </div>
+        <WorkspaceGames
+          folders={games}
+          selectedGame={selectedGame}
+          onFolderOpened={gameSelectedHandler}
+          openWorkspaceFolder={openWorkspaceFolder}
+        />
       </div>
       <div className="main-part flex-1 text-black flex flex-col">
         <div className="tabs-bar h-9 bg-gray-200 p-1">
@@ -84,7 +98,7 @@ const CodeEditorPage = () => {
           />
           <webview
             id="gwpreview"
-            src={gamePreviewDefaultURL}
+            src={gameLocalURL}
             className="inline-flex w-full h-full"
           />
         </div>

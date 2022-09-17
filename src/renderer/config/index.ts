@@ -1,7 +1,13 @@
 export const gamePreviewDefaultURL = 'http://localhost:8080';
-
 export const sourceRepo =
   'https://raw.githubusercontent.com/lwz7512/game-weaver-ast/master/';
+
+export const GWSPACE_KEY = 'workspace'; // DO NOT CHANGE
+
+// global events
+export enum DOMEVENTS {
+  GMSPACE_UNDEFINED = 'GMSPACE_UNDEFINED',
+}
 
 export enum TSLIB {
   P2 = 'phaser/p2.d.txt',

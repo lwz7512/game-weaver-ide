@@ -1,5 +1,7 @@
+import { ipcRenderer } from 'electron';
 import http from 'http';
 import statik from 'node-static';
+import fs from 'fs-extra';
 
 type ServerProps = {
   server: http.Server | null;
@@ -11,11 +13,26 @@ const serverInstance: ServerProps = {
   active: false,
 };
 
-const onListening = (instance: http.Server, port: number) => {
-  console.log(`### server started @ ${port} ###`);
+const onListening = (
+  instance: http.Server,
+  port: number,
+  workspacePath: string
+) => {
+  console.log(`### Server Started @ ${port} ###`);
   serverInstance.active = true;
   serverInstance.server = instance;
+  // check index.html existence
+  const indexFile = `${workspacePath}/index.html`;
+  if (fs.existsSync(indexFile)) return;
+  console.log('### Create index.html placeholder!');
+  const head = `<head><title>Empty HTML</title></head>`;
+  const message = `loading default game...`;
+  const style = `background-color: black; color: rgb(109,232,97);`;
+  const body = `<body style="${style}">${message}</body>`;
+  const indexHTML = `<html>${head}${body}</html>`;
+  fs.outputFileSync(indexFile, indexHTML);
 };
+
 const onStop = () => {
   console.log('### server stopped!');
   serverInstance.active = false;
@@ -26,22 +43,23 @@ export const createServer = (
   port = 8080,
   workspacePath = '/Users/liwenzhi/games/gmspace'
 ) => {
+  // TODO: check port in use ...
+  // if 8080 in use, send message through `ipcRenderer`
+
   if (serverInstance.active) return;
-  console.log('>>> starting http server ...');
+
+  console.log('>>> Starting http server ...');
   const file = new statik.Server(workspacePath);
   const server: http.Server = http
     .createServer((req, res) => {
       req
         .addListener('end', () => {
-          //
-          // Serve files!
-          //
-          file.serve(req, res);
+          file.serve(req, res); // Serve files!
         })
         .resume();
     })
     .listen(port)
-    .addListener('listening', () => onListening(server, port))
+    .addListener('listening', () => onListening(server, port, workspacePath))
     .addListener('close', onStop)
     .addListener('error', (error) => console.log(error));
 };

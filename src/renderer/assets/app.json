@@ -1,5 +1,19 @@
 {
-  "baseURL": "https://github.com/lwz7512/game-weaver-ast/raw/master",
   "heroTitle": "Welcome to Game Weaver!",
-  "heroImage": "/images/space-game-level-banner-with-platforms-flying-spaceship_md.jpg"
+  "baseURL": "https://raw.githubusercontent.com/lwz7512/game-weaver-ast/master",
+  "heroImage": "/images/space-game-level-banner-with-platforms-flying-spaceship_md.jpg",
+  "examplesPath": "/examples",
+  "examples": [
+    {
+      "folder": "demo",
+      "label": "Your First Game",
+      "files": [
+        "/demo/index.html",
+        "/demo/main.js",
+        "/demo/assets/24x24.png",
+        "/demo/assets/phaser.png"
+      ]
+    }
+  ],
+  "projects": []
 }

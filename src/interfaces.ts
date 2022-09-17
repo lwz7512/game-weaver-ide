@@ -1,3 +1,8 @@
+export type FileObj = {
+  url: string;
+  path: string;
+};
+
 export type Files = Map<string, string>;
 
 export type FileTransform = (files: Files) => Promise<Files>;
