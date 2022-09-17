@@ -1,4 +1,13 @@
-import { TabId } from '@blueprintjs/core';
+import { TemplateCodeType } from '../config';
+
+/**
+ * ************* TEMPORAL CODE STORE ***********************
+ */
+export const templetCode: TemplateCodeType = {
+  main: '//loading game source...',
+  success: '// sucess scene code',
+  failure: '// failure scene code',
+};
 
 // import p2Source from '../assets/phaser/p2.d.txt';
 // import pixiSource from '../assets/phaser/pixi.comments.d.txt';
@@ -23,12 +32,3 @@ import { TabId } from '@blueprintjs/core';
 //   phaserCESource,
 //   'ts:phaser/phaser.comments.d.txt'
 // );
-
-/**
- * ************* TEMPORAL CODE STORE ***********************
- */
-export const templetCode: { [key: string]: string } = {
-  main: '//loading game source...',
-  success: '// sucess scene code',
-  failure: '// failure scene code',
-};

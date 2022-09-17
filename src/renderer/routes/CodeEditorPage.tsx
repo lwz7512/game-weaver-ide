@@ -1,5 +1,6 @@
 import { Tab, Tabs } from '@blueprintjs/core';
-import appCfg from '../assets/app.json';
+
+import appMeta from '../assets/app.json';
 import { MODULETYPES } from '../config';
 import LeftSideBar from '../components/LeftSideBar';
 import { IconToolButton } from '../components/Buttons';
@@ -8,11 +9,6 @@ import { PreviewPanelHandleBar } from '../components/PreviewPanelHandleBar';
 import useLeftSideBar from '../hooks/useLeftSideBar';
 import useMonocaEditor from '../hooks/useMonocaEditor';
 import useTabsBar from '../hooks/useTabsBar';
-import useFullscreenButton from '../hooks/useFullscreenButton';
-import {
-  useWorkspaceMainJS,
-  useGMSpaceFolders,
-} from '../hooks/useWorkspaceFile';
 import { useWorkspaceGames } from '../hooks/useWorkspaceGames';
 
 /**
@@ -23,30 +19,25 @@ const CodeEditorPage = () => {
   const { onModuleChanged } = useLeftSideBar();
   const { navbarTabId, handleNavbarTabChange } = useTabsBar();
   // read folders under selected gmspace folder
-  const { gameFolders } = useGMSpaceFolders(appCfg);
   const {
     games,
+    mainJSCode,
     selectedGame,
     gameLocalURL,
+    isWVFullscreen,
+    closeFullscreenGameHandler,
+    fullScreenOpenHandler,
     gameSelectedHandler,
     openWorkspaceFolder,
-  } = useWorkspaceGames(gameFolders);
-  // display main.js in editor
-  const { mainJSCode } = useWorkspaceMainJS(games[0]);
-  // TODO: the code changed, but would be better to save manaully and refresh!
-  const codeValueChangeHandler = (value: string, eol: string) => {
-    // console.log('saving...');
-    // console.log(value);
-  };
+    stableCodeChangeHandler,
+  } = useWorkspaceGames(appMeta);
+
   useMonocaEditor(
     '#code-editors',
     navbarTabId,
     mainJSCode,
-    codeValueChangeHandler
+    stableCodeChangeHandler
   );
-
-  const { isWVFullscreen, fullScreenOpenHandler, closeFullscreenGameHandler } =
-    useFullscreenButton(gameLocalURL);
 
   return (
     <div className="editor-page w-full h-screen flex ">
@@ -96,7 +87,8 @@ const CodeEditorPage = () => {
             targeSelector=".preview-output-panels"
             onFullScreen={fullScreenOpenHandler}
           />
-          <webview
+          <iframe
+            title="Game Preview"
             id="gwpreview"
             src={gameLocalURL}
             className="inline-flex w-full h-full"

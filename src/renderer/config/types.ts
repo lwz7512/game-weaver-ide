@@ -7,3 +7,9 @@ export type ExampleSource = {
   label: string;
   files: string[];
 };
+
+export type JSFILE = 'main' | 'success' | 'failure';
+
+export type TemplateCodeType = {
+  [k in JSFILE]: string;
+};

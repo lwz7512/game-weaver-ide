@@ -6,9 +6,31 @@
 import { useEffect, useRef } from 'react';
 import * as monaco from 'monaco-editor';
 import { TabId } from '@blueprintjs/core';
-import { codeEditorOptions, libSource, sourceRepo, TSLIB } from '../config';
-
+import {
+  codeEditorOptions,
+  libSource,
+  sourceRepo,
+  TSLIB,
+  JSFILE,
+} from '../config';
 import { templetCode } from '../state/template';
+
+// FIXME: cause code editor lost focus!
+// const refreshIFrame = (url: string) => {
+//   const iframe = document.getElementById('gwpreview');
+//   const gwPreview = iframe as HTMLIFrameElement;
+//   gwPreview.src = url;
+// };
+
+// TODO: the code changed, but would be better to save manaully and refresh!
+// this must be memorizable function by `gameLocalURL` param in `useWorkspaceGames`.
+export const codeValueChangeHandler =
+  (gameLocalURL: string) => (value: string, eol: string) => {
+    templetCode.main = value; // cache to a global object
+    console.log('>>> code changed!');
+
+    // TODO: refresh iframe without lost focus in editor ???
+  };
 
 /**
  * language switch hook by tab
@@ -35,19 +57,21 @@ const useMonocaEditor = (
 
   // build editor & observe container resize
   useEffect(() => {
+    console.log('>>> to recreate editor..');
+
     const editorContainer = document.querySelector(
       containerSelector
     ) as HTMLElement;
 
     const options = {
-      value: templetCode[navbarTabId as string],
+      value: templetCode[navbarTabId as JSFILE],
       ...codeEditorOptions,
     };
 
     const onChange = (evt: monaco.editor.IModelContentChangedEvent) => {
       const currentValue = editorRef.current?.getValue() || '';
       onValueChange(currentValue, evt.eol);
-      templetCode[navbarTabId as string] = currentValue; // keep a internal value
+      templetCode[navbarTabId as JSFILE] = currentValue; // keep a internal value
     };
 
     const recreateEditor = () => {
