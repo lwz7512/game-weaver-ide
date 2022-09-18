@@ -12,17 +12,27 @@ export const useWorkspaceMainJS = (gameFolder: string | undefined) => {
 
     const { ipcRenderer } = window.electron;
     const fetchMain = async (jsPath: string) => {
+      // console.log('>>> fetch js:');
+      // console.log(jsPath);
       const unknownContent = await ipcRenderer.invoke(
         IpcEvents.LOAD_GAME_MAINJS,
         jsPath
       );
       const mainSource = unknownContent as string;
+      // console.log('### got main.js content:');
+      // console.log(mainSource);
       if (mainSource) setMainJSCode(mainSource);
     };
+    // need a little time to wait for files wrote down?
+    // especially for busy machine.
+    const lazyHandler = (workspace: string) => {
+      setTimeout(() => {
+        const jsPath = `${workspace}/${gameFolder}/main.js`;
+        fetchMain(jsPath);
+      }, 100);
+    };
     // fetch main.js under game folder
-    safeActionWithWorkspace((workspace) => {
-      fetchMain(`${workspace}/${gameFolder}/main.js`);
-    });
+    safeActionWithWorkspace(lazyHandler);
   }, [gameFolder]);
 
   return { mainJSCode };

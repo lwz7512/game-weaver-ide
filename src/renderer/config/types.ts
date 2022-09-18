@@ -17,5 +17,5 @@ export type TemplateCodeType = {
 export type IFrameContext = {
   url: string;
   timerId: NodeJS.Timeout | undefined;
-  handler: (url: string) => void;
+  handler: (...args: unknown[]) => void;
 };

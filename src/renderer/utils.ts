@@ -22,16 +22,30 @@ export function debounce<A = unknown, R = void>(
   return [debouncedFunc, teardown];
 }
 
-export const throttleURLHandler = (context: IFrameContext, delay: number) => {
-  // If setTimeout is already scheduled, no need to do anything
-  if (context.timerId) {
-    return console.log('ignored!');
-  }
-  // Schedule a setTimeout after delay seconds
-  context.timerId = setTimeout(() => {
-    context.handler(context.url);
-    // Once setTimeout function execution is finished, timerId = undefined so that in <br>
-    // the next scroll event function execution can be scheduled by the setTimeout
-    context.timerId = undefined;
-  }, delay);
+export const getThrottleFunction = (
+  handler: (...args: unknown[]) => void,
+  timeout = 300
+) => {
+  let timerId: NodeJS.Timeout | null;
+  return (...args: unknown[]) => {
+    if (timerId) return console.log('ignored!');
+
+    timerId = setTimeout(() => {
+      handler.apply(this, args);
+      timerId = null; // clear this task
+    }, timeout);
+  };
+};
+
+export const getDebounceFunction = (
+  handler: (...args: unknown[]) => void,
+  timeout = 300
+) => {
+  let timerId: NodeJS.Timeout;
+  return (...args: unknown[]) => {
+    clearTimeout(timerId);
+    timerId = setTimeout(() => {
+      handler.apply(this, args);
+    }, timeout);
+  };
 };

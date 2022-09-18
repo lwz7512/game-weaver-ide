@@ -16,20 +16,22 @@ import {
   IFrameContext,
 } from '../config';
 import { templetCode } from '../state/template';
-import { throttleURLHandler } from '../utils';
+import { getThrottleFunction, getDebounceFunction } from '../utils';
 
 /**
  * iframe refresh context
  */
 const webviewContext: IFrameContext = {
   url: '',
-  timerId: undefined,
-  handler: (url: string) => {
+  timerId: undefined, // not in use
+  handler: (...args: unknown[]) => {
     const iframe = document.getElementById('gwpreview');
     const gwPreview = iframe as HTMLIFrameElement;
-    gwPreview.src = url;
+    gwPreview.src = args.shift() as string;
   },
 };
+const lazyRefresh = getDebounceFunction(webviewContext.handler, 3000);
+// const lazyRefresh = getThrottleFunction(webviewContext.handler, 3000);
 
 export const useIframeContext = (url: string) => {
   webviewContext.url = url;
@@ -71,7 +73,7 @@ const useMonocaEditor = (
     const codeValueChangeHandler = (value: string, eol: string) => {
       templetCode.main = value; // cache to a global object
       // throttle to reduce the screen blinking!
-      throttleURLHandler(webviewContext, 3000);
+      lazyRefresh(webviewContext.url);
     };
 
     const onChange = (evt: monaco.editor.IModelContentChangedEvent) => {
