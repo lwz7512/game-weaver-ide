@@ -1,8 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { IpcEvents } from '../../ipc-events';
 import { gamePreviewDefaultURL as homepage, ConfigType } from '../config';
 import { safeActionWithWorkspace } from '../state/storage';
-import { codeValueChangeHandler } from './useMonocaEditor';
 import useFullscreenButton from './useFullscreenButton';
 import { useWorkspaceMainJS, useGMSpaceFolders } from './useWorkspaceFile';
 
@@ -33,14 +32,6 @@ export const useWorkspaceGames = (appCfg: ConfigType) => {
     });
   };
 
-  const stableCodeChangeHandler = useCallback(
-    // this is the function memorized by `gameLocalURL`
-    (value: string, eol: string) => {
-      codeValueChangeHandler(gameLocalURL)(value, eol);
-    },
-    [gameLocalURL]
-  );
-
   useEffect(() => {
     // TODO: get games description & icon
 
@@ -66,6 +57,5 @@ export const useWorkspaceGames = (appCfg: ConfigType) => {
     closeFullscreenGameHandler,
     gameSelectedHandler,
     openWorkspaceFolder,
-    stableCodeChangeHandler,
   };
 };

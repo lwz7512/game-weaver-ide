@@ -4,6 +4,7 @@
  * @2022/09/09
  */
 import { useEffect, useRef } from 'react';
+
 import * as monaco from 'monaco-editor';
 import { TabId } from '@blueprintjs/core';
 import {
@@ -12,25 +13,27 @@ import {
   sourceRepo,
   TSLIB,
   JSFILE,
+  IFrameContext,
 } from '../config';
 import { templetCode } from '../state/template';
+import { throttleURLHandler } from '../utils';
 
-// FIXME: cause code editor lost focus!
-// const refreshIFrame = (url: string) => {
-//   const iframe = document.getElementById('gwpreview');
-//   const gwPreview = iframe as HTMLIFrameElement;
-//   gwPreview.src = url;
-// };
+/**
+ * iframe refresh context
+ */
+const webviewContext: IFrameContext = {
+  url: '',
+  timerId: undefined,
+  handler: (url: string) => {
+    const iframe = document.getElementById('gwpreview');
+    const gwPreview = iframe as HTMLIFrameElement;
+    gwPreview.src = url;
+  },
+};
 
-// TODO: the code changed, but would be better to save manaully and refresh!
-// this must be memorizable function by `gameLocalURL` param in `useWorkspaceGames`.
-export const codeValueChangeHandler =
-  (gameLocalURL: string) => (value: string, eol: string) => {
-    templetCode.main = value; // cache to a global object
-    console.log('>>> code changed!');
-
-    // TODO: refresh iframe without lost focus in editor ???
-  };
+export const useIframeContext = (url: string) => {
+  webviewContext.url = url;
+};
 
 /**
  * language switch hook by tab
@@ -40,8 +43,7 @@ export const codeValueChangeHandler =
 const useMonocaEditor = (
   containerSelector: string,
   navbarTabId: TabId,
-  mainJSCode: string,
-  onValueChange: (code: string, eol: string) => void
+  mainJSCode: string
 ) => {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
 
@@ -57,8 +59,6 @@ const useMonocaEditor = (
 
   // build editor & observe container resize
   useEffect(() => {
-    console.log('>>> to recreate editor..');
-
     const editorContainer = document.querySelector(
       containerSelector
     ) as HTMLElement;
@@ -68,9 +68,15 @@ const useMonocaEditor = (
       ...codeEditorOptions,
     };
 
+    const codeValueChangeHandler = (value: string, eol: string) => {
+      templetCode.main = value; // cache to a global object
+      // throttle to reduce the screen blinking!
+      throttleURLHandler(webviewContext, 3000);
+    };
+
     const onChange = (evt: monaco.editor.IModelContentChangedEvent) => {
       const currentValue = editorRef.current?.getValue() || '';
-      onValueChange(currentValue, evt.eol);
+      codeValueChangeHandler(currentValue, evt.eol);
       templetCode[navbarTabId as JSFILE] = currentValue; // keep a internal value
     };
 
@@ -89,7 +95,7 @@ const useMonocaEditor = (
     return () => {
       observer.unobserve(editorContainer);
     };
-  }, [navbarTabId, containerSelector, onValueChange]);
+  }, [navbarTabId, containerSelector]);
 
   // build phaser source lib
   useEffect(() => {
@@ -121,6 +127,24 @@ const useMonocaEditor = (
     // fetching remote phaser lib..
     fetchAll();
     // ****** end of libraries addition ******
+  }, []);
+
+  // listen iframe onload
+  useEffect(() => {
+    const iframe = document.getElementById('gwpreview');
+    const gwPreview = iframe as HTMLIFrameElement;
+
+    const iframeLoadHandler = () => {
+      if (editorRef.current) {
+        // some time needed to reset focus! no less than 500!
+        setTimeout(() => editorRef.current?.focus(), 500);
+      }
+    };
+    gwPreview.addEventListener('load', iframeLoadHandler);
+
+    return () => {
+      gwPreview.removeEventListener('load', iframeLoadHandler);
+    };
   }, []);
 
   return {

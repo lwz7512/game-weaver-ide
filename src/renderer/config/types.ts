@@ -13,3 +13,9 @@ export type JSFILE = 'main' | 'success' | 'failure';
 export type TemplateCodeType = {
   [k in JSFILE]: string;
 };
+
+export type IFrameContext = {
+  url: string;
+  timerId: NodeJS.Timeout | undefined;
+  handler: (url: string) => void;
+};

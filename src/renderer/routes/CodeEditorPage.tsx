@@ -1,13 +1,14 @@
+import { useCallback } from 'react';
 import { Tab, Tabs } from '@blueprintjs/core';
 
 import appMeta from '../assets/app.json';
-import { MODULETYPES } from '../config';
+import { MODULETYPES, gamePreviewDefaultURL as homepage } from '../config';
 import LeftSideBar from '../components/LeftSideBar';
 import { IconToolButton } from '../components/Buttons';
 import { WorkspaceGames } from '../components/WorkspaceGames';
 import { PreviewPanelHandleBar } from '../components/PreviewPanelHandleBar';
 import useLeftSideBar from '../hooks/useLeftSideBar';
-import useMonocaEditor from '../hooks/useMonocaEditor';
+import useMonocaEditor, { useIframeContext } from '../hooks/useMonocaEditor';
 import useTabsBar from '../hooks/useTabsBar';
 import { useWorkspaceGames } from '../hooks/useWorkspaceGames';
 
@@ -29,15 +30,11 @@ const CodeEditorPage = () => {
     fullScreenOpenHandler,
     gameSelectedHandler,
     openWorkspaceFolder,
-    stableCodeChangeHandler,
   } = useWorkspaceGames(appMeta);
 
-  useMonocaEditor(
-    '#code-editors',
-    navbarTabId,
-    mainJSCode,
-    stableCodeChangeHandler
-  );
+  useMonocaEditor('#code-editors', navbarTabId, mainJSCode);
+  // save the latest url to refresh!
+  useIframeContext(gameLocalURL);
 
   return (
     <div className="editor-page w-full h-screen flex ">
@@ -82,7 +79,7 @@ const CodeEditorPage = () => {
         <div className="bg-white flex-1 p-1">
           <div id="code-editors" className="code-editors bg-slate-100" />
         </div>
-        <div className="preview-output-panels bg-gray-200 h-60 ">
+        <div className="preview-output-panels bg-black h-60 ">
           <PreviewPanelHandleBar
             targeSelector=".preview-output-panels"
             onFullScreen={fullScreenOpenHandler}
