@@ -7,6 +7,7 @@ type SidebarProps = {
   onModuleChanged: (module: string) => void;
 };
 
+// TODO: check workspace to disable `code` module ?
 const LeftSideBar = ({ activeModule, onModuleChanged }: SidebarProps) => {
   const [currentModule, setCurrentModule] = useState(activeModule);
 
@@ -29,6 +30,7 @@ const LeftSideBar = ({ activeModule, onModuleChanged }: SidebarProps) => {
       {/* === CODE MODULE === */}
       <ModuleToolButton
         icon="code"
+        disabled
         module={MODULETYPES.CODE}
         currentModule={currentModule}
         onModuleChanged={changeModuleType}

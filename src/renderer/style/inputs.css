@@ -1,0 +1,41 @@
+.icon-button {
+  color: lightsteelblue;
+}
+
+button.large {
+  background-color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  appearance: none;
+  font-size: 1.3rem;
+  box-shadow: 0px 8px 28px -6px rgba(24, 39, 75, 0.12),
+    0px 18px 88px -4px rgba(24, 39, 75, 0.14);
+  transition: all ease-in 0.1s;
+  cursor: pointer;
+  opacity: 0.9;
+}
+
+button:hover {
+  transform: scale(1.1);
+  opacity: 1;
+  color: white;
+}
+
+button[disabled], button[disabled]:hover {
+  color: gray;
+  transform: none;
+}
+
+button.no-transform:hover {
+  transform: none;
+}
+
+button.active {
+  color: white;
+}
+
+/* for game item */
+button.selected, button.selected:hover {
+  background-color: rgb(3 105 161); /* bg-sky-700 */
+}

@@ -2,21 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
-@import './style/utilities.css';
-@import './style/welcome.css';
-@import './style/code-editor.css';
-
-@import "~@blueprintjs/core/lib/css/blueprint.css";
-@import "~@blueprintjs/icons/lib/css/blueprint-icons.css";
-
 @layer components {
   .panel {
     @apply p-4 shadow-md border rounded-md m-2 bg-slate-50;
   }
   .game-item {
-    @apply text-white py-4 pl-2 pr-6 text-center w-full no-transform bg-slate-600 hover:bg-sky-600 focus:outline-none;
+    @apply text-white py-4 pl-2 pr-6 text-center w-full bg-slate-600 hover:bg-sky-600 hover:transform-none focus:outline-none;
   }
 }
+
+@import "~@blueprintjs/core/lib/css/blueprint.css";
+@import "~@blueprintjs/icons/lib/css/blueprint-icons.css";
+
+@import './style/utilities.css';
+@import './style/welcome.css';
+@import './style/code-editor.css';
+@import './style/inputs.css';
 
 :root {
   --gw-wheat: rgb(241, 222, 184); /* wheat */
@@ -47,33 +48,6 @@ body {
   align-items: center;
 }
 
-button.large {
-  background-color: white;
-  padding: 10px 20px;
-  border-radius: 10px;
-  border: none;
-  appearance: none;
-  font-size: 1.3rem;
-  box-shadow: 0px 8px 28px -6px rgba(24, 39, 75, 0.12),
-    0px 18px 88px -4px rgba(24, 39, 75, 0.14);
-  transition: all ease-in 0.1s;
-  cursor: pointer;
-  opacity: 0.9;
-}
-
-button:hover {
-  transform: scale(1.05);
-  opacity: 1;
-}
-
-button.no-transform:hover {
-  transform: none;
-}
-
-button.selected, button.selected:hover {
-  background-color: rgb(3 105 161); /* bg-sky-700 */
-}
-
 li {
   list-style: none;
 }
@@ -88,13 +62,6 @@ a {
 a:hover {
   opacity: 1;
   text-decoration: none;
-}
-
-.Hello {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 20px 0;
 }
 
 #root {
