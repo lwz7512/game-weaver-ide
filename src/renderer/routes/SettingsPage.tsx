@@ -1,4 +1,7 @@
+import { useEffect, useRef } from 'react';
+
 import { Button } from '@blueprintjs/core';
+import { ToastContainer, toast } from 'react-toastify';
 
 import { IpcEvents } from '../../ipc-events';
 import LeftSideBar from '../components/LeftSideBar';
@@ -11,7 +14,9 @@ const SettingsPage = () => {
 
   const { onModuleChanged } = useLeftSideBar();
   const { spacePath, initGMSpacePath } = useLocalStorage();
+  const checkerRef = useRef<NodeJS.Timeout>();
 
+  // set workspace by open file dialog
   const openNativeDialog = async () => {
     const paths = (await ipcRenderer.invoke(
       IpcEvents.OPEN_SETTINGS,
@@ -19,13 +24,25 @@ const SettingsPage = () => {
     )) as string[];
     // console.log(paths);
     if (paths.length === 0) return;
-    initGMSpacePath(paths[0]);
+    initGMSpacePath(paths[0]); // save it to app
   };
+
+  useEffect(() => {
+    clearTimeout(checkerRef.current);
+    // lazy detect spacePath blank ...
+    checkerRef.current = setTimeout(() => {
+      if (!spacePath)
+        toast.warn(
+          'Workspace Path not assigned, please pick one folder to start your game coding!'
+        );
+    }, 100);
+  }, [spacePath]);
 
   return (
     <div className="w-full h-screen flex">
       <div className="left-sidepanel flex">
         <LeftSideBar
+          workspace={spacePath}
           activeModule={MODULETYPES.SETTING}
           onModuleChanged={onModuleChanged}
         />
@@ -44,12 +61,14 @@ const SettingsPage = () => {
           <Button
             icon="folder-new"
             intent="primary"
-            text={`${spacePath ? 'Reset' : 'Create'} Workspace Directory`}
+            text={`${spacePath ? 'Reset' : 'Assign'} Workspace Directory`}
             className="focus:outline-none my-4"
             onClick={openNativeDialog}
           />
         </div>
       </div>
+      {/* toast container ... */}
+      <ToastContainer theme="dark" autoClose={6000} />
     </div>
   );
 };

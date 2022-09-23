@@ -1,15 +1,22 @@
 import { useState } from 'react';
 import { MODULETYPES } from '../config';
 import { ModuleToolButton } from './Buttons';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 type SidebarProps = {
   activeModule: string;
+  workspace?: string;
   onModuleChanged: (module: string) => void;
 };
 
-// TODO: check workspace to disable `code` module ?
-const LeftSideBar = ({ activeModule, onModuleChanged }: SidebarProps) => {
+const LeftSideBar = ({
+  activeModule,
+  onModuleChanged,
+  workspace = '',
+}: SidebarProps) => {
   const [currentModule, setCurrentModule] = useState(activeModule);
+  const { spacePath } = useLocalStorage();
+  const codeMenuDisabled = workspace ? false : !spacePath;
 
   const changeModuleType = (type: string) => {
     if (currentModule === type) return;
@@ -30,7 +37,7 @@ const LeftSideBar = ({ activeModule, onModuleChanged }: SidebarProps) => {
       {/* === CODE MODULE === */}
       <ModuleToolButton
         icon="code"
-        disabled
+        disabled={codeMenuDisabled}
         module={MODULETYPES.CODE}
         currentModule={currentModule}
         onModuleChanged={changeModuleType}
