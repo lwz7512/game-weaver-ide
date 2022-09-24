@@ -36,6 +36,10 @@ button.active {
 }
 
 /* for game item */
-button.selected, button.selected:hover {
+button.selected, button.selected:hover, .game-folder.selected {
   background-color: rgb(3 105 161); /* bg-sky-700 */
+}
+
+.more-btn:hover span {
+  display: inline-block;
 }

@@ -39,10 +39,10 @@ app.on('window-all-closed', () => {
 /**
  * available only in Mac os
  */
-// app.on('activate', () => {
-//   console.log('>>> app ReActivated, window count: ');
-//   if (!browserWindows.length) createWindow(isDebug);
-// });
+app.on('activate', () => {
+  console.log('>>> app ReActivated, window count: ');
+  if (!browserWindows.length) createWindow(isDebug);
+});
 
 app
   .whenReady()

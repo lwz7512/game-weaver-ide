@@ -37,7 +37,7 @@ const CodeEditorPage = () => {
   useIframeContext(gameLocalURL);
 
   return (
-    <div className="editor-page w-full h-screen flex ">
+    <div className="editor-page w-full h-screen flex focus:outline-none">
       <div className="left-sidepanel flex">
         <LeftSideBar
           activeModule={MODULETYPES.CODE}
