@@ -4,6 +4,11 @@ import { ConfigType, ExampleSource } from '../config/types';
 import { safeActionWithWorkspace } from '../state/storage';
 import { FileObj } from '../../interfaces';
 
+/**
+ * Read main.js content of one game folder
+ * @param gameFolder game folder under workspace
+ * @returns main.js source code
+ */
 export const useWorkspaceMainJS = (gameFolder: string | undefined) => {
   const [mainJSCode, setMainJSCode] = useState('//loading games...');
 
@@ -53,7 +58,14 @@ const getDemoSourceObjects = (
   return fileObjs;
 };
 
+/**
+ * Read games under workspace and download `demo` if no game exists.
+ * @param config global config
+ * @returns games meta list
+ */
 export const useGMSpaceFolders = (config: ConfigType) => {
+  // FIXME: should save game meta objects: { folder, title, icon, desciption ...}
+  // returned from main process...
   const [gameFolders, setGameFolders] = useState<string[]>([]);
 
   useEffect(() => {

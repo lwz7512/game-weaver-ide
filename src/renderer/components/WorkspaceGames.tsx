@@ -4,9 +4,10 @@ import { Popover2 } from '@blueprintjs/popover2';
 
 type WSGamesProps = {
   selectedGame: string;
-  folders: string[];
+  folders: string[]; // TODO: change to game meta objects ...
   onFolderOpened: (folder: string) => void;
   openWorkspaceFolder: () => void;
+  openNewGameDialog: () => void;
 };
 
 export const WorkspaceGames = ({
@@ -14,10 +15,11 @@ export const WorkspaceGames = ({
   folders,
   onFolderOpened,
   openWorkspaceFolder,
+  openNewGameDialog,
 }: WSGamesProps) => {
   const exampleMenu = (
     <Menu>
-      <MenuItem icon="folder-new" text="New Game" />
+      <MenuItem icon="folder-new" text="New Game" onClick={openNewGameDialog} />
       <MenuDivider />
       <MenuItem
         icon="locate"

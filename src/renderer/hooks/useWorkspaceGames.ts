@@ -13,7 +13,7 @@ import { useWorkspaceMainJS, useGMSpaceFolders } from './useWorkspaceFile';
  */
 export const useWorkspaceGames = (appCfg: ConfigType) => {
   const { ipcRenderer } = window.electron;
-  const [selectedGame, setselectedGame] = useState('');
+  const [selectedGame, setselectedGame] = useState(''); // select game to preview game
   const [gameLocalURL, setGameLocalURL] = useState(homepage);
 
   const { gameFolders } = useGMSpaceFolders(appCfg);
@@ -33,9 +33,7 @@ export const useWorkspaceGames = (appCfg: ConfigType) => {
   };
 
   useEffect(() => {
-    // TODO: get games description & icon
-
-    // demo downloaded
+    // just for demo downloaded while wor
     if (gameFolders.length === 1) {
       setselectedGame('demo');
     }

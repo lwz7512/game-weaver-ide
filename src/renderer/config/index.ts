@@ -70,3 +70,26 @@ export const codeEditorOptions = {
   lineNumbersMinChars: 3, // default is 5
   // contextmenu: false,
 };
+
+export const GAMETYPES = [
+  {
+    type: 'basic',
+    name: 'Basic',
+    icon: 'applications',
+  },
+  {
+    type: 'arcade',
+    name: 'Arcade',
+    icon: 'console',
+  },
+  {
+    type: 'box2d',
+    name: 'Box2D',
+    icon: 'helper-management',
+  },
+  {
+    type: 'platformer',
+    name: 'Platformer',
+    icon: 'heat-grid',
+  },
+];

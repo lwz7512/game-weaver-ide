@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { Tab, Tabs } from '@blueprintjs/core';
 
 import appMeta from '../assets/app.json';
@@ -6,11 +6,13 @@ import { MODULETYPES, gamePreviewDefaultURL as homepage } from '../config';
 import LeftSideBar from '../components/LeftSideBar';
 import { IconToolButton } from '../components/Buttons';
 import { WorkspaceGames } from '../components/WorkspaceGames';
+import { NewGameDialog } from '../components/NewGameDialog';
 import { PreviewPanelHandleBar } from '../components/PreviewPanelHandleBar';
 import useLeftSideBar from '../hooks/useLeftSideBar';
 import useMonocaEditor, { useIframeContext } from '../hooks/useMonocaEditor';
 import useTabsBar from '../hooks/useTabsBar';
 import { useWorkspaceGames } from '../hooks/useWorkspaceGames';
+import { useNewGameDialog } from '../hooks/useNewGameDialog';
 
 /**
  * code editor page
@@ -36,6 +38,8 @@ const CodeEditorPage = () => {
   // save the latest url to refresh!
   useIframeContext(gameLocalURL);
 
+  const { isOpen, handleOpen, handleClose } = useNewGameDialog();
+
   return (
     <div className="editor-page w-full h-screen flex focus:outline-none">
       <div className="left-sidepanel flex">
@@ -48,6 +52,7 @@ const CodeEditorPage = () => {
           selectedGame={selectedGame}
           onFolderOpened={gameSelectedHandler}
           openWorkspaceFolder={openWorkspaceFolder}
+          openNewGameDialog={handleOpen}
         />
       </div>
       <div className="main-part flex-1 text-black flex flex-col">
@@ -63,7 +68,7 @@ const CodeEditorPage = () => {
               title="Main Scene"
               className="select-none focus: outline-none"
             />
-            <Tab
+            {/* <Tab
               id="success"
               title="Sucess Scene"
               className="select-none focus: outline-none"
@@ -72,7 +77,7 @@ const CodeEditorPage = () => {
               id="failure"
               title="Failure Scene"
               className="select-none focus: outline-none"
-            />
+            /> */}
           </Tabs>
         </div>
         {/* code editor container */}
@@ -100,6 +105,7 @@ const CodeEditorPage = () => {
         )}
         {/* ... */}
       </div>
+      <NewGameDialog isOpen={isOpen} handleClose={handleClose} />
     </div>
   );
 };

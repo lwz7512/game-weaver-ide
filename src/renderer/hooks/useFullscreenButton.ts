@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import { IpcEvents } from '../../ipc-events';
 
+/**
+ * Open webview to enable game running as full screen mode
+ * @param gamePreviewDefaultURL game preview address
+ * @returns
+ */
 const useFullscreenButton = (gamePreviewDefaultURL: string) => {
   const { ipcRenderer } = window.electron;
 

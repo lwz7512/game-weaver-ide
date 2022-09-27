@@ -6,12 +6,57 @@
   "examples": [
     {
       "folder": "demo",
-      "label": "Your First Game",
+      "name": "Your First Game",
       "files": [
         "/demo/index.html",
         "/demo/main.js",
+        "/demo/meta.json",
         "/demo/assets/24x24.png",
         "/demo/assets/phaser.png"
+      ]
+    },
+    {
+      "folder": "basic",
+      "name": "Your basic Game",
+      "files": [
+        "/basic/index.html",
+        "/basic/main.js",
+        "/basic/meta.json",
+        "/basic/assets/24x24.png",
+        "/basic/assets/phaser.png"
+      ]
+    },
+    {
+      "folder": "arcade",
+      "name": "Your Arcade Game",
+      "files": [
+        "/arcade/index.html",
+        "/arcade/main.js",
+        "/arcade/meta.json",
+        "/arcade/assets/24x24.png",
+        "/arcade/assets/phaser.png"
+      ]
+    },
+    {
+      "folder": "box2d",
+      "name": "Your Box2d Game",
+      "files": [
+        "/box2d/index.html",
+        "/box2d/main.js",
+        "/box2d/meta.json",
+        "/box2d/assets/24x24.png",
+        "/box2d/assets/phaser.png"
+      ]
+    },
+    {
+      "folder": "platformer",
+      "name": "Your Platformer Game",
+      "files": [
+        "/platformer/index.html",
+        "/platformer/main.js",
+        "/platformer/meta.json",
+        "/platformer/assets/24x24.png",
+        "/platformer/assets/phaser.png"
       ]
     }
   ],
