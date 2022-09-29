@@ -1,10 +1,10 @@
 import { useCallback, useState } from 'react';
 
 import { IpcEvents } from '../../ipc-events';
-import { ConfigType } from '../config';
+import appMeta from '../assets/app.json';
 import { getTemplateSourceObjects } from './useWorkspaceFile';
 
-export const useNewGameDialog = (appCfg: ConfigType) => {
+export const useNewGameDialog = () => {
   const { ipcRenderer } = window.electron;
 
   const [isOpen, setIsOpen] = useState(false);
@@ -20,7 +20,7 @@ export const useNewGameDialog = (appCfg: ConfigType) => {
     template: string, // basic, box2d, ...
     gamePath: string // local path under workspace
   ): Promise<boolean> => {
-    const fileObjs = getTemplateSourceObjects(appCfg, template, gamePath);
+    const fileObjs = getTemplateSourceObjects(appMeta, template, gamePath);
     const result = await ipcRenderer.invoke(
       IpcEvents.DOWNLOAD_GAME_TEMPLATE,
       fileObjs

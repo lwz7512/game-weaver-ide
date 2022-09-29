@@ -24,6 +24,7 @@ type GameDialogProps = {
   handleClose: () => void;
   checkSavePathExist: (path: string) => Promise<boolean>;
   createGameProject: (template: string, savePath: string) => Promise<boolean>;
+  onGameCreateSuccess: () => void;
 };
 
 const dialogProps = {
@@ -41,6 +42,7 @@ export const NewGameDialog = ({
   handleClose,
   checkSavePathExist,
   createGameProject,
+  onGameCreateSuccess,
 }: GameDialogProps) => {
   const [selecedTemplate, setSelecedTemplate] = useState('basic');
   const [gameName, setGameName] = useState('');
@@ -77,6 +79,7 @@ export const NewGameDialog = ({
     if (success) {
       handleClose();
       setSaving(false);
+      onGameCreateSuccess();
     }
   };
 

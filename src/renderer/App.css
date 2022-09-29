@@ -7,7 +7,7 @@
     @apply p-4 shadow-md border rounded-md m-2 bg-slate-50;
   }
   .game-item {
-    @apply text-white py-4 px-2 text-center hover:bg-sky-600 hover:transform-none focus:outline-none;
+    @apply text-white py-4 px-2 text-center hover:transform-none focus:outline-none;
   }
 }
 

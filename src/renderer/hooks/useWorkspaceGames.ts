@@ -8,16 +8,15 @@ import { useWorkspaceMainJS, useGMSpaceFolders } from './useWorkspaceFile';
 /**
  * Central hook used in `CodeEditorPage`.
  *
- * @param appCfg global config in app.json
  * @returns
  */
-export const useWorkspaceGames = (appCfg: ConfigType) => {
+export const useWorkspaceGames = () => {
   const { ipcRenderer } = window.electron;
   const [selectedGame, setselectedGame] = useState(''); // select game to preview game
   const [gameLocalURL, setGameLocalURL] = useState(homepage);
 
-  const { gameFolders } = useGMSpaceFolders(appCfg);
-  const { mainJSCode } = useWorkspaceMainJS(gameFolders[0]);
+  const { gameFolders, refreshGamesInSpace } = useGMSpaceFolders();
+  const { mainJSCode } = useWorkspaceMainJS(selectedGame);
   const { isWVFullscreen, fullScreenOpenHandler, closeFullscreenGameHandler } =
     useFullscreenButton(gameLocalURL);
 
@@ -55,5 +54,6 @@ export const useWorkspaceGames = (appCfg: ConfigType) => {
     closeFullscreenGameHandler,
     gameSelectedHandler,
     openWorkspaceFolder,
+    refreshGamesInSpace,
   };
 };

@@ -52,7 +52,7 @@ export const WorkspaceGames = ({
         {folders.map((game) => (
           <li
             key={game}
-            className={clsx('game-folder mb-px bg-slate-600', {
+            className={clsx('game-folder mb-px bg-slate-600 hover:bg-sky-600', {
               selected: selectedGame === game,
             })}
           >

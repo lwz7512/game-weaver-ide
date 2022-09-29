@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { IpcEvents } from '../../ipc-events';
+import appMeta from '../assets/app.json';
 import { ConfigType, ExampleSource } from '../config/types';
 import { safeActionWithWorkspace } from '../state/storage';
 import { FileObj } from '../../interfaces';
@@ -81,38 +82,44 @@ const getDemoSourceObjects = (
  * @param config global config
  * @returns games meta list
  */
-export const useGMSpaceFolders = (config: ConfigType) => {
+export const useGMSpaceFolders = () => {
   // FIXME: should save game meta objects: { folder, title, icon, desciption ...}
   // returned from main process...
   const [gameFolders, setGameFolders] = useState<string[]>([]);
 
-  useEffect(() => {
+  const fetchGamesInSpace = useCallback(async (workspace: string) => {
     const { ipcRenderer } = window.electron;
+    // step1: check gmspace
+    const folders = (await ipcRenderer.invoke(
+      IpcEvents.READ_GAMESPACE_DIRS,
+      workspace
+    )) as string[];
+    // console.log(folders);
 
-    const fetchGamesInSpace = async (workspace: string) => {
-      // step1: check gmspace
-      const folders = (await ipcRenderer.invoke(
-        IpcEvents.READ_GAMESPACE_DIRS,
-        workspace
-      )) as string[];
-      // console.log(folders);
+    if (folders.length) {
+      return setGameFolders(folders);
+    }
 
-      if (folders.length) {
-        return setGameFolders(folders);
-      }
+    // step2: download demo game to empty workspace if run IDE first
+    const files = getDemoSourceObjects(appMeta, workspace);
+    // download remote demo...
+    await ipcRenderer.invoke(IpcEvents.DOWNLOAD_GAME_DEMO, files);
+    // refresh side panel
+    setGameFolders(['demo']); // add demo folder to display at sidebar
+  }, []);
 
-      // step2: download demo game
-      const files = getDemoSourceObjects(config, workspace);
-      // download remote demo...
-      await ipcRenderer.invoke(IpcEvents.DOWNLOAD_GAME_DEMO, files);
-      // refresh side panel
-      setGameFolders(['demo']); // add demo folder to display at sidebar
-    };
+  const refreshGamesInSpace = () => {
+    safeActionWithWorkspace((workspace) => {
+      fetchGamesInSpace(workspace);
+    });
+  };
+
+  useEffect(() => {
     // fetch game folders under workspace
     safeActionWithWorkspace((gmPath) => {
       fetchGamesInSpace(gmPath);
     });
-  }, [config]);
+  }, [fetchGamesInSpace]);
 
-  return { gameFolders };
+  return { gameFolders, refreshGamesInSpace };
 };

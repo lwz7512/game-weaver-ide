@@ -6,6 +6,8 @@ import { FileObj } from '../interfaces';
 
 const pipeline = promisify(stream.pipeline);
 
+const remoteFileCache: { [key: string]: Buffer } = {};
+
 /**
  * Read javascript file source code content
  * @param path main.js path
@@ -33,8 +35,28 @@ export const readDirectoriesInSpace = (path: string): string[] => {
 export const downloadRemoteFile = async (url: string, path: string) => {
   // NOTE: this make sure folder/file created to enable stream writing
   fs.outputFileSync(path, '');
-  await pipeline(got.stream(url), fs.createWriteStream(path));
-  console.log('## one file Done!');
+
+  // prepare write stream
+  const fstream = fs.createWriteStream(path);
+
+  // NOTE: cache download file in case of reuse!
+  if (remoteFileCache[url]) {
+    // reuse cached chunks
+    const buffers = remoteFileCache[url];
+    return fstream.write(buffers);
+  }
+  // cache Buffer data
+  const chunks: Uint8Array[] = [];
+  const req = got.stream(url);
+  req.on('data', (chunk) => chunks.push(chunk));
+  req.on('end', () => {
+    remoteFileCache[url] = Buffer.concat(chunks);
+  });
+  // running pipeline ...
+  await pipeline(req, fstream);
+  // console.log('## Downloaded file: ');
+  // console.log(url);
+  return true;
 };
 
 export const downloadFileList = async (fileObjs: FileObj[]) => {

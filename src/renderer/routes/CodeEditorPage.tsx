@@ -1,6 +1,6 @@
 import { Tab, Tabs } from '@blueprintjs/core';
 
-import appMeta from '../assets/app.json';
+// import appMeta from '../assets/app.json';
 import { MODULETYPES, gamePreviewDefaultURL as homepage } from '../config';
 import LeftSideBar from '../components/LeftSideBar';
 import { IconToolButton } from '../components/Buttons';
@@ -31,7 +31,8 @@ const CodeEditorPage = () => {
     fullScreenOpenHandler,
     gameSelectedHandler,
     openWorkspaceFolder,
-  } = useWorkspaceGames(appMeta);
+    refreshGamesInSpace,
+  } = useWorkspaceGames();
 
   useMonocaEditor('#code-editors', navbarTabId, mainJSCode);
   // save the latest url to refresh!
@@ -43,7 +44,7 @@ const CodeEditorPage = () => {
     handleClose,
     savePathCheckHandler,
     createGameProjectHandler,
-  } = useNewGameDialog(appMeta);
+  } = useNewGameDialog();
 
   return (
     <div className="editor-page w-full h-screen flex focus:outline-none">
@@ -117,6 +118,7 @@ const CodeEditorPage = () => {
           handleClose={handleClose}
           checkSavePathExist={savePathCheckHandler}
           createGameProject={createGameProjectHandler}
+          onGameCreateSuccess={refreshGamesInSpace}
         />
       )}
     </div>
