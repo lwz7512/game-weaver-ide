@@ -54,6 +54,7 @@ const useMonocaEditor = (
     if (!mainJSCode) return;
     // save to main scene
     templetCode.main = mainJSCode;
+    // reset code in editor
     if (editorRef.current) {
       editorRef.current.setValue(mainJSCode);
     }
@@ -64,11 +65,6 @@ const useMonocaEditor = (
     const editorContainer = document.querySelector(
       containerSelector
     ) as HTMLElement;
-
-    const options = {
-      value: templetCode[navbarTabId as JSFILE],
-      ...codeEditorOptions,
-    };
 
     const codeValueChangeHandler = (value: string, eol: string) => {
       templetCode.main = value; // cache to a global object
@@ -85,7 +81,11 @@ const useMonocaEditor = (
     const recreateEditor = () => {
       // console.log('>>> Dispose editor...');
       editorRef.current?.dispose();
-      // console.log('>>> To create editor...');
+      // NOTE: editor options should be here to use the code value
+      const options = {
+        value: templetCode[navbarTabId as JSFILE],
+        ...codeEditorOptions,
+      };
       editorRef.current = monaco.editor.create(editorContainer, options);
       editorRef.current.onDidChangeModelContent(onChange);
       editorRef.current.focus();

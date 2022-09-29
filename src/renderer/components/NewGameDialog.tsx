@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { ChangeEvent, useCallback, useState } from 'react';
+import { ChangeEvent, useCallback, useState, useRef, useEffect } from 'react';
 import {
   Tab,
   Tabs,
@@ -12,36 +12,44 @@ import {
   Elevation,
   Icon,
   IconName,
+  Spinner,
 } from '@blueprintjs/core';
 
-import { GAMETYPES } from '../config';
+import { GAMETYPES, GAME_DIALOG_TITLE, GAME_PATH_EXISTS } from '../config';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { kebabCase } from '../utils';
 
 type GameDialogProps = {
   isOpen: boolean;
   handleClose: () => void;
+  checkSavePathExist: (path: string) => Promise<boolean>;
+  createGameProject: (template: string, savePath: string) => Promise<boolean>;
 };
 
 const dialogProps = {
-  autoFocus: true,
+  autoFocus: false,
   canEscapeKeyClose: true,
-  canOutsideClickClose: true,
-  enforceFocus: true,
+  canOutsideClickClose: false,
+  enforceFocus: false,
   shouldReturnFocusOnClose: true,
   usePortal: true,
-  title: 'New Phaser Game 🦄 🚀 ',
+  title: GAME_DIALOG_TITLE,
 };
 
-export const NewGameDialog = ({ isOpen, handleClose }: GameDialogProps) => {
+export const NewGameDialog = ({
+  isOpen,
+  handleClose,
+  checkSavePathExist,
+  createGameProject,
+}: GameDialogProps) => {
   const [selecedTemplate, setSelecedTemplate] = useState('basic');
   const [gameName, setGameName] = useState('');
   const [gamePath, setGamePath] = useState('');
   const [errorInfo, setErrorInfo] = useState('');
-
+  const [saving, setSaving] = useState(false);
+  const [disableCreate, setDisableCreate] = useState(true);
+  const inputRef = useRef<HTMLInputElement>(null);
   const { spacePath } = useLocalStorage();
-
-  // console.log(gameName);
 
   const gameInputHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const regex = /^[a-zA-Z\s]*$/;
@@ -49,17 +57,36 @@ export const NewGameDialog = ({ isOpen, handleClose }: GameDialogProps) => {
     if (regex.test(input)) {
       setGameName(input);
       setGamePath(`${spacePath}/${kebabCase(input)}`);
+      setDisableCreate(false);
+    } else {
+      setDisableCreate(true);
     }
   };
 
-  // TODO:
   // 1. check folder existence, if exist couldnt save, warning user.
   // 2. if pass check, download template and create to local
-  const createNewGameHandler = () => {
-    // ...
-
-    handleClose();
+  const createNewGameHandler = async () => {
+    setDisableCreate(true);
+    // check path validity first
+    const exist = await checkSavePathExist(gamePath);
+    if (exist) {
+      return setErrorInfo(GAME_PATH_EXISTS);
+    }
+    setSaving(true);
+    const success = await createGameProject(selecedTemplate, gamePath);
+    if (success) {
+      handleClose();
+      setSaving(false);
+    }
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 200); // need some time to fully rendering input
+    }
+  }, [isOpen]);
 
   return (
     <Dialog isOpen={isOpen} onClose={handleClose} {...dialogProps}>
@@ -77,6 +104,7 @@ export const NewGameDialog = ({ isOpen, handleClose }: GameDialogProps) => {
         >
           <InputGroup
             id="gameName"
+            inputRef={inputRef}
             placeholder="Your New Game Name"
             disabled={false}
             intent="primary"
@@ -132,13 +160,13 @@ export const NewGameDialog = ({ isOpen, handleClose }: GameDialogProps) => {
             Cancel
           </Button>
           <Button
-            disabled={!gameName}
+            disabled={disableCreate}
             icon="folder-new"
             intent="primary"
             className="px-4 py-2"
             onClick={createNewGameHandler}
           >
-            Create
+            {saving ? <Spinner size={18} intent="primary" /> : 'Create'}
           </Button>
         </div>
       </div>

@@ -4,6 +4,24 @@ import { ConfigType, ExampleSource } from '../config/types';
 import { safeActionWithWorkspace } from '../state/storage';
 import { FileObj } from '../../interfaces';
 
+export const getTemplateSourceObjects = (
+  config: ConfigType,
+  template: string,
+  savePath: string
+): FileObj[] => {
+  const baseURL = config.baseURL as string;
+  const examplesPath = config.examplesPath as string;
+  const examples = config.examples as ExampleSource[];
+  const sourceFiles = examples.find(
+    (example) => example.folder === template
+  ) as ExampleSource;
+  const fileObjs = sourceFiles.files.map((path) => ({
+    url: baseURL + examplesPath + path, // remote url
+    path: savePath + path.replace(`/${template}`, ''),
+  }));
+  return fileObjs;
+};
+
 /**
  * Read main.js content of one game folder
  * @param gameFolder game folder under workspace

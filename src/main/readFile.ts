@@ -31,19 +31,25 @@ export const readDirectoriesInSpace = (path: string): string[] => {
 };
 
 export const downloadRemoteFile = async (url: string, path: string) => {
-  console.log('>>> Downloading :');
-  console.log(url);
-  // const path = '/Users/liwenzhi/Downloads/gmspace/main.js';
-  fs.outputFileSync(path, ''); // make sure folder/file created
+  // NOTE: this make sure folder/file created to enable stream writing
+  fs.outputFileSync(path, '');
   await pipeline(got.stream(url), fs.createWriteStream(path));
   console.log('## one file Done!');
 };
 
 export const downloadFileList = async (fileObjs: FileObj[]) => {
-  if (!fileObjs.length) return console.log('#### All done!');
-
+  if (!fileObjs.length) {
+    console.log('#### All done!');
+    return true;
+  }
   const headFile = fileObjs.shift() as FileObj;
   await downloadRemoteFile(headFile.url, headFile.path);
   // call self to download next file!
   await downloadFileList(fileObjs);
+
+  return true;
+};
+
+export const checkDirectoryExistence = (path: string): boolean => {
+  return fs.existsSync(path);
 };

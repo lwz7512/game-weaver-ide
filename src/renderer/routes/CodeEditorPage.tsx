@@ -1,4 +1,3 @@
-import { useCallback, useState } from 'react';
 import { Tab, Tabs } from '@blueprintjs/core';
 
 import appMeta from '../assets/app.json';
@@ -38,7 +37,13 @@ const CodeEditorPage = () => {
   // save the latest url to refresh!
   useIframeContext(gameLocalURL);
 
-  const { isOpen, handleOpen, handleClose } = useNewGameDialog();
+  const {
+    isOpen,
+    handleOpen,
+    handleClose,
+    savePathCheckHandler,
+    createGameProjectHandler,
+  } = useNewGameDialog(appMeta);
 
   return (
     <div className="editor-page w-full h-screen flex focus:outline-none">
@@ -105,7 +110,15 @@ const CodeEditorPage = () => {
         )}
         {/* ... */}
       </div>
-      <NewGameDialog isOpen={isOpen} handleClose={handleClose} />
+      {/* lazy initialize dialog until open */}
+      {isOpen && (
+        <NewGameDialog
+          isOpen={isOpen}
+          handleClose={handleClose}
+          checkSavePathExist={savePathCheckHandler}
+          createGameProject={createGameProjectHandler}
+        />
+      )}
     </div>
   );
 };

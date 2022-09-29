@@ -1,4 +1,5 @@
 export * from './types';
+export * from './labels';
 
 export const gamePreviewDefaultURL = 'http://localhost:8080';
 export const sourceRepo =

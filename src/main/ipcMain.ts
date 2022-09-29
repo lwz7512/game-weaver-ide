@@ -4,7 +4,12 @@ import { browserWindows, createView, closeView } from './createWindow';
 import { showOpenDialog, showSaveDialog } from './dialogs';
 import { IpcEvents } from '../ipc-events';
 import { createServer } from './createServer';
-import { readFile, readDirectoriesInSpace, downloadFileList } from './readFile';
+import {
+  readFile,
+  readDirectoriesInSpace,
+  downloadFileList,
+  checkDirectoryExistence,
+} from './readFile';
 
 export const setupIpcMainHandler = () => {
   ipcMain.on('ipc-example', async (event, arg) => {
@@ -38,6 +43,14 @@ export const setupIpcMainHandler = () => {
 
   ipcMain.handle(IpcEvents.READ_GAMESPACE_DIRS, (_, path: string) => {
     return readDirectoriesInSpace(path);
+  });
+
+  ipcMain.handle(IpcEvents.CHECK_DIR_EXISTS, (_, path: string) => {
+    return checkDirectoryExistence(path);
+  });
+
+  ipcMain.handle(IpcEvents.DOWNLOAD_GAME_TEMPLATE, (_, fileObjs: []) => {
+    return downloadFileList(fileObjs);
   });
 
   ipcMain.on(IpcEvents.OPEN_GAME_VIEW, (e, args: unknown[]) => {
