@@ -1,8 +1,12 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { IpcEvents } from '../../ipc-events';
 import appMeta from '../assets/app.json';
 import { ConfigType, ExampleSource } from '../config/types';
-import { safeActionWithWorkspace } from '../state/storage';
+import {
+  safeActionWithWorkspace,
+  clearWorkspaceInexisted,
+} from '../state/storage';
+import { useLocalStorage } from './useLocalStorage';
 import { FileObj } from '../../interfaces';
 
 export const getTemplateSourceObjects = (
@@ -122,4 +126,33 @@ export const useGMSpaceFolders = () => {
   }, [fetchGamesInSpace]);
 
   return { gameFolders, refreshGamesInSpace };
+};
+
+export const useWorkspaceFolderExists = (
+  onSpaceGone: () => void,
+  onSpaceUnassigned: () => void,
+  onSpaceExisted: (workspace: string) => void
+) => {
+  const checkerRef = useRef<NodeJS.Timeout>();
+  const { spacePath } = useLocalStorage();
+
+  useEffect(() => {
+    clearTimeout(checkerRef.current);
+
+    const { ipcRenderer } = window.electron;
+
+    // lazy detect spacePath exists, cause initially `spacePath` is blank!
+    checkerRef.current = setTimeout(async () => {
+      if (!spacePath) return onSpaceUnassigned(); // no set do nothing!
+      // check if the workspace is there?
+      const result = await ipcRenderer.invoke(
+        IpcEvents.CHECK_DIR_EXISTS,
+        spacePath
+      );
+      if (result) return onSpaceExisted(spacePath); // safe to go!
+      // send warning outside!
+      onSpaceGone();
+      clearWorkspaceInexisted();
+    }, 100);
+  }, [spacePath, onSpaceGone, onSpaceUnassigned, onSpaceExisted]);
 };

@@ -9,6 +9,10 @@ export const saveWorkspacePath = (path: string): void => {
   localStorage.setItem(GWSPACE_KEY, path);
 };
 
+export const clearWorkspaceInexisted = () => {
+  localStorage.removeItem(GWSPACE_KEY);
+};
+
 export const safeActionWithWorkspace = (callback: (gmPath: string) => void) => {
   const gmWorkspacePath = localStorage.getItem(GWSPACE_KEY);
   if (gmWorkspacePath) {

@@ -9,13 +9,10 @@ import SettingsPage from './routes/SettingsPage';
 import TiledEditorPage from './routes/TileEditorPage';
 import UserPage from './routes/UserPage';
 import { ROUTES } from './config';
-import { useHTTPServer } from './hooks/useHTTPServer';
 
 import './App.css';
 
 export default function App() {
-  useHTTPServer();
-
   return (
     <Router>
       <Routes>

@@ -36,9 +36,9 @@ const CodeEditorPage = () => {
     restoreToNoGame,
   } = useWorkspaceGames();
 
-  useMonocaEditor('#code-editors', navbarTabId, mainJSCode);
   // save the latest url to refresh!
   useIframeContext(gameLocalURL);
+  useMonocaEditor('#code-editors', navbarTabId, mainJSCode);
 
   const {
     isOpen: isNewOpen,
