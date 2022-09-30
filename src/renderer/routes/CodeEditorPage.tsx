@@ -1,17 +1,18 @@
 import { Tab, Tabs } from '@blueprintjs/core';
 
-// import appMeta from '../assets/app.json';
-import { MODULETYPES, gamePreviewDefaultURL as homepage } from '../config';
+import { MODULETYPES } from '../config';
 import LeftSideBar from '../components/LeftSideBar';
 import { IconToolButton } from '../components/Buttons';
 import { WorkspaceGames } from '../components/WorkspaceGames';
 import { NewGameDialog } from '../components/NewGameDialog';
+import { DeleteGameAlert } from '../components/DeleteGameAlert';
 import { PreviewPanelHandleBar } from '../components/PreviewPanelHandleBar';
 import useLeftSideBar from '../hooks/useLeftSideBar';
 import useMonocaEditor, { useIframeContext } from '../hooks/useMonocaEditor';
 import useTabsBar from '../hooks/useTabsBar';
 import { useWorkspaceGames } from '../hooks/useWorkspaceGames';
 import { useNewGameDialog } from '../hooks/useNewGameDialog';
+import { useDeleteGameDialog } from '../hooks/useDeleteGameDialog';
 
 /**
  * code editor page
@@ -32,6 +33,7 @@ const CodeEditorPage = () => {
     gameSelectedHandler,
     openWorkspaceFolder,
     refreshGamesInSpace,
+    restoreToNoGame,
   } = useWorkspaceGames();
 
   useMonocaEditor('#code-editors', navbarTabId, mainJSCode);
@@ -39,12 +41,21 @@ const CodeEditorPage = () => {
   useIframeContext(gameLocalURL);
 
   const {
-    isOpen,
+    isOpen: isNewOpen,
     handleOpen,
     handleClose,
     savePathCheckHandler,
     createGameProjectHandler,
   } = useNewGameDialog();
+
+  const {
+    isOpen: isDeleteOpen,
+    isLoading,
+    deletedGame,
+    openDeleteGameDialog,
+    handleDeleteClose,
+    handleDeleteConfirm,
+  } = useDeleteGameDialog(restoreToNoGame);
 
   return (
     <div className="editor-page w-full h-screen flex focus:outline-none">
@@ -59,6 +70,7 @@ const CodeEditorPage = () => {
           onFolderOpened={gameSelectedHandler}
           openWorkspaceFolder={openWorkspaceFolder}
           openNewGameDialog={handleOpen}
+          openDeleteGameConfirmation={openDeleteGameDialog}
         />
       </div>
       <div className="main-part flex-1 text-black flex flex-col">
@@ -112,13 +124,23 @@ const CodeEditorPage = () => {
         {/* ... */}
       </div>
       {/* lazy initialize dialog until open */}
-      {isOpen && (
+      {isNewOpen && (
         <NewGameDialog
-          isOpen={isOpen}
+          isOpen={isNewOpen}
           handleClose={handleClose}
           checkSavePathExist={savePathCheckHandler}
           createGameProject={createGameProjectHandler}
           onGameCreateSuccess={refreshGamesInSpace}
+        />
+      )}
+      {/* delete game alert */}
+      {isDeleteOpen && (
+        <DeleteGameAlert
+          game={deletedGame}
+          isOpen={isDeleteOpen}
+          isLoading={isLoading}
+          handleCloseDialog={handleDeleteClose}
+          handleDeleteGame={handleDeleteConfirm}
         />
       )}
     </div>

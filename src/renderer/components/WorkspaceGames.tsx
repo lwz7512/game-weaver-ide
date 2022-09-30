@@ -8,6 +8,7 @@ type WSGamesProps = {
   onFolderOpened: (folder: string) => void;
   openWorkspaceFolder: () => void;
   openNewGameDialog: () => void;
+  openDeleteGameConfirmation: (folder: string) => void;
 };
 
 export const WorkspaceGames = ({
@@ -16,6 +17,7 @@ export const WorkspaceGames = ({
   onFolderOpened,
   openWorkspaceFolder,
   openNewGameDialog,
+  openDeleteGameConfirmation,
 }: WSGamesProps) => {
   const exampleMenu = (
     <Menu>
@@ -72,8 +74,9 @@ export const WorkspaceGames = ({
             <button
               type="button"
               className="more-btn inline-block focus:outline-none p-2 ml-2 w-8 h-9"
+              onClick={() => openDeleteGameConfirmation(game)}
             >
-              <Icon icon="more" size={18} color="white" className="hidden" />
+              <Icon icon="trash" size={18} color="white" className="hidden" />
             </button>
           </li>
         ))}

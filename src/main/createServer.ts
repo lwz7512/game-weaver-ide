@@ -6,11 +6,13 @@ import fs from 'fs-extra';
 type ServerProps = {
   server: http.Server | null;
   active: boolean;
+  servePath: string;
 };
 
 const serverInstance: ServerProps = {
   server: null,
   active: false,
+  servePath: '',
 };
 
 const onListening = (
@@ -21,6 +23,7 @@ const onListening = (
   console.log(`### Server Started @ ${port} ###`);
   serverInstance.active = true;
   serverInstance.server = instance;
+  serverInstance.servePath = workspacePath;
   // check index.html existence
   const indexFile = `${workspacePath}/index.html`;
   if (fs.existsSync(indexFile)) return;
@@ -37,6 +40,7 @@ const onStop = () => {
   console.log('### server stopped!');
   serverInstance.active = false;
   serverInstance.server = null;
+  serverInstance.servePath = '';
 };
 
 export const createServer = (
@@ -45,8 +49,8 @@ export const createServer = (
 ) => {
   // TODO: check port in use ...
   // if 8080 in use, send message through `ipcRenderer`
-
   if (serverInstance.active) return;
+  // TODO: if workspace path changed, restart it!
 
   console.log('>>> Starting http server ...');
   const file = new statik.Server(workspacePath);

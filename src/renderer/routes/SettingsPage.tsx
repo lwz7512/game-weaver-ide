@@ -5,7 +5,12 @@ import { ToastContainer, toast } from 'react-toastify';
 
 import { IpcEvents } from '../../ipc-events';
 import LeftSideBar from '../components/LeftSideBar';
-import { MODULETYPES } from '../config';
+import {
+  MODULETYPES,
+  port,
+  WORKSPACE_ASSIGNED,
+  WORKSPACE_UNDEFINED,
+} from '../config';
 import useLeftSideBar from '../hooks/useLeftSideBar';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 
@@ -20,21 +25,23 @@ const SettingsPage = () => {
   const openNativeDialog = async () => {
     const paths = (await ipcRenderer.invoke(
       IpcEvents.OPEN_SETTINGS,
-      'gmspace'
+      'gmspace' // new folder to be created in selected path
     )) as string[];
     // console.log(paths);
     if (paths.length === 0) return;
     initGMSpacePath(paths[0]); // save it to app
+    // NOTE: tring to restart server ...
+    // this is absolutely necessary at first of workspace setting!
+    // but if server is running, restart is needed to make it works.
+    ipcRenderer.sendMessage(IpcEvents.START_HTTP_SERVER, [port, paths[0]]);
+    toast.success(WORKSPACE_ASSIGNED);
   };
 
   useEffect(() => {
     clearTimeout(checkerRef.current);
     // lazy detect spacePath blank ...
     checkerRef.current = setTimeout(() => {
-      if (!spacePath)
-        toast.warn(
-          'Workspace Path not assigned, please pick one folder to start your game coding!'
-        );
+      if (!spacePath) toast.warn(WORKSPACE_UNDEFINED);
     }, 100);
   }, [spacePath]);
 
@@ -62,7 +69,7 @@ const SettingsPage = () => {
             icon="folder-new"
             intent="primary"
             text={`${spacePath ? 'Reset' : 'Assign'} Workspace Directory`}
-            className="focus:outline-none my-4"
+            className="focus:outline-none my-4 py-2 px-4 text-base"
             onClick={openNativeDialog}
           />
         </div>

@@ -14,7 +14,6 @@ export const safeActionWithWorkspace = (callback: (gmPath: string) => void) => {
   if (gmWorkspacePath) {
     callback(gmWorkspacePath);
   } else {
-    // TODO: popup toast ...
     document.dispatchEvent(new Event(DOMEVENTS.GMSPACE_UNDEFINED));
   }
 };

@@ -1,7 +1,8 @@
 export * from './types';
 export * from './labels';
 
-export const gamePreviewDefaultURL = 'http://localhost:8080';
+export const port = 8080;
+export const gamePreviewDefaultURL = `http://localhost:${port}`;
 export const sourceRepo =
   'https://raw.githubusercontent.com/lwz7512/game-weaver-ast/master/';
 

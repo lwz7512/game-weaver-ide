@@ -32,7 +32,7 @@ export const useWorkspaceMainJS = (gameFolder: string | undefined) => {
   const [mainJSCode, setMainJSCode] = useState('//loading games...');
 
   useEffect(() => {
-    if (!gameFolder) return; // no game folder specified
+    if (!gameFolder) return setMainJSCode(''); // no game folder specified
 
     const { ipcRenderer } = window.electron;
     const fetchMain = async (jsPath: string) => {

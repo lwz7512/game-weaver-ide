@@ -12,6 +12,7 @@ import { useWorkspaceMainJS, useGMSpaceFolders } from './useWorkspaceFile';
  */
 export const useWorkspaceGames = () => {
   const { ipcRenderer } = window.electron;
+
   const [selectedGame, setselectedGame] = useState(''); // select game to preview game
   const [gameLocalURL, setGameLocalURL] = useState(homepage);
 
@@ -31,15 +32,17 @@ export const useWorkspaceGames = () => {
     });
   };
 
-  useEffect(() => {
-    // just for demo downloaded while wor
-    if (gameFolders.length === 1) {
-      setselectedGame('demo');
-    }
-  }, [gameFolders]);
+  /**
+   * reset to no game selected!
+   */
+  const restoreToNoGame = () => {
+    setselectedGame('');
+    refreshGamesInSpace();
+  };
 
   useEffect(() => {
-    if (!selectedGame) return;
+    if (!selectedGame) return setGameLocalURL(homepage);
+
     const url = `${homepage}/${selectedGame}`;
     setGameLocalURL(url);
   }, [selectedGame]);
@@ -55,5 +58,6 @@ export const useWorkspaceGames = () => {
     gameSelectedHandler,
     openWorkspaceFolder,
     refreshGamesInSpace,
+    restoreToNoGame,
   };
 };

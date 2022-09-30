@@ -26,6 +26,8 @@ const webviewContext: IFrameContext = {
   timerId: undefined, // not in use
   handler: (...args: unknown[]) => {
     const iframe = document.getElementById('gwpreview');
+    if (!iframe || args.length === 0) return;
+
     const gwPreview = iframe as HTMLIFrameElement;
     gwPreview.src = args.shift() as string;
   },

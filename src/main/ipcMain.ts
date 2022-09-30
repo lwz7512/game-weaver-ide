@@ -9,6 +9,7 @@ import {
   readDirectoriesInSpace,
   downloadFileList,
   checkDirectoryExistence,
+  deleteDirectory,
 } from './readFile';
 
 export const setupIpcMainHandler = () => {
@@ -29,8 +30,8 @@ export const setupIpcMainHandler = () => {
     return showOpenDialog(message);
   });
 
-  ipcMain.handle(IpcEvents.OPEN_SETTINGS, (_, message) => {
-    return showSaveDialog(message);
+  ipcMain.handle(IpcEvents.OPEN_SETTINGS, (_, directory: string) => {
+    return showSaveDialog(directory);
   });
 
   ipcMain.handle(IpcEvents.LOAD_GAME_MAINJS, (_, path: string) => {
@@ -51,6 +52,10 @@ export const setupIpcMainHandler = () => {
 
   ipcMain.handle(IpcEvents.DOWNLOAD_GAME_TEMPLATE, (_, fileObjs: []) => {
     return downloadFileList(fileObjs);
+  });
+
+  ipcMain.handle(IpcEvents.DELETE_GAME_FOLDER, (_, path) => {
+    return deleteDirectory(path);
   });
 
   ipcMain.on(IpcEvents.OPEN_GAME_VIEW, (e, args: unknown[]) => {

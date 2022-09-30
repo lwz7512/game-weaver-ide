@@ -75,3 +75,8 @@ export const downloadFileList = async (fileObjs: FileObj[]) => {
 export const checkDirectoryExistence = (path: string): boolean => {
   return fs.existsSync(path);
 };
+
+export const deleteDirectory = (path: string) => {
+  fs.rmSync(path, { recursive: true });
+  return true;
+};

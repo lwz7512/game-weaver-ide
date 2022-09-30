@@ -1,6 +1,6 @@
 import { app, dialog } from 'electron';
 import * as fs from 'fs-extra';
-import { IpcEvents } from '../ipc-events';
+// import { IpcEvents } from '../ipc-events';
 
 /**
  * Shows the "Open Fiddle" dialog and forwards
@@ -12,16 +12,10 @@ export async function showOpenDialog(title: string): Promise<string[]> {
     properties: ['openDirectory'],
   });
 
-  // console.log(filePaths);
-
   if (!filePaths || filePaths.length < 1) {
     return [];
   }
   return filePaths;
-
-  // TODO: create workspace folder: gwspace
-
-  // app.addRecentDocument(filePaths[0]);
 }
 
 /**
@@ -45,7 +39,7 @@ export async function showSaveDialog(dir = 'gmspace'): Promise<string[]> {
   if (!gmExisted) {
     await fs.mkdir(gmspacePath);
   } else {
-    await fs.writeFile(`${gmspacePath}/empty.txt`, '...');
+    await fs.writeFile(`${gmspacePath}/empty.txt`, '');
   }
   console.log(`### Saved to ${gmspacePath}`);
   return [gmspacePath];
