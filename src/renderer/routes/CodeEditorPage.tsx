@@ -38,7 +38,7 @@ const CodeEditorPage = () => {
 
   // save the latest url to refresh!
   useIframeContext(gameLocalURL);
-  useMonocaEditor('#code-editors', navbarTabId, mainJSCode);
+  useMonocaEditor(navbarTabId, mainJSCode);
 
   const {
     isOpen: isNewOpen,
@@ -86,7 +86,7 @@ const CodeEditorPage = () => {
               title="Main Scene"
               className="select-none focus: outline-none"
             />
-            {/* <Tab
+            <Tab
               id="success"
               title="Sucess Scene"
               className="select-none focus: outline-none"
@@ -95,7 +95,7 @@ const CodeEditorPage = () => {
               id="failure"
               title="Failure Scene"
               className="select-none focus: outline-none"
-            /> */}
+            />
           </Tabs>
         </div>
         {/* code editor container */}

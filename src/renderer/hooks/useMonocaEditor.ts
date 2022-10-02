@@ -8,15 +8,21 @@ import { useEffect, useRef } from 'react';
 import * as monaco from 'monaco-editor';
 import { TabId } from '@blueprintjs/core';
 import {
-  codeEditorOptions,
+  codeEditorOptions as cops,
   libSource,
   sourceRepo,
   TSLIB,
   JSFILE,
   IFrameContext,
 } from '../config';
-import { templetCode } from '../state/template';
-import { getThrottleFunction, getDebounceFunction } from '../utils';
+import {
+  templetCode,
+  isModelExists,
+  saveEditorState,
+  getEditorState,
+} from '../state/template';
+
+type EditorType = monaco.editor.IStandaloneCodeEditor;
 
 /**
  * iframe refresh context
@@ -32,11 +38,30 @@ const webviewContext: IFrameContext = {
     gwPreview.src = args.shift() as string;
   },
 };
-const lazyRefresh = getDebounceFunction(webviewContext.handler, 3000);
-// const lazyRefresh = getThrottleFunction(webviewContext.handler, 3000);
 
 export const useIframeContext = (url: string) => {
   webviewContext.url = url;
+};
+
+/**
+ * Runtime add editor model(some js file) to enable intellisense of code in other module
+ *
+ * @param fileName such as `success`, `failure` etc other phaser state module file
+ * @param code code value
+ * @param language model language NOTE: must be the same value as codeEditorOptions
+ */
+export const addNewModel = (
+  code = '',
+  fileName: string,
+  eagerMode = false,
+  fileSuffix = 'js'
+) => {
+  const uri = monaco.Uri.parse(`file:///${fileName}.${fileSuffix}`);
+  const model = monaco.editor.createModel(code, 'javascript', uri);
+  if (eagerMode) {
+    monaco.languages.typescript.javascriptDefaults.setEagerModelSync(true);
+  }
+  return model;
 };
 
 /**
@@ -44,71 +69,102 @@ export const useIframeContext = (url: string) => {
  * @param navbarTabId
  * @returns state and callbacks
  */
-const useMonocaEditor = (
-  containerSelector: string,
-  navbarTabId: TabId,
-  mainJSCode: string
-) => {
+const useMonocaEditor = (navbarTabId: TabId, mainJSCode: string) => {
+  // keep an editor instance here
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+  // keep the last file name
+  const lastFileRef = useRef<string | null>(null);
+
+  // build editor & observe container resize
+  useEffect(() => {
+    const editorParent = document.querySelector('#code-editors') as HTMLElement;
+
+    const onCodeChange = (evt: monaco.editor.IModelContentChangedEvent) => {
+      const currentValue = editorRef.current?.getValue() || '';
+      templetCode[navbarTabId as JSFILE] = currentValue; // keep a internal value
+    };
+
+    const createEditor = () => {
+      // NOTE: editor options should be here to reflect the code value in realtime
+      // @2022/09/30
+      const model = addNewModel(templetCode.main, 'main');
+      const options = { ...cops, model };
+      editorRef.current = monaco.editor.create(editorParent, options);
+      editorRef.current.onDidChangeModelContent(onCodeChange);
+      editorRef.current.focus();
+      console.log('### editor created!');
+    };
+
+    const resetModelAndState = (
+      lastFile: string,
+      currentFile: string,
+      editor: EditorType
+    ) => {
+      if (!lastFile || lastFile === currentFile) return;
+
+      const lastModel = editor.getModel();
+      const lastState = editor.saveViewState();
+      saveEditorState(lastFile, lastModel, lastState);
+
+      const modelExists = isModelExists(currentFile);
+      if (!modelExists) {
+        const dummyCode = templetCode[currentFile as JSFILE];
+        const newModel = addNewModel(dummyCode, currentFile, true);
+        editor.setModel(newModel);
+      } else {
+        const { model, state } = getEditorState(currentFile);
+        editor.setModel(model);
+        editor.restoreViewState(state);
+      }
+    };
+
+    const relayoutEditor = (entries: ResizeObserverEntry[]) => {
+      if (!editorRef.current) return createEditor();
+
+      // lastFile could be `null` while resizing editor on main tab ...
+      const lastFile = lastFileRef.current as string;
+      const currentFile = navbarTabId as string;
+      const editor = editorRef.current as EditorType;
+      resetModelAndState(lastFile, currentFile, editor);
+
+      // resize editor according to editorContainer change
+      const editorBox = entries[0];
+      editor.layout({
+        width: editorBox.contentRect.width * 0.99,
+        height: editorBox.contentRect.height * 0.99,
+      });
+
+      // focus at last!
+      editor.focus();
+    };
+
+    const observer = new ResizeObserver(relayoutEditor);
+    observer.observe(editorParent);
+
+    // clearup when destroy
+    return () => {
+      observer.unobserve(editorParent);
+      // rember last file name
+      lastFileRef.current = navbarTabId as string;
+    };
+  }, [navbarTabId]);
 
   // load main.js content
   useEffect(() => {
     if (!mainJSCode) return;
     // save to main scene
     templetCode.main = mainJSCode;
-    // reset code in editor
-    if (editorRef.current) {
-      editorRef.current.setValue(mainJSCode);
-    }
+    // editor not ready ...
+    if (!editorRef.current) return;
+    // editor and model is ready!
+    editorRef.current.setValue(mainJSCode);
   }, [mainJSCode]);
 
-  // build editor & observe container resize
-  useEffect(() => {
-    const editorContainer = document.querySelector(
-      containerSelector
-    ) as HTMLElement;
-
-    const codeValueChangeHandler = (value: string, eol: string) => {
-      templetCode.main = value; // cache to a global object
-      // throttle to reduce the screen blinking!
-      lazyRefresh(webviewContext.url);
-    };
-
-    const onChange = (evt: monaco.editor.IModelContentChangedEvent) => {
-      const currentValue = editorRef.current?.getValue() || '';
-      codeValueChangeHandler(currentValue, evt.eol);
-      templetCode[navbarTabId as JSFILE] = currentValue; // keep a internal value
-    };
-
-    const recreateEditor = () => {
-      // console.log('>>> Dispose editor...');
-      editorRef.current?.dispose();
-      // NOTE: editor options should be here to use the code value
-      const options = {
-        value: templetCode[navbarTabId as JSFILE],
-        ...codeEditorOptions,
-      };
-      editorRef.current = monaco.editor.create(editorContainer, options);
-      editorRef.current.onDidChangeModelContent(onChange);
-      editorRef.current.focus();
-    };
-    const observer = new ResizeObserver(recreateEditor);
-    observer.observe(editorContainer);
-
-    // clearup when destroy
-    return () => {
-      observer.unobserve(editorContainer);
-    };
-  }, [navbarTabId, containerSelector]);
-
-  // build phaser source lib
+  // *** build phaser source lib ***
   useEffect(() => {
     console.log('>>> Hacking monaco languages....');
     // ****** add extra libraries for test ******
-    monaco.languages.typescript.javascriptDefaults.addExtraLib(
-      libSource,
-      TSLIB.FACTS
-    );
+
     async function fetchPhaserLib(fileName: string) {
       const response = await fetch(sourceRepo + fileName);
       const source = await response.text();
@@ -117,7 +173,6 @@ const useMonocaEditor = (
         `ts:${fileName}`
       );
     }
-    // TODO: fetch game code template ...
 
     async function fetchAll() {
       console.log('>>> fetching phaser lib...');

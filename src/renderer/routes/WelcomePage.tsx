@@ -1,5 +1,7 @@
 /**
  * Created @2022/08/19
+ *
+ * - Added refactered `useHTTPServer` to detect workspace existance @2022/09/30
  */
 import { ToastContainer, toast } from 'react-toastify';
 import {

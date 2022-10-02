@@ -1,34 +1,85 @@
+import * as monaco from 'monaco-editor';
 import { TemplateCodeType } from '../config';
 
 /**
+ * TODO: add succes and failure state code ...
  * ************* TEMPORAL CODE STORE ***********************
  */
 export const templetCode: TemplateCodeType = {
   main: '//loading game source...',
-  success: '// sucess scene code',
-  failure: '// failure scene code',
+  success: `class SuccessState extends Phaser.State {
+    init() {
+      // ...
+    }
+  
+    preload() {
+      // ...
+    }
+  
+    create() {
+      // ...
+    }
+  
+    update() {
+      // ...
+    }
+  }`,
+  failure: `class FailureState extends Phaser.State {
+    init() {
+      // ...
+    }
+  
+    preload() {
+      // ...
+    }
+  
+    create() {
+      // ...
+    }
+  
+    update() {
+      // ...
+    }
+  }
+  `,
 };
 
-// import p2Source from '../assets/phaser/p2.d.txt';
-// import pixiSource from '../assets/phaser/pixi.comments.d.txt';
-// import phaserCESource from '../assets/phaser/phaser.comments.d.txt';
+type NullMoM = monaco.editor.ITextModel | null;
+type NullMoV = monaco.editor.ICodeEditorViewState | null;
 
-// apply compiler options as typescript sensible!
-// monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
-//   target: monaco.languages.typescript.ScriptTarget.ES2015,
-//   allowNonTsExtensions: true,
-// });
-// add phaser-ce library:
-// https://github.com/photonstorm/phaser-ce/tree/master/typescript
-// monaco.languages.typescript.javascriptDefaults.addExtraLib(
-//   p2Source,
-//   'ts:phaser/p2.d.txt'
-// );
-// monaco.languages.typescript.javascriptDefaults.addExtraLib(
-//   pixiSource,
-//   'ts:phaser/pixi.comments.d.txt'
-// );
-// monaco.languages.typescript.javascriptDefaults.addExtraLib(
-//   phaserCESource,
-//   'ts:phaser/phaser.comments.d.txt'
-// );
+type ModelAndState = {
+  model: NullMoM;
+  state: NullMoV;
+};
+
+const editorState: {
+  [file: string]: ModelAndState;
+} = {};
+
+export const saveEditorState = (
+  file: string,
+  model: NullMoM,
+  state: NullMoV
+) => {
+  console.log('>>> save model and state:');
+  console.log(file);
+  editorState[file] = {
+    model,
+    state,
+  };
+};
+
+export const getEditorState = (file: string) => {
+  const vm = editorState[file];
+  return vm || {};
+};
+
+export const getEditorValue = (file: string) => {
+  const vm = editorState[file];
+  return vm.model ? vm.model.getValue() : '';
+};
+
+export const isModelExists = (file: string) => {
+  const vm = editorState[file];
+  return !!vm;
+};
