@@ -13,12 +13,14 @@ import useTabsBar from '../hooks/useTabsBar';
 import { useWorkspaceGames } from '../hooks/useWorkspaceGames';
 import { useNewGameDialog } from '../hooks/useNewGameDialog';
 import { useDeleteGameDialog } from '../hooks/useDeleteGameDialog';
+import useWindowEvents from '../hooks/useWindowEvents';
 
 /**
  * code editor page
  * @returns code page
  */
 const CodeEditorPage = () => {
+  useWindowEvents();
   const { onModuleChanged } = useLeftSideBar();
   const { navbarTabId, handleNavbarTabChange } = useTabsBar();
   // read folders under selected gmspace folder

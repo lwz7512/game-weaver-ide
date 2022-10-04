@@ -1,6 +1,8 @@
 import * as monaco from 'monaco-editor';
 import { TemplateCodeType } from '../config';
 
+export type EditorType = monaco.editor.IStandaloneCodeEditor;
+
 /**
  * TODO: add succes and failure state code ...
  * ************* TEMPORAL CODE STORE ***********************

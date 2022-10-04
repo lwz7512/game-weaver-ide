@@ -9,20 +9,18 @@ import * as monaco from 'monaco-editor';
 import { TabId } from '@blueprintjs/core';
 import {
   codeEditorOptions as cops,
-  libSource,
   sourceRepo,
   TSLIB,
   JSFILE,
   IFrameContext,
 } from '../config';
 import {
+  EditorType,
   templetCode,
   isModelExists,
   saveEditorState,
   getEditorState,
 } from '../state/template';
-
-type EditorType = monaco.editor.IStandaloneCodeEditor;
 
 /**
  * iframe refresh context
@@ -45,18 +43,22 @@ export const useIframeContext = (url: string) => {
 
 /**
  * Runtime add editor model(some js file) to enable intellisense of code in other module
+ * Do not create duplicated model with same uri! @2022/10/03
  *
- * @param fileName such as `success`, `failure` etc other phaser state module file
  * @param code code value
- * @param language model language NOTE: must be the same value as codeEditorOptions
+ * @param fileName such as `success`, `failure` etc other phaser state module file
+ * @param eagerMode model syncroniztion mode, if model is added after editor creation, this should be `true`
  */
-export const addNewModel = (
+export const addNewJSModel = (
   code = '',
   fileName: string,
-  eagerMode = false,
-  fileSuffix = 'js'
+  eagerMode = false
 ) => {
-  const uri = monaco.Uri.parse(`file:///${fileName}.${fileSuffix}`);
+  const uri = monaco.Uri.parse(`file:///${fileName}.js`);
+  // check model existence is a MUST!
+  const savedModel = monaco.editor.getModel(uri);
+  if (savedModel) return savedModel;
+
   const model = monaco.editor.createModel(code, 'javascript', uri);
   if (eagerMode) {
     monaco.languages.typescript.javascriptDefaults.setEagerModelSync(true);
@@ -85,9 +87,8 @@ const useMonocaEditor = (navbarTabId: TabId, mainJSCode: string) => {
     };
 
     const createEditor = () => {
-      // NOTE: editor options should be here to reflect the code value in realtime
-      // @2022/09/30
-      const model = addNewModel(templetCode.main, 'main');
+      console.log('>>> to create monaco editor ...');
+      const model = addNewJSModel(templetCode.main, 'main');
       const options = { ...cops, model };
       editorRef.current = monaco.editor.create(editorParent, options);
       editorRef.current.onDidChangeModelContent(onCodeChange);
@@ -109,7 +110,7 @@ const useMonocaEditor = (navbarTabId: TabId, mainJSCode: string) => {
       const modelExists = isModelExists(currentFile);
       if (!modelExists) {
         const dummyCode = templetCode[currentFile as JSFILE];
-        const newModel = addNewModel(dummyCode, currentFile, true);
+        const newModel = addNewJSModel(dummyCode, currentFile, true);
         editor.setModel(newModel);
       } else {
         const { model, state } = getEditorState(currentFile);
@@ -146,6 +147,10 @@ const useMonocaEditor = (navbarTabId: TabId, mainJSCode: string) => {
       observer.unobserve(editorParent);
       // rember last file name
       lastFileRef.current = navbarTabId as string;
+
+      // editorRef.current?.getModel()?.dispose();
+      // editorRef.current?.dispose();
+      // editorRef.current = null;
     };
   }, [navbarTabId]);
 

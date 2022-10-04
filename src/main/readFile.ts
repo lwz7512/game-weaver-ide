@@ -1,3 +1,4 @@
+import * as pathModule from 'node:path';
 import fs from 'fs-extra';
 import { promisify } from 'node:util';
 import stream from 'node:stream';
@@ -29,7 +30,20 @@ export const readFile = (path: string): string | null => {
 export const readDirectoriesInSpace = (path: string): string[] => {
   const entries = fs.readdirSync(path, { withFileTypes: true });
   const folders = entries.filter((item) => item.isDirectory());
-  return folders.map((item) => item.name);
+
+  return folders
+    .map((folder) => {
+      const fullFolderPath = pathModule.join(
+        pathModule.resolve(path),
+        folder.name
+      );
+      const stats = fs.statSync(fullFolderPath);
+      return { name: folder.name, ctimeMs: stats.ctimeMs };
+    })
+    .sort((a, b) => {
+      return b.ctimeMs - a.ctimeMs; // descending order, latest first
+    })
+    .map((item) => item.name);
 };
 
 export const downloadRemoteFile = async (url: string, path: string) => {
