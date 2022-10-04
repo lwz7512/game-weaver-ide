@@ -12,7 +12,8 @@
         "/demo/main.js",
         "/demo/meta.json",
         "/demo/assets/24x24.png",
-        "/demo/assets/phaser.png"
+        "/demo/assets/phaser.png",
+        "/demo/assets/bridge.js"
       ]
     },
     {
@@ -23,7 +24,8 @@
         "/basic/main.js",
         "/basic/meta.json",
         "/basic/assets/24x24.png",
-        "/basic/assets/phaser.png"
+        "/basic/assets/phaser.png",
+        "/basic/assets/bridge.js"
       ]
     },
     {
@@ -34,7 +36,8 @@
         "/arcade/main.js",
         "/arcade/meta.json",
         "/arcade/assets/24x24.png",
-        "/arcade/assets/phaser.png"
+        "/arcade/assets/phaser.png",
+        "/arcade/assets/bridge.js"
       ]
     },
     {
@@ -45,7 +48,8 @@
         "/box2d/main.js",
         "/box2d/meta.json",
         "/box2d/assets/24x24.png",
-        "/box2d/assets/phaser.png"
+        "/box2d/assets/phaser.png",
+        "/box2d/assets/bridge.js"
       ]
     },
     {
@@ -56,7 +60,8 @@
         "/platformer/main.js",
         "/platformer/meta.json",
         "/platformer/assets/24x24.png",
-        "/platformer/assets/phaser.png"
+        "/platformer/assets/phaser.png",
+        "/platformer/assets/bridge.js"
       ]
     }
   ],
