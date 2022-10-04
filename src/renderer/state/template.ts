@@ -63,8 +63,6 @@ export const saveEditorState = (
   model: NullMoM,
   state: NullMoV
 ) => {
-  console.log('>>> save model and state:');
-  console.log(file);
   editorState[file] = {
     model,
     state,

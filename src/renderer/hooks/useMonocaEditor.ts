@@ -147,10 +147,6 @@ const useMonocaEditor = (navbarTabId: TabId, mainJSCode: string) => {
       observer.unobserve(editorParent);
       // rember last file name
       lastFileRef.current = navbarTabId as string;
-
-      // editorRef.current?.getModel()?.dispose();
-      // editorRef.current?.dispose();
-      // editorRef.current = null;
     };
   }, [navbarTabId]);
 
