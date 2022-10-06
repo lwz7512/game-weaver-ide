@@ -12,7 +12,6 @@ import {
   sourceRepo,
   TSLIB,
   JSFILE,
-  IFrameContext,
 } from '../config';
 import {
   EditorType,
@@ -21,29 +20,6 @@ import {
   saveEditorState,
   getEditorState,
 } from '../state/template';
-
-/**
- * iframe refresh context
- */
-const webviewContext: IFrameContext = {
-  url: '',
-  timerId: undefined, // not in use
-  handler: (...args: unknown[]) => {
-    const iframe = document.getElementById('gwpreview');
-    if (!iframe || args.length === 0) return;
-
-    const gwPreview = iframe as HTMLIFrameElement;
-    gwPreview.src = args.shift() as string;
-  },
-};
-
-export const useIframeContext = (url: string) => {
-  webviewContext.url = url;
-
-  return () => {
-    webviewContext.handler(webviewContext.url);
-  };
-};
 
 /**
  * Runtime add editor model(some js file) to enable intellisense of code in other module

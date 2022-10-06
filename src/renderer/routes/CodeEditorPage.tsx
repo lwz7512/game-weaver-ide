@@ -8,7 +8,8 @@ import { NewGameDialog } from '../components/NewGameDialog';
 import { DeleteGameAlert } from '../components/DeleteGameAlert';
 import { PreviewPanelHandleBar } from '../components/PreviewPanelHandleBar';
 import useLeftSideBar from '../hooks/useLeftSideBar';
-import useMonocaEditor, { useIframeContext } from '../hooks/useMonocaEditor';
+import useMonocaEditor from '../hooks/useMonocaEditor';
+import { useIframeContext } from '../hooks/useIframeContext';
 import useTabsBar from '../hooks/useTabsBar';
 import { useWorkspaceGames } from '../hooks/useWorkspaceGames';
 import useFullscreenButton from '../hooks/useFullscreenButton';
@@ -40,8 +41,6 @@ const CodeEditorPage = () => {
   const { isWVFullscreen, fullScreenOpenHandler, closeFullscreenGameHandler } =
     useFullscreenButton(gameLocalURL);
 
-  // save the latest url to refresh!
-  const refreshPreview = useIframeContext(gameLocalURL);
   // init editor and return sth sidebar used
   const { currentFile, getCurrentCode } = useMonocaEditor(
     navbarTabId,
@@ -52,6 +51,9 @@ const CodeEditorPage = () => {
     currentFile,
     getCurrentCode
   );
+
+  // save the latest game and refresh!
+  const refreshPreview = useIframeContext(gameLocalURL, saveMainJS);
 
   const {
     isOpen: isNewOpen,
@@ -134,7 +136,6 @@ const CodeEditorPage = () => {
         {isWVFullscreen && (
           <IconToolButton icon="delete" onClick={closeFullscreenGameHandler} />
         )}
-        {/* TODO: ... */}
         <IconToolButton icon="play" onClick={refreshPreview} />
         <IconToolButton icon="floppy-disk" onClick={saveMainJS} />
         {/* ... */}

@@ -73,6 +73,9 @@ export const codeEditorOptions = {
   // contextmenu: false,
 };
 
+/**
+ * for new game dialog game template selection
+ */
 export const GAMETYPES = [
   {
     type: 'basic',

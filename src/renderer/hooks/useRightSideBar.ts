@@ -40,16 +40,16 @@ export const useRightSideBar = (
     toasterRef.current.show(toast);
   };
 
-  const saveMainJS = () => {
-    const filePath = `${spacePath}/${selectedGame}/${fileName}.js`;
-    const fileCode = getSourceCode();
-    ipcRenderer.invoke(IpcEvents.SAVE_GAME_FILE, filePath, fileCode);
-
+  const saveMainJS = async () => {
     addToast({
       icon: 'tick-circle',
       intent: Intent.SUCCESS,
       message: `${fileName}.js saved successfully!`,
     });
+
+    const filePath = `${spacePath}/${selectedGame}/${fileName}.js`;
+    const fileCode = getSourceCode();
+    await ipcRenderer.invoke(IpcEvents.SAVE_GAME_FILE, filePath, fileCode);
   };
 
   return {
