@@ -94,3 +94,8 @@ export const deleteDirectory = (path: string) => {
   fs.rmSync(path, { recursive: true });
   return true;
 };
+
+export const writeFile = (path: string, content: string) => {
+  fs.writeFileSync(path, content);
+  return true;
+};

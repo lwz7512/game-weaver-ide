@@ -7,8 +7,12 @@ type ToolButtonProps = {
 };
 
 export const IconToolButton = ({ icon, onClick }: ToolButtonProps) => (
-  <div className="btn-box py-3 px-2">
-    <button type="button" className="focus:outline-none" onClick={onClick}>
+  <div className="btn-box mb-1">
+    <button
+      type="button"
+      className="focus:outline-none px-3 py-2 hover:bg-green-500"
+      onClick={onClick}
+    >
       <Icon icon={icon} size={24} color="white" />
     </button>
   </div>

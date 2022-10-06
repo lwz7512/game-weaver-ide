@@ -10,6 +10,7 @@ import {
   downloadFileList,
   checkDirectoryExistence,
   deleteDirectory,
+  writeFile,
 } from './readFile';
 
 export const setupIpcMainHandler = () => {
@@ -54,9 +55,16 @@ export const setupIpcMainHandler = () => {
     return downloadFileList(fileObjs);
   });
 
-  ipcMain.handle(IpcEvents.DELETE_GAME_FOLDER, (_, path) => {
+  ipcMain.handle(IpcEvents.DELETE_GAME_FOLDER, (_, path: string) => {
     return deleteDirectory(path);
   });
+
+  ipcMain.handle(
+    IpcEvents.SAVE_GAME_FILE,
+    (_, path: string, content: string) => {
+      return writeFile(path, content);
+    }
+  );
 
   ipcMain.on(IpcEvents.OPEN_GAME_VIEW, (e, args: unknown[]) => {
     const url = args[0] as string;

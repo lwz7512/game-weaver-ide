@@ -39,6 +39,10 @@ const webviewContext: IFrameContext = {
 
 export const useIframeContext = (url: string) => {
   webviewContext.url = url;
+
+  return () => {
+    webviewContext.handler(webviewContext.url);
+  };
 };
 
 /**
@@ -94,13 +98,14 @@ const useMonocaEditor = (navbarTabId: TabId, mainJSCode: string) => {
       editorRef.current.onDidChangeModelContent(onCodeChange);
       editorRef.current.focus();
       console.log('### editor created!');
+      const editor = editorRef.current as EditorType;
+      const state = editor.saveViewState();
+      saveEditorState('main', model, state);
     };
 
-    const resetModelAndState = (
-      lastFile: string,
-      currentFile: string,
-      editor: EditorType
-    ) => {
+    const resetModelAndState = (lastFile: string, editor: EditorType) => {
+      const currentFile = navbarTabId as string;
+
       if (!lastFile || lastFile === currentFile) return;
 
       const lastModel = editor.getModel();
@@ -124,9 +129,8 @@ const useMonocaEditor = (navbarTabId: TabId, mainJSCode: string) => {
 
       // lastFile could be `null` while resizing editor on main tab ...
       const lastFile = lastFileRef.current as string;
-      const currentFile = navbarTabId as string;
       const editor = editorRef.current as EditorType;
-      resetModelAndState(lastFile, currentFile, editor);
+      resetModelAndState(lastFile, editor);
 
       // resize editor according to editorContainer change
       const editorBox = entries[0];
@@ -157,8 +161,12 @@ const useMonocaEditor = (navbarTabId: TabId, mainJSCode: string) => {
     templetCode.main = mainJSCode;
     // editor not ready ...
     if (!editorRef.current) return;
+
     // editor and model is ready!
-    editorRef.current.setValue(mainJSCode);
+    const mainModel = getEditorState('main').model;
+    if (mainModel) {
+      mainModel.setValue(mainJSCode);
+    }
   }, [mainJSCode]);
 
   // *** build phaser source lib ***
@@ -207,8 +215,14 @@ const useMonocaEditor = (navbarTabId: TabId, mainJSCode: string) => {
     };
   }, []);
 
+  const getCurrentCode = () => {
+    const currentModel = getEditorState(navbarTabId as string).model;
+    return currentModel ? currentModel.getValue() : '';
+  };
+
   return {
-    defaultCode: '//',
+    currentFile: navbarTabId as string,
+    getCurrentCode,
   };
 };
 

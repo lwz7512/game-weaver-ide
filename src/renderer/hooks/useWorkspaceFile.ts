@@ -1,7 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { IpcEvents } from '../../ipc-events';
 import appMeta from '../assets/app.json';
-import { ConfigType, ExampleSource } from '../config/types';
+import {
+  MAIN_JS_CODE_DEFAULT as MC,
+  ConfigType,
+  ExampleSource,
+} from '../config';
 import {
   safeActionWithWorkspace,
   clearWorkspaceInexisted,
@@ -33,7 +37,7 @@ export const getTemplateSourceObjects = (
  * @returns main.js source code
  */
 export const useWorkspaceMainJS = (gameFolder: string | undefined) => {
-  const [mainJSCode, setMainJSCode] = useState('//loading games...');
+  const [mainJSCode, setMainJSCode] = useState(MC);
 
   useEffect(() => {
     if (!gameFolder) return setMainJSCode(''); // no game folder specified

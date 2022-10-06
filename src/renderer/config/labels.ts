@@ -7,3 +7,4 @@ export const WORKSPACE_ASSIGNED =
   'Workspace allocated! Now you can navigate to `Code` module! ';
 export const WORKSPACE_GONE_WARNING =
   'Workspace directory has gone unexpected! please have it reassigned!';
+export const MAIN_JS_CODE_DEFAULT = '//click one game to load source...';

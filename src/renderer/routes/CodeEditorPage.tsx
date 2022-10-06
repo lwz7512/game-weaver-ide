@@ -1,4 +1,4 @@
-import { Tab, Tabs } from '@blueprintjs/core';
+import { Tab, Tabs, Toaster } from '@blueprintjs/core';
 
 import { MODULETYPES } from '../config';
 import LeftSideBar from '../components/LeftSideBar';
@@ -11,9 +11,11 @@ import useLeftSideBar from '../hooks/useLeftSideBar';
 import useMonocaEditor, { useIframeContext } from '../hooks/useMonocaEditor';
 import useTabsBar from '../hooks/useTabsBar';
 import { useWorkspaceGames } from '../hooks/useWorkspaceGames';
+import useFullscreenButton from '../hooks/useFullscreenButton';
 import { useNewGameDialog } from '../hooks/useNewGameDialog';
 import { useDeleteGameDialog } from '../hooks/useDeleteGameDialog';
 import useWindowEvents from '../hooks/useWindowEvents';
+import { useRightSideBar } from '../hooks/useRightSideBar';
 
 /**
  * code editor page
@@ -29,18 +31,27 @@ const CodeEditorPage = () => {
     mainJSCode,
     selectedGame,
     gameLocalURL,
-    isWVFullscreen,
-    closeFullscreenGameHandler,
-    fullScreenOpenHandler,
     gameSelectedHandler,
     openWorkspaceFolder,
     refreshGamesInSpace,
     restoreToNoGame,
   } = useWorkspaceGames();
 
+  const { isWVFullscreen, fullScreenOpenHandler, closeFullscreenGameHandler } =
+    useFullscreenButton(gameLocalURL);
+
   // save the latest url to refresh!
-  useIframeContext(gameLocalURL);
-  useMonocaEditor(navbarTabId, mainJSCode);
+  const refreshPreview = useIframeContext(gameLocalURL);
+  // init editor and return sth sidebar used
+  const { currentFile, getCurrentCode } = useMonocaEditor(
+    navbarTabId,
+    mainJSCode
+  );
+  const { toastState, toasterCallback, saveMainJS } = useRightSideBar(
+    selectedGame,
+    currentFile,
+    getCurrentCode
+  );
 
   const {
     isOpen: isNewOpen,
@@ -118,11 +129,14 @@ const CodeEditorPage = () => {
         </div>
       </div>
       {/* side buttons bar */}
-      <div className="right-toolbar w-14 bg-gray-700 text-white px-2">
+      <div className="right-toolbar w-14 bg-gray-700 text-white p-1">
         {/* delet or close view */}
         {isWVFullscreen && (
           <IconToolButton icon="delete" onClick={closeFullscreenGameHandler} />
         )}
+        {/* TODO: ... */}
+        <IconToolButton icon="play" onClick={refreshPreview} />
+        <IconToolButton icon="floppy-disk" onClick={saveMainJS} />
         {/* ... */}
       </div>
       {/* lazy initialize dialog until open */}
@@ -145,6 +159,8 @@ const CodeEditorPage = () => {
           handleDeleteGame={handleDeleteConfirm}
         />
       )}
+      {/* toaster */}
+      <Toaster {...toastState} ref={toasterCallback} />
     </div>
   );
 };

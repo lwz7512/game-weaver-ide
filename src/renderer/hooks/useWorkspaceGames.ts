@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { IpcEvents } from '../../ipc-events';
 import { gamePreviewDefaultURL as homepage, ConfigType } from '../config';
 import { safeActionWithWorkspace } from '../state/storage';
-import useFullscreenButton from './useFullscreenButton';
 import { useWorkspaceMainJS, useGMSpaceFolders } from './useWorkspaceFile';
 
 /**
@@ -18,8 +17,6 @@ export const useWorkspaceGames = () => {
 
   const { gameFolders, refreshGamesInSpace } = useGMSpaceFolders();
   const { mainJSCode } = useWorkspaceMainJS(selectedGame);
-  const { isWVFullscreen, fullScreenOpenHandler, closeFullscreenGameHandler } =
-    useFullscreenButton(gameLocalURL);
 
   const gameSelectedHandler = (game: string) => {
     setselectedGame(game);
@@ -52,9 +49,6 @@ export const useWorkspaceGames = () => {
     mainJSCode,
     selectedGame,
     gameLocalURL,
-    isWVFullscreen,
-    fullScreenOpenHandler,
-    closeFullscreenGameHandler,
     gameSelectedHandler,
     openWorkspaceFolder,
     refreshGamesInSpace,
