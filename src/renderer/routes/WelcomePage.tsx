@@ -41,6 +41,12 @@ const WelcomePage = () => {
         <div className="four-section-grid grid grid-cols-3 grid-rows-2">
           <div className="section">
             <h2 className="text-lg font-semibold">New...</h2>
+            <ul className="py-4 px-8 text-gray-200 text-sm leading-6">
+              <li className="home-card-item">New Game (save to local)...</li>
+              <li className="home-card-item">New Code Example ...</li>
+              <li className="home-card-item">New Tutorial ...</li>
+              <li className="home-card-item">New Project ...</li>
+            </ul>
           </div>
           <div className="section">
             <h2 className="text-lg font-semibold">Recent</h2>

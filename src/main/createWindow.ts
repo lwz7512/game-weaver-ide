@@ -124,3 +124,10 @@ export const closeView = () => {
     win.removeBrowserView(view);
   }
 };
+
+export const toggleDevTools = () => {
+  const win = browserWindows[0];
+  if (win) {
+    win.webContents.toggleDevTools();
+  }
+};

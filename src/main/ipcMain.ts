@@ -1,6 +1,11 @@
 // ==================  MESSAGE HANDLING  ==========================
 import { ipcMain, dialog, shell } from 'electron';
-import { browserWindows, createView, closeView } from './createWindow';
+import {
+  browserWindows,
+  createView,
+  closeView,
+  toggleDevTools,
+} from './createWindow';
 import { showOpenDialog, showSaveDialog } from './dialogs';
 import { IpcEvents } from '../ipc-events';
 import { createServer } from './createServer';
@@ -65,6 +70,10 @@ export const setupIpcMainHandler = () => {
       return writeFile(path, content);
     }
   );
+
+  ipcMain.handle(IpcEvents.TOGGLE_DEV_TOOLS, () => {
+    return toggleDevTools();
+  });
 
   ipcMain.on(IpcEvents.OPEN_GAME_VIEW, (e, args: unknown[]) => {
     const url = args[0] as string;

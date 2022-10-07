@@ -46,11 +46,8 @@ const CodeEditorPage = () => {
     navbarTabId,
     mainJSCode
   );
-  const { toastState, toasterCallback, saveMainJS } = useRightSideBar(
-    selectedGame,
-    currentFile,
-    getCurrentCode
-  );
+  const { toastState, toasterCallback, saveMainJS, toggleDevTools } =
+    useRightSideBar(selectedGame, currentFile, getCurrentCode);
 
   // save the latest game and refresh!
   const refreshPreview = useIframeContext(gameLocalURL, saveMainJS);
@@ -138,6 +135,7 @@ const CodeEditorPage = () => {
         )}
         <IconToolButton icon="play" onClick={refreshPreview} />
         <IconToolButton icon="floppy-disk" onClick={saveMainJS} />
+        <IconToolButton icon="console" onClick={toggleDevTools} />
         {/* ... */}
       </div>
       {/* lazy initialize dialog until open */}

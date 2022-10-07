@@ -52,9 +52,14 @@ export const useRightSideBar = (
     await ipcRenderer.invoke(IpcEvents.SAVE_GAME_FILE, filePath, fileCode);
   };
 
+  const toggleDevTools = () => {
+    ipcRenderer.invoke(IpcEvents.TOGGLE_DEV_TOOLS);
+  };
+
   return {
     toastState,
     toasterCallback,
     saveMainJS,
+    toggleDevTools,
   };
 };
