@@ -160,13 +160,13 @@ const useMonocaEditor = (navbarTabId: TabId, mainJSCode: string) => {
     }
 
     async function fetchAll() {
-      console.log('>>> fetching phaser lib...');
+      // console.log('>>> fetching phaser lib...');
       await fetchPhaserLib(TSLIB.P2);
-      console.log('## p2.d done!');
+      // console.log('## p2.d done!');
       await fetchPhaserLib(TSLIB.PIXI);
-      console.log('## pixi.d done!');
+      // console.log('## pixi.d done!');
       await fetchPhaserLib(TSLIB.PHASER);
-      console.log('## phaser.d done!');
+      // console.log('## phaser.d done!');
     }
     // fetching remote phaser lib..
     fetchAll();

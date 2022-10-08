@@ -81,6 +81,10 @@ a:hover {
   outline: none;
 }
 
+.bp4-tree-node-content {
+  height: 36px;
+}
+
 .flying-bar {
   /* background-color: #337FCE; */
   /* height: 6px; */
@@ -89,4 +93,9 @@ a:hover {
   z-index: 10;
   opacity: 0.8;
   pointer-events: none;
+}
+
+.examples-container {
+  width: 100%;
+  height: calc(100% - 100px);
 }

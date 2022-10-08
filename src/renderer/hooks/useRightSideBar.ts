@@ -41,6 +41,8 @@ export const useRightSideBar = (
   };
 
   const saveMainJS = async () => {
+    if (!selectedGame || !fileName) return; // safety check is a must!
+
     addToast({
       icon: 'tick-circle',
       intent: Intent.SUCCESS,
