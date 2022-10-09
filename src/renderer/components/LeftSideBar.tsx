@@ -42,17 +42,17 @@ const LeftSideBar = ({
         currentModule={currentModule}
         onModuleChanged={changeModuleType}
       />
-      {/* === CODE BLOCK === */}
-      <ModuleToolButton
-        icon="code-block"
-        module={MODULETYPES.BLOCKS}
-        currentModule={currentModule}
-        onModuleChanged={changeModuleType}
-      />
       {/* === TILED MODULE === */}
       <ModuleToolButton
         icon="style"
         module={MODULETYPES.TILED}
+        currentModule={currentModule}
+        onModuleChanged={changeModuleType}
+      />
+      {/* === CODE BLOCK === */}
+      <ModuleToolButton
+        icon="code-block"
+        module={MODULETYPES.BLOCKS}
         currentModule={currentModule}
         onModuleChanged={changeModuleType}
       />

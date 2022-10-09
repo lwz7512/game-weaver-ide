@@ -69,7 +69,7 @@ const CodeBlocksPage = () => {
               />
             );
           })}
-          <div className="w-24 absolute right-0 top-0 p-4 pointer-events-none">
+          <div className="w-24 fixed right-0 top-24 p-4 pointer-events-none">
             <p className="text-sm text-gray-500">......S......</p>
             <p className="text-sm text-gray-500">......C......</p>
             <p className="text-sm text-gray-500">......R......</p>
