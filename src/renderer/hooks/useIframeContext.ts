@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { IFrameContext } from '../config';
 
 /**
@@ -26,4 +27,28 @@ export const useIframeContext = (
     await saveFirst();
     webviewContext.handler(webviewContext.url);
   };
+};
+
+export const useIframeFocus = () => {
+  useEffect(() => {
+    const options = {
+      root: document.querySelector('.examples-container'),
+      rootMargin: '0px',
+      threshold: 0.01,
+    };
+    const callback: IntersectionObserverCallback = (entries, observer) => {
+      setTimeout(() => {
+        const lastEntry = entries[0];
+        const iframe = lastEntry.target as HTMLElement;
+        iframe.focus();
+      }, 2000); // lazy focus is needed for assest download...
+    };
+    const observer = new IntersectionObserver(callback, options);
+    const targets = document.querySelectorAll('iframe');
+    targets.forEach((iframe) => observer.observe(iframe));
+
+    return () => {
+      targets.forEach((iframe) => observer.unobserve(iframe));
+    };
+  }, []);
 };

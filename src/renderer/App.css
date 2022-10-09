@@ -10,7 +10,7 @@
     @apply text-white py-4 px-2 text-center hover:transform-none focus:outline-none;
   }
   .home-card-item {
-    @apply py-1 px-2 border-b border-cyan-500 hover:bg-sky-600 select-none;
+    @apply py-1 px-2 border-b border-gray-500 hover:bg-sky-600 select-none;
   }
 }
 

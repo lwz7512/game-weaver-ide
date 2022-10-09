@@ -5,6 +5,8 @@ import LeftSideBar from '../components/LeftSideBar';
 import { MODULETYPES } from '../config';
 import useLeftSideBar from '../hooks/useLeftSideBar';
 import { useExampleTree, createTreeNodeInfo } from '../hooks/useExampleTree';
+import { useIframeFocus } from '../hooks/useIframeContext';
+
 import examples from '../assets/examples.json';
 
 /**
@@ -27,7 +29,7 @@ const CodeBlocksPage = () => {
     handleNodeExpand,
   } = useExampleTree(exampleTreeNodes);
 
-  console.log(selectedPages);
+  useIframeFocus();
 
   return (
     <div className="w-full h-screen flex">
@@ -54,16 +56,27 @@ const CodeBlocksPage = () => {
         </h1>
         {/* height: calc(100% - 100px); */}
         <div className="overflow-y-scroll examples-container relative">
-          {selectedPages.map((url) => (
-            <iframe key={url} title={url} width="90%" height="1600" src={url} />
-          ))}
-          <div className="w-24 absolute right-0 top-0 px-4 pointer-events-none">
+          {selectedPages.map((url) => {
+            const height = selectedPages.length === 1 ? 2400 : 1600;
+            return (
+              <iframe
+                key={url}
+                title={url}
+                width="90%"
+                height={height}
+                src={url}
+                className="my-1"
+              />
+            );
+          })}
+          <div className="w-24 absolute right-0 top-0 p-4 pointer-events-none">
             <p className="text-sm text-gray-500">......S......</p>
             <p className="text-sm text-gray-500">......C......</p>
             <p className="text-sm text-gray-500">......R......</p>
             <p className="text-sm text-gray-500">......O......</p>
             <p className="text-sm text-gray-500">......L......</p>
             <p className="text-sm text-gray-500">......L......</p>
+            <p className="text-sm text-gray-500">&nbsp;</p>
             <p className="text-sm text-gray-500">......A......</p>
             <p className="text-sm text-gray-500">......R......</p>
             <p className="text-sm text-gray-500">......E......</p>
