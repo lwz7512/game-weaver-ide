@@ -3,3 +3,8 @@
 .bg-sliver {
   background-color: var(--gw-logo-silver);
 }
+
+.p-5px {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}

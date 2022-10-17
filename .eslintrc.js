@@ -20,6 +20,9 @@ module.exports = {
     'import/prefer-default-export': 'off',
     'no-console': 'off',
     'consistent-return': 'off',
+    'class-methods-use-this': 'off',
+    '@typescript-eslint/lines-between-class-members': 'off',
+    '@typescript-eslint/no-unused-expressions': 'off',
   },
   parserOptions: {
     ecmaVersion: 2020,
