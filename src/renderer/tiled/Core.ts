@@ -2,9 +2,11 @@
  * Created at 2022/10/10
  */
 import * as PIXI from 'pixi.js';
-import { EventSystem } from '@pixi/events';
+import { EventSystem, FederatedPointerEvent } from '@pixi/events';
 import { Graphics, Rectangle } from 'pixi.js';
 import { BaseEditor } from './Base';
+
+type EventHandler = (event: Event) => void;
 
 export class TiledCore extends BaseEditor {
   rootElement: HTMLElement;
@@ -31,7 +33,14 @@ export class TiledCore extends BaseEditor {
   pickerInteractLayer: PIXI.Graphics | null = null;
 
   mapScale = 0.6;
+  mapMarginX = 100;
+  mapMarginY = 50;
 
+  stagePressed = false;
+
+  onPointerDownStage: EventHandler = () => null;
+  onPointerUpStage: EventHandler = () => null;
+  onPointerMoveOnMap: EventHandler = () => null;
   // and more members...
 
   constructor(parentElement: HTMLElement, width: number, height: number) {
@@ -39,8 +48,6 @@ export class TiledCore extends BaseEditor {
     this.rootElement = parentElement;
     this.appWidth = width;
     this.appHeight = height;
-
-    // fancy blue: 0x1099bb
 
     const config = {
       width: this.appWidth,
@@ -54,20 +61,11 @@ export class TiledCore extends BaseEditor {
     const { renderer } = this.app;
     // Install the EventSystem
     renderer.addSystem(EventSystem, 'events');
-
-    this.app.stage.interactive = true;
-    // this.app.stage.hitArea = renderer.screen;
-    // this.app.stage.addEventListener('click', () =>
-    //   console.log('stage clicked!')
-    // );
-
     // Render stage so that it becomes the root target for UI events
     renderer.render(this.app.stage);
 
     this.init(this.app);
-
-    // const bounds = this.app.stage.getBounds();
-    // console.log(bounds);
+    this.listen(this.app);
   }
 
   /**
@@ -97,9 +95,6 @@ export class TiledCore extends BaseEditor {
     this.mapInterectLayer = new PIXI.Graphics();
     this.mapInterectLayer.interactive = true;
     this.mapContainer.addChild(this.mapInterectLayer);
-    this.mapInterectLayer.addEventListener('click', () =>
-      console.log('>>> click on interect layer!')
-    );
 
     this.mapInterectLayer.lineStyle(1, 0xf0f0f0, 2);
     this.mapInterectLayer.beginFill(0x0000ff, 0.001);
@@ -107,9 +102,43 @@ export class TiledCore extends BaseEditor {
     this.mapInterectLayer.endFill();
   }
 
-  resize() {
-    if (this.app) {
-      this.app.resizeTo = this.rootElement;
+  listen(app: PIXI.Application) {
+    this.onPointerDownStage = (event: Event) => {
+      // const fdEvent = event as FederatedPointerEvent;
+      this.stagePressed = true;
+    };
+
+    this.onPointerUpStage = (event: Event) => {
+      this.stagePressed = false;
+    };
+
+    this.onPointerMoveOnMap = (event: Event) => {
+      if (!this.stagePressed) return;
+
+      const fdEvent = event as FederatedPointerEvent;
+      // const currentX = fdEvent.globalX;
+      const diffX = fdEvent.movementX * 0.6;
+      const diffY = fdEvent.movementY * 0.6;
+
+      this.mapMarginX += diffX;
+      this.mapMarginY += diffY;
+      // refresh grid
+      this.drawMapGrid();
+    };
+
+    app.stage.interactive = true;
+    // this.app.stage.hitArea = renderer.screen;
+    app.stage.addEventListener('pointerdown', this.onPointerDownStage);
+    app.stage.addEventListener('pointerup', this.onPointerUpStage);
+
+    if (this.mapInterectLayer) {
+      this.mapInterectLayer.addEventListener(
+        'pointermove',
+        this.onPointerMoveOnMap
+      );
+      this.mapInterectLayer.addEventListener('click', () =>
+        console.log('>>> click on interect layer!')
+      );
     }
   }
 
@@ -139,14 +168,17 @@ export class TiledCore extends BaseEditor {
     this.drawMapGrid();
   }
 
+  /**
+   * Redraw tile grid
+   */
   drawMapGrid() {
     // console.log('>>> draw grid ...');
     // const stageRect = this.screenRect as Rectangle;
     const robot = this.mapDrawLayer as Graphics;
     robot.clear(); // cleanup before each draw
 
-    const x0 = 100;
-    const y0 = 50;
+    const x0 = this.mapMarginX;
+    const y0 = this.mapMarginY;
     const gridWidth = this.gameHoriTiles * this.tileWidth * this.mapScale;
     const gridHeight = this.gameVertTiles * this.tileHeight * this.mapScale;
     // frame
@@ -189,6 +221,19 @@ export class TiledCore extends BaseEditor {
 
   destroy() {
     if (this.app) {
+      this.app.stage.removeEventListener(
+        'pointerdown',
+        this.onPointerDownStage
+      );
+      this.app.stage.removeEventListener('pointerup', this.onPointerUpStage);
+
+      if (this.mapInterectLayer) {
+        this.mapInterectLayer.removeEventListener(
+          'pointermove',
+          this.onPointerMoveOnMap
+        );
+      }
+
       this.rootElement.removeChild(this.app.view);
     }
     this.app = null;

@@ -34,7 +34,7 @@ const TiledEditorPage = () => {
         <h1 className="select-none text-base text-center p-4 bg-slate-600 text-white block mb-0 lg:mb-2">
           Assets Explorer
         </h1>
-        <div className="map-attributes-group px-0 lg:px-2 py-1 lg:py-2">
+        <div className="map-attributes-group px-0 lg:px-2 py-1 lg:py-2 ">
           <InputField
             title="Map Height"
             name="mapHeight"
@@ -50,7 +50,7 @@ const TiledEditorPage = () => {
             onValueChange={(event) => setMapWidth(event.target.value)}
           />
         </div>
-        <div className="map-attributes-group px-0 lg:px-2 py-2">
+        <div className="map-attributes-group px-0 lg:px-2 py-1 lg:py-2 ">
           <InputField
             title="Tile Height"
             name="tileHeight"
