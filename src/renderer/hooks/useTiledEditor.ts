@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 
 import { TiledCore } from '../tiled/Core';
+import { setDrawingSession, getDrawingSession } from '../state/session';
 
 /**
  * Core tiled editor interaction with page UI
@@ -34,10 +35,19 @@ export const useTiledEditor = (
       const editor = new TiledCore(root, width, height);
       editorRef.current = editor; // save the app instance
 
-      const tiledApp = editorRef.current;
-      tiledApp.setGameDimension(mapWidth, mapHeight, tileWidth, tileHeight);
-      tiledApp.drawMapGrid();
-
+      const session = getDrawingSession();
+      editor.resetSession(session);
+      editor.create();
+      // now start draw
+      editor.setGameDimension(mapWidth, mapHeight, tileWidth, tileHeight);
+      editor.drawMapGrid();
+      // listen editor change
+      editor.addEventListener('session', (event: Event) => {
+        const customEvt = event as CustomEvent;
+        // save the session
+        const newSession = { ...session, ...customEvt.detail };
+        setDrawingSession(newSession);
+      });
       // console.log('>>> recreate editor...');
     };
 

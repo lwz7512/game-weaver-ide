@@ -3,6 +3,9 @@
 @tailwind utilities;
 
 @layer components {
+  .verti-align-center {
+    @apply flex flex-col items-center;
+  }
   .panel {
     @apply p-4 shadow-md border rounded-md m-2 bg-slate-50;
   }

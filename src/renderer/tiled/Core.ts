@@ -5,6 +5,7 @@ import * as PIXI from 'pixi.js';
 import { EventSystem, FederatedPointerEvent } from '@pixi/events';
 import { Graphics, Rectangle } from 'pixi.js';
 import { BaseEditor } from './Base';
+import { DrawingSession } from '../config';
 
 type EventHandler = (event: Event) => void;
 
@@ -34,7 +35,7 @@ export class TiledCore extends BaseEditor {
 
   mapScale = 0.6;
   mapMarginX = 100;
-  mapMarginY = 50;
+  mapMarginY = 100;
 
   stagePressed = false;
 
@@ -63,9 +64,27 @@ export class TiledCore extends BaseEditor {
     renderer.addSystem(EventSystem, 'events');
     // Render stage so that it becomes the root target for UI events
     renderer.render(this.app.stage);
+  }
 
-    this.init(this.app);
-    this.listen(this.app);
+  /**
+   * reset the game parameter befor `run`
+   */
+  resetSession(detail: DrawingSession) {
+    if (detail.mapMarginX) {
+      this.mapMarginX = detail.mapMarginX as number;
+    }
+    if (detail.mapMarginY) {
+      this.mapMarginY = detail.mapMarginY as number;
+    }
+  }
+
+  /**
+   * Run the main functions for the tile tool
+   */
+  create() {
+    const safeApp = this.app as PIXI.Application;
+    this.init(safeApp);
+    this.listen(safeApp);
   }
 
   /**
@@ -124,6 +143,12 @@ export class TiledCore extends BaseEditor {
       this.mapMarginY += diffY;
       // refresh grid
       this.drawMapGrid();
+
+      const detail = {
+        mapMarginX: this.mapMarginX,
+        mapMarginY: this.mapMarginY,
+      };
+      this.dispatchEvent(new CustomEvent('session', { detail }));
     };
 
     app.stage.interactive = true;

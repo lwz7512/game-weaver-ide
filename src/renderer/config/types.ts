@@ -19,3 +19,11 @@ export type IFrameContext = {
   timerId: NodeJS.Timeout | undefined;
   handler: (...args: unknown[]) => void;
 };
+
+export type DrawingSession = {
+  [key: string]: number | string;
+};
+
+export type GeneralObject = {
+  [key: string]: number | string;
+};
