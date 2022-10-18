@@ -45,7 +45,7 @@ export class TiledCore extends BaseEditor {
     const config = {
       width: this.appWidth,
       height: this.appHeight,
-      backgroundColor: 0xbfbfbf, // gray
+      backgroundColor: 0xd4d4d8, // gray
       resolution: 1,
     };
     this.app = new PIXI.Application(config);
@@ -101,10 +101,16 @@ export class TiledCore extends BaseEditor {
       console.log('>>> click on interect layer!')
     );
 
-    this.mapInterectLayer.lineStyle(1, 0xeeeeee, 2);
-    this.mapInterectLayer.beginFill(0x0000ff, 0.01);
+    this.mapInterectLayer.lineStyle(1, 0xf0f0f0, 2);
+    this.mapInterectLayer.beginFill(0x0000ff, 0.001);
     this.mapInterectLayer.drawRect(0, 0, mapAreaW, mapAreaH);
     this.mapInterectLayer.endFill();
+  }
+
+  resize() {
+    if (this.app) {
+      this.app.resizeTo = this.rootElement;
+    }
   }
 
   setGameDimension(
@@ -117,19 +123,27 @@ export class TiledCore extends BaseEditor {
     this.gameVertTiles = mapHeight;
     this.tileWidth = tileWidth;
     this.tileHeight = tileHeight;
-    console.log('>>> to start draw tile gird with params:');
-    console.log([
-      this.gameHoriTiles,
-      this.gameVertTiles,
-      this.tileWidth,
-      this.tileHeight,
-    ]);
+  }
+
+  zoomIn() {
+    if (this.mapScale > 2) return;
+
+    this.mapScale += 0.1;
+    this.drawMapGrid();
+  }
+
+  zoomOut() {
+    if (this.mapScale < 0.3) return;
+
+    this.mapScale -= 0.1;
+    this.drawMapGrid();
   }
 
   drawMapGrid() {
-    console.log('>>> draw grid ...');
+    // console.log('>>> draw grid ...');
     // const stageRect = this.screenRect as Rectangle;
     const robot = this.mapDrawLayer as Graphics;
+    robot.clear(); // cleanup before each draw
 
     const x0 = 100;
     const y0 = 50;
@@ -144,7 +158,7 @@ export class TiledCore extends BaseEditor {
     const leftBottomY = y0 + gridHeight;
     const rightBottomX = x0 + gridWidth;
     const rightBottomY = y0 + gridHeight;
-    robot.lineStyle(1, 0x666666, 1);
+    robot.lineStyle(1, 0x333333, 1);
     robot.moveTo(leftTopX, leftTopY);
     robot.lineTo(rightTopX, rightTopY);
     robot.lineTo(rightBottomX, rightBottomY);
@@ -152,7 +166,7 @@ export class TiledCore extends BaseEditor {
     robot.lineTo(leftTopX, leftTopY);
 
     // change dash line
-    robot.lineStyle(1, 0x999999, 1);
+    robot.lineStyle(1, 0x888888, 1);
     // horizontal dash lines
     for (let i = 1; i < this.gameVertTiles; i += 1) {
       const y1 = y0 + i * this.tileHeight * this.mapScale;

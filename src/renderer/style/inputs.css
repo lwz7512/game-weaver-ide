@@ -48,3 +48,7 @@ button.selected, button.selected:hover, .game-folder.selected {
 .bp4-form-group.bp4-intent-primary.has-warning .bp4-form-helper-text {
   color: red;
 }
+
+.input-field {
+  min-width: 160px;
+}

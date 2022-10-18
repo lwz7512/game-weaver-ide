@@ -14,7 +14,7 @@ const TiledEditorPage = () => {
   const [tileWidth, setTileWidth] = useState('32');
 
   return (
-    <div className="w-full h-screen flex">
+    <div className="tile-editor w-full h-screen flex">
       <div className="left-sidepanel flex">
         <LeftSideBar
           activeModule={MODULETYPES.TILED}
@@ -29,12 +29,12 @@ const TiledEditorPage = () => {
           tileWidth={+tileWidth}
         />
       </div>
-      <div className="object-explorer bg-gray-200 w-60 ">
+      <div className="object-explorer bg-gray-200 w-60">
         {/* <TiledPanelResizeBar targeSelector=".object-explorer" /> */}
-        <h1 className="select-none text-base text-center p-4 bg-slate-600 text-white block mb-2">
+        <h1 className="select-none text-base text-center p-4 bg-slate-600 text-white block mb-0 lg:mb-2">
           Assets Explorer
         </h1>
-        <div className="map-attributes-group px-2 py-2">
+        <div className="map-attributes-group px-0 lg:px-2 py-1 lg:py-2">
           <InputField
             title="Map Height"
             name="mapHeight"
@@ -50,7 +50,7 @@ const TiledEditorPage = () => {
             onValueChange={(event) => setMapWidth(event.target.value)}
           />
         </div>
-        <div className="map-attributes-group px-2 py-2">
+        <div className="map-attributes-group px-0 lg:px-2 py-2">
           <InputField
             title="Tile Height"
             name="tileHeight"

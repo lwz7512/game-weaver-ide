@@ -18,7 +18,7 @@ export const InputField = ({
   return (
     <label
       htmlFor={title}
-      className="inline-block py-1 px-4 relative mb-0 ml-4"
+      className="input-field inline-block py-1 px-2 lg:px-4 relative mb-0 ml-0 lg:ml-4"
     >
       <span className="w-24 inline-block bg-slate-600 text-white leading-5 p-5px pl-2 text-sm">
         {title}:

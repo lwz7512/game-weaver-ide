@@ -3,17 +3,27 @@ import { Icon, IconName } from '@blueprintjs/core';
 
 type ToolButtonProps = {
   icon: IconName;
+  mini?: boolean;
+  iconSize?: number;
   onClick: () => void;
 };
 
-export const IconToolButton = ({ icon, onClick }: ToolButtonProps) => (
+export const IconToolButton = ({
+  icon,
+  onClick,
+  mini = false,
+  iconSize = 24,
+}: ToolButtonProps) => (
   <div className="btn-box mb-1">
     <button
       type="button"
-      className="focus:outline-none px-3 py-2 hover:bg-green-500"
+      className={clsx(
+        'focus:outline-none hover:bg-green-500',
+        mini ? 'w-6 h-6 rounded-xl hover:bg-slate-800' : 'px-3 py-2'
+      )}
       onClick={onClick}
     >
-      <Icon icon={icon} size={24} color="white" />
+      <Icon icon={icon} size={iconSize} color="white" />
     </button>
   </div>
 );
