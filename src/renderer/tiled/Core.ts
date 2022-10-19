@@ -42,6 +42,9 @@ export class TiledCore extends BaseEditor {
   onPointerDownStage: EventHandler = () => null;
   onPointerUpStage: EventHandler = () => null;
   onPointerMoveOnMap: EventHandler = () => null;
+  onWheelMoveOnMap: EventHandler = () => null;
+
+  // pinch: Pinch | null = null;
   // and more members...
 
   constructor(parentElement: HTMLElement, width: number, height: number) {
@@ -81,7 +84,9 @@ export class TiledCore extends BaseEditor {
   /**
    * Run the main functions for the tile tool
    */
-  create() {
+  create(session?: DrawingSession) {
+    if (session) this.resetSession(session);
+
     const safeApp = this.app as PIXI.Application;
     this.init(safeApp);
     this.listen(safeApp);
@@ -123,7 +128,6 @@ export class TiledCore extends BaseEditor {
 
   listen(app: PIXI.Application) {
     this.onPointerDownStage = (event: Event) => {
-      // const fdEvent = event as FederatedPointerEvent;
       this.stagePressed = true;
     };
 
@@ -151,20 +155,44 @@ export class TiledCore extends BaseEditor {
       this.dispatchEvent(new CustomEvent('session', { detail }));
     };
 
-    app.stage.interactive = true;
-    // this.app.stage.hitArea = renderer.screen;
-    app.stage.addEventListener('pointerdown', this.onPointerDownStage);
-    app.stage.addEventListener('pointerup', this.onPointerUpStage);
+    this.onWheelMoveOnMap = (event: Event) => {
+      const wheelEvt = event as WheelEvent;
+      const scaleDiff = wheelEvt.deltaY * -0.01;
+      this.mapScale += scaleDiff;
+      // Restrict scale
+      this.mapScale = Math.min(Math.max(0.2, this.mapScale), 2);
+      // move to center
+      const diffWidth = this.gameHoriTiles * this.tileWidth * scaleDiff * 0.5;
+      const diffHeight = this.gameVertTiles * this.tileHeight * scaleDiff * 0.5;
+      this.mapMarginX -= diffWidth;
+      this.mapMarginY -= diffHeight;
+      // limit position
+      const fullWidth = this.gameHoriTiles * this.tileWidth;
+      const fullHeight = this.gameVertTiles * this.tileHeight;
+      this.mapMarginX = Math.min(
+        Math.max(-fullWidth * 0.5, this.mapMarginX),
+        fullWidth * 0.5
+      );
+      this.mapMarginY = Math.min(
+        Math.max(-fullHeight * 0.5, this.mapMarginY),
+        fullHeight * 0.5
+      );
+
+      this.drawMapGrid();
+    };
 
     if (this.mapInterectLayer) {
       this.mapInterectLayer.addEventListener(
         'pointermove',
         this.onPointerMoveOnMap
       );
-      this.mapInterectLayer.addEventListener('click', () =>
-        console.log('>>> click on interect layer!')
-      );
+      this.mapInterectLayer.addEventListener('wheel', this.onWheelMoveOnMap);
     }
+
+    app.stage.interactive = true;
+    // this.app.stage.hitArea = renderer.screen;
+    app.stage.addEventListener('pointerdown', this.onPointerDownStage);
+    app.stage.addEventListener('pointerup', this.onPointerUpStage);
   }
 
   setGameDimension(
@@ -257,10 +285,14 @@ export class TiledCore extends BaseEditor {
           'pointermove',
           this.onPointerMoveOnMap
         );
+        this.mapInterectLayer.removeEventListener(
+          'wheel',
+          this.onWheelMoveOnMap
+        );
       }
 
       this.rootElement.removeChild(this.app.view);
+      this.app = null;
     }
-    this.app = null;
-  }
+  } // end of destroy()
 }

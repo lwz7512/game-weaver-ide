@@ -36,8 +36,7 @@ export const useTiledEditor = (
       editorRef.current = editor; // save the app instance
 
       const session = getDrawingSession();
-      editor.resetSession(session);
-      editor.create();
+      editor.create(session);
       // now start draw
       editor.setGameDimension(mapWidth, mapHeight, tileWidth, tileHeight);
       editor.drawMapGrid();
@@ -51,6 +50,8 @@ export const useTiledEditor = (
       // console.log('>>> recreate editor...');
     };
 
+    console.log('>>> rerendered editor?');
+
     const observer = new ResizeObserver(relayoutEditor);
     observer.observe(root);
 
@@ -58,6 +59,7 @@ export const useTiledEditor = (
       (editorRef.current as TiledCore).destroy();
       editorRef.current = null; // clear the instance
       observer.unobserve(root);
+      console.log('>>>> tiled editer destroy ...');
     };
   }, [mapWidth, mapHeight, tileWidth, tileHeight]);
 
