@@ -167,8 +167,7 @@ export class TiledCore extends BaseEditor {
       this.mapMarginX -= diffWidth;
       this.mapMarginY -= diffHeight;
       // limit position
-      const fullWidth = this.gameHoriTiles * this.tileWidth;
-      const fullHeight = this.gameVertTiles * this.tileHeight;
+      const { fullWidth, fullHeight } = this.getGridFullSize();
       this.mapMarginX = Math.min(
         Math.max(-fullWidth * 0.5, this.mapMarginX),
         fullWidth * 0.5
@@ -207,9 +206,18 @@ export class TiledCore extends BaseEditor {
     this.tileHeight = tileHeight;
   }
 
+  getGridFullSize() {
+    const fullWidth = this.gameHoriTiles * this.tileWidth;
+    const fullHeight = this.gameVertTiles * this.tileHeight;
+    return { fullWidth, fullHeight };
+  }
+
   zoomIn() {
     if (this.mapScale > 2) return;
 
+    const { fullWidth, fullHeight } = this.getGridFullSize();
+    this.mapMarginX -= fullWidth * 0.05;
+    this.mapMarginY -= fullHeight * 0.05;
     this.mapScale += 0.1;
     this.drawMapGrid();
   }
@@ -217,6 +225,9 @@ export class TiledCore extends BaseEditor {
   zoomOut() {
     if (this.mapScale < 0.3) return;
 
+    const { fullWidth, fullHeight } = this.getGridFullSize();
+    this.mapMarginX += fullWidth * 0.05;
+    this.mapMarginY += fullHeight * 0.05;
     this.mapScale -= 0.1;
     this.drawMapGrid();
   }

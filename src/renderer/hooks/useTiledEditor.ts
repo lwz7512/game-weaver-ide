@@ -50,8 +50,6 @@ export const useTiledEditor = (
       // console.log('>>> recreate editor...');
     };
 
-    console.log('>>> rerendered editor?');
-
     const observer = new ResizeObserver(relayoutEditor);
     observer.observe(root);
 

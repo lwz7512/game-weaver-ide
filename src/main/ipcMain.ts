@@ -6,12 +6,13 @@ import {
   closeView,
   toggleDevTools,
 } from './createWindow';
-import { showOpenDialog, showSaveDialog } from './dialogs';
+import { showOpenDialog, showSaveDialog, showOpenImageDialog } from './dialogs';
 import { IpcEvents } from '../ipc-events';
 import { createServer } from './createServer';
 import {
   readFile,
   readDirectoriesInSpace,
+  readImageToBlob,
   downloadFileList,
   checkDirectoryExistence,
   deleteDirectory,
@@ -25,7 +26,7 @@ export const setupIpcMainHandler = () => {
     event.reply('ipc-example', msgTemplate('pong'));
   });
 
-  ipcMain.on('showDialog', (e, message) => {
+  ipcMain.on('showNativeMessage', (e, message) => {
     const mainWindow = browserWindows[0];
     if (mainWindow) {
       dialog.showMessageBox(mainWindow, { message: 'Gotit!' });
@@ -62,6 +63,14 @@ export const setupIpcMainHandler = () => {
 
   ipcMain.handle(IpcEvents.DELETE_GAME_FOLDER, (_, path: string) => {
     return deleteDirectory(path);
+  });
+
+  ipcMain.handle(IpcEvents.OPEN_FILE_FROM_DIALOG, (_, title: string) => {
+    return showOpenImageDialog(title);
+  });
+
+  ipcMain.handle(IpcEvents.READ_IMAGE_FILE, (_, imageFilePath: string) => {
+    return readImageToBlob(imageFilePath);
   });
 
   ipcMain.handle(

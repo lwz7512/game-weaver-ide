@@ -1,6 +1,18 @@
 import { app, dialog } from 'electron';
 import * as fs from 'fs-extra';
-// import { IpcEvents } from '../ipc-events';
+
+export async function showOpenImageDialog(title: string): Promise<string[]> {
+  const { filePaths } = await dialog.showOpenDialog({
+    title,
+    properties: ['openFile'],
+    filters: [{ name: 'Images', extensions: ['png'] }],
+  });
+
+  if (!filePaths || filePaths.length < 1) {
+    return [];
+  }
+  return filePaths;
+}
 
 /**
  * Shows the "Open Fiddle" dialog and forwards

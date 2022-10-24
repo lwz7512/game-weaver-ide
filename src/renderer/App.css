@@ -15,6 +15,15 @@
   .home-card-item {
     @apply py-1 px-2 border-b border-gray-500 hover:bg-sky-600 select-none;
   }
+  .blue-btn {
+    @apply px-2 py-1 text-white select-none focus:outline-none rounded-sm bg-sky-600 hover:bg-sky-500;
+  }
+  .orange-btn {
+    @apply px-2 py-1 text-white select-none focus:outline-none rounded-sm bg-orange-600 hover:bg-orange-500;
+  }
+  .full-width-btn {
+    @apply w-full px-4 py-2 text-white bg-sky-600 select-none focus:outline-none rounded-sm hover:bg-sky-500;
+  }
 }
 
 @import "~@blueprintjs/core/lib/css/blueprint.css";

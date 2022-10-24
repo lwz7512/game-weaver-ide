@@ -7,7 +7,32 @@ import { FileObj } from '../interfaces';
 
 const pipeline = promisify(stream.pipeline);
 
+/**
+ * for github reposiitory files
+ */
 const remoteFileCache: { [key: string]: Buffer } = {};
+
+/**
+ * for local exsited image file cache
+ */
+const localImageFileCache: { [key: string]: Buffer } = {};
+
+/**
+ * read a png file bytes as blob
+ * @param path png file path
+ * @returns blob
+ */
+export const readImageToBlob = (path: string): Buffer | null => {
+  const cachedBlob = localImageFileCache[path];
+  if (cachedBlob) return localImageFileCache[path];
+
+  if (!fs.existsSync(path)) return null;
+
+  const buffer = fs.readFileSync(path);
+  localImageFileCache[path] = buffer; // cache it!
+
+  return buffer;
+};
 
 /**
  * Read javascript file source code content
