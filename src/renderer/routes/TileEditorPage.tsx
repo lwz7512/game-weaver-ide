@@ -7,6 +7,7 @@ import useLeftSideBar from '../hooks/useLeftSideBar';
 import { TiledEditor } from '../tiled/Editor';
 import { useSpriteSheetImage } from '../hooks/useSpriteSheetImage';
 import { useSpritesPreview } from '../hooks/useSpritesPreview';
+import { MiniIconButton } from '../components/Buttons';
 
 const TiledEditorPage = () => {
   const { onModuleChanged } = useLeftSideBar();
@@ -16,11 +17,14 @@ const TiledEditorPage = () => {
   const [tileHeight, setTileHeight] = useState('32');
   const [tileWidth, setTileWidth] = useState('32');
 
-  const { selectedImage, openFileDialog } = useSpriteSheetImage(
-    +tileWidth,
-    +tileHeight
-  );
-  useSpritesPreview(selectedImage);
+  const {
+    dots,
+    selectedImage,
+    openFileDialog,
+    navigateToNext,
+    navigateToPrev,
+  } = useSpriteSheetImage(+tileWidth || 0, +tileHeight || 0);
+  useSpritesPreview(selectedImage, dots);
 
   return (
     <div className="tile-editor w-full h-screen flex">
@@ -92,15 +96,17 @@ const TiledEditorPage = () => {
             Download Remote
           </button>
         </div>
-        {/* FIXME: sprites sheet preview, use width, height attributes only! */}
+        {/* sprites sheet preview, use width, height attributes only! */}
         {/* DO NOT USE CSS CLASS!!! */}
-        <div className="p-1 flex justify-center">
+        <div className="flex items-center px-1 ">
+          <MiniIconButton icon="caret-left" onClick={navigateToPrev} />
           <canvas
             id="spritesPreview"
             width="192"
             height="128"
-            className="bg-white border border-gray-500"
+            className="bg-white border border-gray-500 block w-48 h-32 ml-1"
           />
+          <MiniIconButton icon="caret-right" onClick={navigateToNext} />
         </div>
         {/* spritesheet image slider button */}
       </div>

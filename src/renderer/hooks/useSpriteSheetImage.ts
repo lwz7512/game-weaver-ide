@@ -20,6 +20,34 @@ type ImageCache = { [imgURL: string]: ImageDataTiles };
 const imageBlobs: FileBlob[] = [];
 const imageDataCache: ImageCache = {};
 
+export const getPreviewDots = () => {
+  return imageBlobs.length;
+};
+
+export const getNextImageURL = (imgURL: string): string | null => {
+  if (!imgURL) return null;
+
+  const index = imageBlobs.findIndex((file) => file.imgURL === imgURL);
+  if (index === -1) return null;
+
+  const nextFile = imageBlobs[index + 1];
+  if (nextFile) return nextFile.imgURL;
+
+  return null;
+};
+
+export const getPrevImageURL = (imgURL: string): string | null => {
+  if (!imgURL) return null;
+
+  const index = imageBlobs.findIndex((file) => file.imgURL === imgURL);
+  if (index === -1) return null;
+
+  const prevFile = imageBlobs[index - 1];
+  if (prevFile) return prevFile.imgURL;
+
+  return null;
+};
+
 /**
  * Get top left 24 tiles(4rows * 6columns) image data, assume each tile is 32x32.
  *
@@ -34,6 +62,8 @@ const imageDataCache: ImageCache = {};
  * @param imgURL image path
  */
 export const getPreviewImageTiles = (imgURL: string): ImageDataTiles => {
+  if (!imgURL) return { tw: 0, th: 0, tiles: [] };
+
   const { tw, th, tiles } = imageDataCache[imgURL] || {};
 
   const topLeftTiles = [
@@ -62,6 +92,10 @@ export const getPreviewImageTiles = (imgURL: string): ImageDataTiles => {
 export const useSpriteSheetImage = (tileWidth: number, tileHeight: number) => {
   const { ipcRenderer } = window.electron;
   const [selectedImage, setSelectedImage] = useState('');
+
+  const dots: number[] = imageBlobs.map((file) =>
+    file.imgURL === selectedImage ? 1 : 0
+  );
 
   // TODO: if tileWidth, tileHeight changed, all the tiles in `imageDataCache` should update!
   useEffect(() => {
@@ -115,10 +149,21 @@ export const useSpriteSheetImage = (tileWidth: number, tileHeight: number) => {
     }
   };
 
-  // console.log(selectedImage);
+  const navigateToNext = () => {
+    const next = getNextImageURL(selectedImage);
+    next && setSelectedImage(next);
+  };
+
+  const navigateToPrev = () => {
+    const prev = getPrevImageURL(selectedImage);
+    prev && setSelectedImage(prev);
+  };
 
   return {
+    dots,
     selectedImage,
     openFileDialog,
+    navigateToNext,
+    navigateToPrev,
   };
 };

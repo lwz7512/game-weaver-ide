@@ -8,6 +8,26 @@ type ToolButtonProps = {
   onClick: () => void;
 };
 
+type MiniButtonProps = {
+  icon: IconName;
+  size?: number;
+  onClick: () => void;
+};
+
+export const MiniIconButton = ({
+  icon,
+  onClick,
+  size = 20,
+}: MiniButtonProps) => (
+  <button
+    type="button"
+    className="block w-4 h-4 text-gray-600 hover:text-sky-600 focus:outline-none"
+    onClick={onClick}
+  >
+    <Icon icon={icon} size={size} />
+  </button>
+);
+
 export const IconToolButton = ({
   icon,
   onClick,

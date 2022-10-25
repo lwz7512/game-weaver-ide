@@ -23,6 +23,8 @@ module.exports = {
     'class-methods-use-this': 'off',
     '@typescript-eslint/lines-between-class-members': 'off',
     '@typescript-eslint/no-unused-expressions': 'off',
+    'react/no-unused-prop-types': 'warn',
+    'no-useless-return': 'warn',
   },
   parserOptions: {
     ecmaVersion: 2020,
