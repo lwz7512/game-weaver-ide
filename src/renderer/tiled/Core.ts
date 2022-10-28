@@ -39,10 +39,17 @@ export class TiledCore extends BaseEditor {
 
   stagePressed = false;
 
+  tiles: PIXI.Texture[][] | null = null;
+  tilesStartX = 0;
+  tilesStartY = 0;
+  tileScale = 1;
+
   onPointerDownStage: EventHandler = () => null;
   onPointerUpStage: EventHandler = () => null;
   onPointerMoveOnMap: EventHandler = () => null;
   onWheelMoveOnMap: EventHandler = () => null;
+  onPointerMoveOnPicker: EventHandler = () => null;
+  onWheelMoveOnPicker: EventHandler = () => null;
 
   // pinch: Pinch | null = null;
   // and more members...
@@ -136,7 +143,6 @@ export class TiledCore extends BaseEditor {
     this.pickerContainer.addChild(this.pickerTileMap);
     const pickerAreaW = this.screenRect.width;
     const pickerAreaH = this.screenRect.height * 0.3;
-    // FIXME: need mask?
     const maskBtm = new PIXI.Graphics();
     maskBtm.beginFill(0xffffff);
     // draw mask to the bottom of map
@@ -146,9 +152,10 @@ export class TiledCore extends BaseEditor {
 
     // add event listener
     this.pickerInteractLayer = new PIXI.Graphics();
+    this.pickerInteractLayer.interactive = true;
     this.pickerContainer.addChild(this.pickerInteractLayer);
     this.pickerInteractLayer.lineStyle(1, 0xf0f0f0, 2);
-    this.pickerInteractLayer.beginFill(0x0000ff, 0.001);
+    this.pickerInteractLayer.beginFill(0x0000ff, 0.01);
     this.pickerInteractLayer.drawRect(0, 0, pickerAreaW, pickerAreaH);
     this.pickerInteractLayer.endFill();
   }
@@ -207,6 +214,32 @@ export class TiledCore extends BaseEditor {
       this.drawMapGrid();
     };
 
+    this.onPointerMoveOnPicker = (event: Event) => {
+      if (!this.stagePressed || !this.pickerTileMap) return;
+
+      const fdEvent = event as FederatedPointerEvent;
+      // const currentX = fdEvent.globalX;
+      const diffX = fdEvent.movementX * 0.6;
+      const diffY = fdEvent.movementY * 0.6;
+      const tw = this.tileWidth * this.tileScale;
+      const th = this.tileHeight * this.tileScale;
+      // save the latest position
+      this.tilesStartX += diffX;
+      this.tilesStartY += diffY;
+      this.translateTilePicker(diffX, diffY, tw, th);
+    };
+
+    this.onWheelMoveOnPicker = (event: Event) => {
+      const wheelEvt = event as WheelEvent;
+      const scaleDiff = wheelEvt.deltaY * -0.01;
+      this.tileScale += scaleDiff;
+      // Restrict scale
+      this.tileScale = Math.min(Math.max(0.5, this.tileScale), 1.5);
+      const tw = this.tileWidth * this.tileScale;
+      const th = this.tileHeight * this.tileScale;
+      this.scaleTilePicker(tw, th);
+    };
+
     if (this.mapInterectLayer) {
       this.mapInterectLayer.addEventListener(
         'pointermove',
@@ -215,10 +248,22 @@ export class TiledCore extends BaseEditor {
       this.mapInterectLayer.addEventListener('wheel', this.onWheelMoveOnMap);
     }
 
+    if (this.pickerInteractLayer) {
+      this.pickerInteractLayer.addEventListener(
+        'pointermove',
+        this.onPointerMoveOnPicker
+      );
+      this.pickerInteractLayer.addEventListener(
+        'wheel',
+        this.onWheelMoveOnPicker
+      );
+    }
+
     app.stage.interactive = true;
     // this.app.stage.hitArea = renderer.screen;
     app.stage.addEventListener('pointerdown', this.onPointerDownStage);
     app.stage.addEventListener('pointerup', this.onPointerUpStage);
+    app.stage.addEventListener('pointerupoutside', this.onPointerUpStage);
   }
 
   setGameDimension(
@@ -318,27 +363,22 @@ export class TiledCore extends BaseEditor {
    * @param tiles
    */
   drawTilePicker(tw: number, th: number, tiles: PIXI.Texture[][]) {
-    const robot = this.pickerTileMap as PIXI.Container;
-    robot.removeChildren(); // cleanup before each draw
-    // black background
-    const mapAreaW = this.screenRect?.width as number;
-    const mapAreaH = (this.screenRect?.height as number) * 0.3;
-    const background = new PIXI.Graphics();
-    background.beginFill(0x000000);
-    background.drawRect(0, 0, mapAreaW, mapAreaH);
-    background.endFill();
-    robot.addChild(background);
+    this.tiles = tiles;
+    this.tilesStartX = 0;
+    this.tilesStartY = 0;
 
     const gap = 1;
-
+    const robot = this.pickerTileMap as PIXI.Container;
+    robot.removeChildren(); // cleanup before each draw
+    const background = new PIXI.Graphics();
+    robot.addChild(background);
+    this.drawTilePickerBackground(background, tw, th);
+    // put tiles
     for (let i = 0; i < tiles.length; i += 1) {
       const row = tiles[i];
       for (let j = 0; j < row.length; j += 1) {
         const xPos = j * (tw + gap);
         const yPos = i * (th + gap);
-        background.beginFill(0xffffff, 0.8);
-        background.drawRect(xPos, yPos, tw, th);
-        background.endFill();
         const texture = tiles[i][j];
         const tile = new Sprite(texture);
         tile.x = xPos;
@@ -346,6 +386,89 @@ export class TiledCore extends BaseEditor {
         robot.addChild(tile);
       }
     }
+  }
+
+  drawTilePickerBackground(
+    background: PIXI.Graphics,
+    tw: number,
+    th: number,
+    gap = 1
+  ) {
+    if (!this.tiles) return;
+    // black background
+    const mapAreaW = this.screenRect?.width as number;
+    const mapAreaH = (this.screenRect?.height as number) * 0.3;
+    background.clear();
+    background.beginFill(0x000000);
+    background.drawRect(0, 0, mapAreaW, mapAreaH);
+    background.endFill();
+    // draw tile background
+    for (let i = 0; i < this.tiles.length; i += 1) {
+      const row = this.tiles[i];
+      for (let j = 0; j < row.length; j += 1) {
+        const xPos = j * (tw + gap) + this.tilesStartX;
+        const yPos = i * (th + gap) + this.tilesStartY;
+        background.beginFill(0xffffff, 0.8);
+        background.drawRect(xPos, yPos, tw, th);
+        background.endFill();
+      }
+    }
+  }
+
+  /**
+   * resize tiles and redraw background
+   * sprite position decided by `tw` and `th`
+   */
+  scaleTilePicker(tw: number, th: number) {
+    if (!this.tiles) return;
+
+    // ==> Step1: scale all the tiles
+    const robot = this.pickerTileMap as PIXI.Container;
+    robot.children.forEach((node, index) => {
+      if (index === 0) return;
+      node.scale.set(this.tileScale, this.tileScale);
+    });
+    // ==> step2: move tiles to the right position
+    const gap = 1;
+    // row loop
+    for (let i = 0; i < this.tiles.length; i += 1) {
+      const row = this.tiles[i];
+      // column loop
+      for (let j = 0; j < row.length; j += 1) {
+        const xPos = j * (tw + gap) + this.tilesStartX;
+        const yPos = i * (th + gap) + this.tilesStartY;
+        const tileIndex = i * row.length + j + 1; // after background graphics
+        const tileSprite = robot.getChildAt(tileIndex);
+        tileSprite.x = xPos;
+        tileSprite.y = yPos;
+      }
+    }
+    // step3: redraw background
+    const background = robot.getChildAt(0) as PIXI.Graphics;
+    this.drawTilePickerBackground(background, tw, th);
+  }
+
+  /**
+   * move tiles no need to consider scale operation
+   * @param diffX
+   * @param diffY
+   * @param tw
+   * @param th
+   * @returns
+   */
+  translateTilePicker(diffX: number, diffY: number, tw: number, th: number) {
+    if (!this.tiles) return;
+
+    // move tiles
+    const robot = this.pickerTileMap as PIXI.Container;
+    robot.children.forEach((node, index) => {
+      if (index === 0) return;
+      node.x += diffX;
+      node.y += diffY;
+    });
+    // clear before redraw
+    const background = robot.getChildAt(0) as PIXI.Graphics;
+    this.drawTilePickerBackground(background, tw, th);
   }
 
   destroy() {
@@ -364,6 +487,17 @@ export class TiledCore extends BaseEditor {
         this.mapInterectLayer.removeEventListener(
           'wheel',
           this.onWheelMoveOnMap
+        );
+      }
+
+      if (this.pickerInteractLayer) {
+        this.pickerInteractLayer.removeEventListener(
+          'pointermove',
+          this.onPointerMoveOnPicker
+        );
+        this.pickerInteractLayer.removeEventListener(
+          'wheel',
+          this.onWheelMoveOnPicker
         );
       }
 
