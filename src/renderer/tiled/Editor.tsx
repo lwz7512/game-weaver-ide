@@ -2,7 +2,7 @@
  * Created at 2022/10/10
  */
 
-import { extensions, InteractionManager } from 'pixi.js';
+import { extensions, InteractionManager, Renderer } from 'pixi.js';
 import { ShaderSystem } from '@pixi/core';
 import { install } from '@pixi/unsafe-eval'; // FIXME: THIS IS NECESSARY!
 

@@ -1,6 +1,12 @@
 import { useEffect } from 'react';
 import { getPreviewImageTiles } from './useSpriteSheetImage';
 
+/**
+ * Draw 24 tiles image idata to canvas
+ *
+ * @param selectedImage imported tiles sheet file path
+ * @param dots dot array for each file
+ */
 export const useSpritesPreview = (selectedImage: string, dots: number[]) => {
   useEffect(() => {
     if (!selectedImage) return;

@@ -1,6 +1,13 @@
 import { useState, useEffect } from 'react';
+import * as PIXI from 'pixi.js';
 import { IpcEvents } from '../../ipc-events';
-import { getImageContext, getImageDataGrid } from '../tiled/ImageBit';
+import {
+  getImageContext,
+  getImageDataGrid,
+  getImageTextures,
+} from '../tiled/ImageBit';
+
+import { GWEvent } from '../tiled/Events';
 
 type FileBlob = {
   path: string; // file path in local directory
@@ -12,6 +19,7 @@ type ImageDataTiles = {
   tw: number; // tile width
   th: number; // tile height
   tiles: ImageData[][];
+  textures: PIXI.Texture[][];
 };
 
 type ImageCache = { [imgURL: string]: ImageDataTiles };
@@ -19,6 +27,10 @@ type ImageCache = { [imgURL: string]: ImageDataTiles };
 // NOTE: do not expose this cache!
 const imageBlobs: FileBlob[] = [];
 const imageDataCache: ImageCache = {};
+
+export const getTileSheetBy = (imgURL: string): ImageDataTiles => {
+  return imageDataCache[imgURL];
+};
 
 export const getPreviewDots = () => {
   return imageBlobs.length;
@@ -62,9 +74,13 @@ export const getPrevImageURL = (imgURL: string): string | null => {
  * @param imgURL image path
  */
 export const getPreviewImageTiles = (imgURL: string): ImageDataTiles => {
-  if (!imgURL) return { tw: 0, th: 0, tiles: [] };
+  const empty = { tw: 0, th: 0, tiles: [], textures: [] };
+  if (!imgURL) return empty;
 
   const { tw, th, tiles } = imageDataCache[imgURL] || {};
+
+  // undefined
+  if (!tiles || !tiles.length) return empty;
 
   const topLeftTiles = [
     tiles[0].slice(0, 6),
@@ -73,13 +89,11 @@ export const getPreviewImageTiles = (imgURL: string): ImageDataTiles => {
     tiles[3].slice(0, 6),
   ];
 
-  // undefined
-  if (!tiles) return { tw, th, tiles: [] };
-
   return {
     tw,
     th,
     tiles: topLeftTiles,
+    textures: [],
   };
 };
 
@@ -97,13 +111,21 @@ export const useSpriteSheetImage = (tileWidth: number, tileHeight: number) => {
     file.imgURL === selectedImage ? 1 : 0
   );
 
+  useEffect(() => {
+    if (!selectedImage) return;
+
+    const detail = { detail: selectedImage };
+    const customEvt = new CustomEvent(GWEvent.SELECTEDIMAGE, detail);
+    document.dispatchEvent(customEvt);
+  }, [selectedImage]);
+
   // TODO: if tileWidth, tileHeight changed, all the tiles in `imageDataCache` should update!
   useEffect(() => {
     if (!tileWidth || !tileHeight) return;
     // ....reset imageDataCache...
-    console.log('>>> reset image data cache by:');
-    console.log({ tileWidth });
-    console.log({ tileHeight });
+    // console.log('>>> reset image data cache by:');
+    // console.log({ tileWidth });
+    // console.log({ tileHeight });
     // ...
   }, [tileWidth, tileHeight]);
 
@@ -137,10 +159,12 @@ export const useSpriteSheetImage = (tileWidth: number, tileHeight: number) => {
       // asume it has the same size with the tile inputs now!
       // tile size setting should only have single source and applying for tilegrid,
       const tiles = getImageDataGrid(context, safeW, safeH);
+      const textures = getImageTextures(context, safeW, safeH);
       imageDataCache[imgURL] = {
         tw: safeW,
         th: safeH,
         tiles,
+        textures,
       };
       // save the selected file page
       setSelectedImage(imgURL);

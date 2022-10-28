@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 
 import { TiledCore } from '../tiled/Core';
+import { GWEvent } from '../tiled/Events';
 import { setDrawingSession, getDrawingSession } from '../state/session';
+import { getTileSheetBy } from './useSpriteSheetImage';
 
 /**
  * Core tiled editor interaction with page UI
@@ -21,6 +23,9 @@ export const useTiledEditor = (
 ) => {
   const editorRef = useRef<TiledCore | null>(null);
 
+  /**
+   * construct editor
+   */
   useEffect(() => {
     const selector = '.tiled-editor-root';
     const root = document.querySelector(selector) as HTMLElement;
@@ -61,6 +66,31 @@ export const useTiledEditor = (
     };
   }, [mapWidth, mapHeight, tileWidth, tileHeight]);
 
+  /**
+   * draw tiles from tile sheet image
+   */
+  useEffect(() => {
+    const selectedImageChangeHandler = (evt: Event) => {
+      const customEvt = evt as CustomEvent;
+      const selectedImage = customEvt.detail;
+      const { textures } = getTileSheetBy(selectedImage);
+      const editor = editorRef.current as TiledCore;
+      editor.drawTilePicker(tileWidth, tileHeight, textures);
+    };
+
+    document.addEventListener(
+      GWEvent.SELECTEDIMAGE,
+      selectedImageChangeHandler
+    );
+
+    return () => {
+      document.removeEventListener(
+        GWEvent.SELECTEDIMAGE,
+        selectedImageChangeHandler
+      );
+    };
+  }, [tileWidth, tileHeight]);
+
   const zoomInHandler = () => {
     editorRef.current && editorRef.current.zoomIn();
   };
@@ -70,6 +100,7 @@ export const useTiledEditor = (
   };
 
   return {
+    editorRef,
     zoomInHandler,
     zoomOutHandler,
   };

@@ -3,7 +3,7 @@
  */
 import * as PIXI from 'pixi.js';
 import { EventSystem, FederatedPointerEvent } from '@pixi/events';
-import { Graphics, Rectangle } from 'pixi.js';
+import { Graphics, Rectangle, Sprite } from 'pixi.js';
 import { BaseEditor } from './Base';
 import { DrawingSession } from '../config';
 
@@ -30,7 +30,7 @@ export class TiledCore extends BaseEditor {
   mapDrawLayer: PIXI.Graphics | null = null;
   mapInterectLayer: PIXI.Graphics | null = null;
 
-  pickerDrawLayer: PIXI.Graphics | null = null;
+  pickerTileMap: PIXI.Container | null = null;
   pickerInteractLayer: PIXI.Graphics | null = null;
 
   mapScale = 0.6;
@@ -104,16 +104,17 @@ export class TiledCore extends BaseEditor {
     app.stage.addChild(this.mapContainer);
 
     this.screenRect = app.renderer.screen;
+    // tile grid at the top part
     const mapAreaW = this.screenRect.width;
     const mapAreaH = this.screenRect.height * 0.7;
 
     this.mapDrawLayer = new PIXI.Graphics();
     this.mapContainer.addChild(this.mapDrawLayer);
-    const mask = new Graphics();
-    mask.beginFill(0xffffff);
-    mask.drawRect(0, 0, mapAreaW + 1, mapAreaH + 1);
-    mask.endFill();
-    this.mapContainer.mask = mask;
+    const maskTop = new PIXI.Graphics();
+    maskTop.beginFill(0xffffff);
+    maskTop.drawRect(0, 0, mapAreaW + 1, mapAreaH + 1);
+    maskTop.endFill();
+    this.mapDrawLayer.mask = maskTop;
 
     // add event listeners
     this.mapInterectLayer = new PIXI.Graphics();
@@ -124,6 +125,32 @@ export class TiledCore extends BaseEditor {
     this.mapInterectLayer.beginFill(0x0000ff, 0.001);
     this.mapInterectLayer.drawRect(0, 0, mapAreaW, mapAreaH);
     this.mapInterectLayer.endFill();
+
+    this.pickerContainer = new PIXI.Container();
+    this.pickerContainer.y = this.screenRect.height * 0.7;
+    app.stage.addChild(this.pickerContainer);
+
+    // tile picker at the bottom part
+    this.pickerTileMap = new PIXI.Container();
+    // // move it to the bottom of map
+    this.pickerContainer.addChild(this.pickerTileMap);
+    const pickerAreaW = this.screenRect.width;
+    const pickerAreaH = this.screenRect.height * 0.3;
+    // FIXME: need mask?
+    const maskBtm = new PIXI.Graphics();
+    maskBtm.beginFill(0xffffff);
+    // draw mask to the bottom of map
+    maskBtm.drawRect(0, mapAreaH, pickerAreaW + 1, pickerAreaH);
+    maskBtm.endFill();
+    this.pickerTileMap.mask = maskBtm;
+
+    // add event listener
+    this.pickerInteractLayer = new PIXI.Graphics();
+    this.pickerContainer.addChild(this.pickerInteractLayer);
+    this.pickerInteractLayer.lineStyle(1, 0xf0f0f0, 2);
+    this.pickerInteractLayer.beginFill(0x0000ff, 0.001);
+    this.pickerInteractLayer.drawRect(0, 0, pickerAreaW, pickerAreaH);
+    this.pickerInteractLayer.endFill();
   }
 
   listen(app: PIXI.Application) {
@@ -280,6 +307,44 @@ export class TiledCore extends BaseEditor {
         x1,
         y0 + this.gameVertTiles * this.tileHeight * this.mapScale
       );
+    }
+  }
+
+  /**
+   * Drawing tiles matrix, gap use global settings
+   *
+   * @param tw
+   * @param th
+   * @param tiles
+   */
+  drawTilePicker(tw: number, th: number, tiles: PIXI.Texture[][]) {
+    const robot = this.pickerTileMap as PIXI.Container;
+    robot.removeChildren(); // cleanup before each draw
+    // black background
+    const mapAreaW = this.screenRect?.width as number;
+    const mapAreaH = (this.screenRect?.height as number) * 0.3;
+    const background = new PIXI.Graphics();
+    background.beginFill(0x000000);
+    background.drawRect(0, 0, mapAreaW, mapAreaH);
+    background.endFill();
+    robot.addChild(background);
+
+    const gap = 1;
+
+    for (let i = 0; i < tiles.length; i += 1) {
+      const row = tiles[i];
+      for (let j = 0; j < row.length; j += 1) {
+        const xPos = j * (tw + gap);
+        const yPos = i * (th + gap);
+        background.beginFill(0xffffff, 0.8);
+        background.drawRect(xPos, yPos, tw, th);
+        background.endFill();
+        const texture = tiles[i][j];
+        const tile = new Sprite(texture);
+        tile.x = xPos;
+        tile.y = yPos;
+        robot.addChild(tile);
+      }
     }
   }
 
