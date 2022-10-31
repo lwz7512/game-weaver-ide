@@ -114,7 +114,6 @@
     "@blueprintjs/core": "^4.8.0",
     "@blueprintjs/popover2": "^1.6.6",
     "@pixi/events": "^6.5.5",
-    "@pixi/filter-drop-shadow": "^4.1.5",
     "@pixi/unsafe-eval": "^6.5.5",
     "clsx": "^1.2.1",
     "electron-debug": "^3.2.0",

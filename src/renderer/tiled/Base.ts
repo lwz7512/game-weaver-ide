@@ -6,6 +6,19 @@ import * as PIXI from 'pixi.js';
 
 import bunnyImage from '../assets/bunny.png';
 
+export const rectEquals = (
+  one: PIXI.Rectangle,
+  other: PIXI.Rectangle
+): boolean => {
+  return (
+    other &&
+    one.x === other.x &&
+    one.y === other.y &&
+    one.width === other.width &&
+    one.height === other.height
+  );
+};
+
 export class BaseEditor extends EventTarget {
   protected basicText: PIXI.Text | null = null;
 
