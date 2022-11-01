@@ -36,6 +36,7 @@ export class TiledCore extends BaseEditor {
   pickerInteractLayer: PIXI.Graphics | null = null;
   selectedTileLayer: PIXI.Graphics | null = null;
   lastHoverRectInPicker: PIXI.Rectangle = PIXI.Rectangle.EMPTY;
+  lastSelectedRectInPicker: PIXI.Rectangle = PIXI.Rectangle.EMPTY;
 
   mapScale = 0.6;
   mapMarginX = 100;
@@ -158,6 +159,9 @@ export class TiledCore extends BaseEditor {
     app.stage.addChild(this.pickerContainer);
 
     // tile picker at the bottom part
+    // includes two parts:
+    // 1. background graphics
+    // 2. tiles sprites
     this.pickerTileMap = new PIXI.Container();
     // // move it to the bottom of map
     this.pickerContainer.addChild(this.pickerTileMap);
@@ -178,12 +182,17 @@ export class TiledCore extends BaseEditor {
     this.pickerInteractLayer = new PIXI.Graphics();
     this.pickerInteractLayer.interactive = true;
     this.pickerContainer.addChild(this.pickerInteractLayer);
-    this.pickerInteractLayer.lineStyle(1, 0xf0f0f0, 2);
+    this.pickerInteractLayer.lineStyle(1, 0xf0f0f0, 1);
     this.pickerInteractLayer.beginFill(0x0000ff, 0.01);
     this.pickerInteractLayer.drawRect(0, 0, pickerAreaW, pickerAreaH);
     this.pickerInteractLayer.endFill();
   }
 
+  /**
+   * add action to two main layers:
+   * move, pointer down/up, click...
+   * @param app
+   */
   listen(app: PIXI.Application) {
     this.onPointerDownStage = (event: Event) => {
       this.stagePressed = true;
@@ -210,6 +219,7 @@ export class TiledCore extends BaseEditor {
         mapMarginX: this.mapMarginX,
         mapMarginY: this.mapMarginY,
       };
+      // `useTiledEditor` handle this event
       this.dispatchEvent(new CustomEvent('session', { detail }));
     };
 
@@ -248,22 +258,11 @@ export class TiledCore extends BaseEditor {
       // figure out the tile coordinate ...
       const point = new PIXI.Point(currentX, currentY);
       const grid = this.buildTileGridInPicker();
-      console.log(grid);
       const hitRect = this.containInGrid(point, grid);
-      const hitRectCallback = (target: PIXI.Rectangle) => {
-        const hoverTileLayer = this.selectedTileLayer as PIXI.Graphics;
-        hoverTileLayer.clear();
-        hoverTileLayer.beginFill(0x0000ff, 0.5);
-        hoverTileLayer.drawRect(
-          target.x,
-          target.y,
-          target.width,
-          target.height
-        );
-        hoverTileLayer.endFill();
-      };
       if (!rectEquals(hitRect, this.lastHoverRectInPicker)) {
-        window.requestAnimationFrame(() => hitRectCallback(hitRect));
+        window.requestAnimationFrame(() =>
+          this.drawTilePickerHoverRects(hitRect)
+        );
         this.lastHoverRectInPicker = hitRect;
       }
 
@@ -291,15 +290,20 @@ export class TiledCore extends BaseEditor {
       this.scaleTilePicker(tw, th);
     };
 
-    // TODO: ...
+    // draw selected cell(border & fill) on background graphics...
     this.onClickTilePicker = (event: Event) => {
       const fdEvent = event as FederatedPointerEvent;
       const screenRect = this.screenRect as PIXI.Rectangle;
       const pickerYOffset = screenRect.height * this.mapHeightRatio;
       const pointerX = fdEvent.globalX;
       const pointerY = fdEvent.globalY - pickerYOffset;
-      // console.log(pointerX);
-      // console.log(pointerY);
+
+      // draw selected tile
+      const point = new PIXI.Point(pointerX, pointerY);
+      const grid = this.buildTileGridInPicker();
+      const hitRect = this.containInGrid(point, grid);
+      this.drawTilePickerHoverRects(hitRect);
+      this.lastSelectedRectInPicker = hitRect;
     };
 
     if (this.mapInterectLayer) {
@@ -517,6 +521,33 @@ export class TiledCore extends BaseEditor {
         background.drawRect(xPos, yPos, tw, th);
         background.endFill();
       }
+    }
+  }
+
+  drawTilePickerHoverRects(hitRect: PIXI.Rectangle) {
+    const hoverTileLayer = this.selectedTileLayer as PIXI.Graphics;
+    if (!rectEquals(hitRect, this.lastSelectedRectInPicker)) {
+      hoverTileLayer.clear();
+      hoverTileLayer.beginFill(0x0000ff, 0.5);
+      hoverTileLayer.drawRect(
+        hitRect.x,
+        hitRect.y,
+        hitRect.width,
+        hitRect.height
+      );
+      hoverTileLayer.endFill();
+    }
+    // draw the previously selected tile
+    const selectedTile = this.lastSelectedRectInPicker;
+    if (!rectEquals(selectedTile, PIXI.Rectangle.EMPTY)) {
+      hoverTileLayer.beginFill(0x0000ff, 0.5);
+      hoverTileLayer.drawRect(
+        selectedTile.x,
+        selectedTile.y,
+        selectedTile.width,
+        selectedTile.height
+      );
+      hoverTileLayer.endFill();
     }
   }
 

@@ -138,13 +138,18 @@ export const useSpriteSheetImage = (tileWidth: number, tileHeight: number) => {
 
     // only pick first one!
     const pngFilePath = files[0];
-    // console.log(`>>> reading image : ${pngFilePath}`);
-    // reading file buffer ...
+    // check if already loaded
+    const imageBlobExist = imageBlobs.find((item) => item.path === pngFilePath);
+    if (imageBlobExist) {
+      setSelectedImage(imageBlobExist.imgURL);
+      return; // no need to fetch again!
+    }
+    // *** reading file buffer ***
     const imageBlob = await ipcRenderer.invoke(
       IpcEvents.READ_IMAGE_FILE,
       pngFilePath
     );
-    if (imageBlob) {
+    if (imageBlob && !imageBlobExist) {
       const buffer = imageBlob as Buffer;
       const blob = new Blob([buffer], { type: 'image/png' });
       const imgURL = URL.createObjectURL(blob);
