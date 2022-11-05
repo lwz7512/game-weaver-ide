@@ -34,7 +34,7 @@ export const TiledEditor = ({
   );
 
   return (
-    <div className="tiled-editor-root w-full h-full bg-black relative">
+    <div className="tiled-editor-root flex-1 h-full bg-gray-300 relative">
       {/* empty content to hold pixi application canvas */}
       <div className="absolute top-4 right-4 w-6 h-14">
         <IconToolButton

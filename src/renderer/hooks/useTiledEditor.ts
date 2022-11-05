@@ -27,15 +27,14 @@ export const useTiledEditor = (
    * construct editor
    */
   useEffect(() => {
-    const selector = '.tiled-editor-root';
-    const root = document.querySelector(selector) as HTMLElement;
-
     const relayoutEditor = (entries: ResizeObserverEntry[]) => {
       if (editorRef.current) {
-        editorRef.current.destroy();
-        editorRef.current = null;
+        const { width: bw, height: bh } = entries[0].contentRect;
+        editorRef.current.resetApp(bw - 298, bh);
+        return;
       }
-
+      const selector = '.tiled-editor-root';
+      const root = document.querySelector(selector) as HTMLElement;
       const { width, height } = root.getBoundingClientRect();
       const editor = new TiledCore(root, width, height);
       editorRef.current = editor; // save the app instance
@@ -43,9 +42,9 @@ export const useTiledEditor = (
       const session = getDrawingSession();
       editor.create(session);
       // now start draw
-      editor.setGameDimension(mapWidth, mapHeight, tileWidth, tileHeight);
-      editor.drawMapGrid();
+      editor.layout(mapWidth, mapHeight, tileWidth, tileHeight);
       // listen editor change
+      // add more session data to keep the editor status including tiles...
       editor.addEventListener('session', (event: Event) => {
         const customEvt = event as CustomEvent;
         // save the session
@@ -54,14 +53,16 @@ export const useTiledEditor = (
       });
       // console.log('>>> recreate editor...');
     };
-
+    // FIXME: observing body is the right way to respond to devtool toggling
+    // @2022/11/04
+    const body = document.querySelector('body') as HTMLElement;
     const observer = new ResizeObserver(relayoutEditor);
-    observer.observe(root);
+    observer.observe(body);
 
     () => {
       (editorRef.current as TiledCore).destroy();
       editorRef.current = null; // clear the instance
-      observer.unobserve(root);
+      observer.unobserve(body);
       console.log('>>>> tiled editer destroy ...');
     };
   }, [mapWidth, mapHeight, tileWidth, tileHeight]);

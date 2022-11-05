@@ -20,7 +20,7 @@ export const InputField = ({
       htmlFor={title}
       className="input-field block w-36 py-1 px-0 relative mb-0 ml-0"
     >
-      <span className="w-24 inline-block bg-slate-600 text-white leading-5 p-5px pl-2 text-sm">
+      <span className="w-24 inline-block bg-slate-600 text-white leading-5 p-5px pl-2 text-sm select-none">
         {title}:
       </span>
       <input

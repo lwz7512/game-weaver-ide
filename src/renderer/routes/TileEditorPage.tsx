@@ -34,14 +34,12 @@ const TiledEditorPage = () => {
           onModuleChanged={onModuleChanged}
         />
       </div>
-      <div className="flex-1 bg-white">
-        <TiledEditor
-          mapHeight={+mapHeight}
-          mapWidth={+mapWidth}
-          tileHeight={+tileHeight}
-          tileWidth={+tileWidth}
-        />
-      </div>
+      <TiledEditor
+        mapHeight={+mapHeight}
+        mapWidth={+mapWidth}
+        tileHeight={+tileHeight}
+        tileWidth={+tileWidth}
+      />
       <div className="object-explorer bg-gray-200 w-60">
         {/* <TiledPanelResizeBar targeSelector=".object-explorer" /> */}
         <h1 className="select-none text-base text-center p-2 bg-slate-600 text-white block mb-0 lg:mb-1">

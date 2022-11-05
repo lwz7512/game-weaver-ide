@@ -121,7 +121,7 @@ export const useSpriteSheetImage = (tileWidth: number, tileHeight: number) => {
 
   // TODO: if tileWidth, tileHeight changed, all the tiles in `imageDataCache` should update!
   useEffect(() => {
-    if (!tileWidth || !tileHeight) return;
+    // if (!tileWidth || !tileHeight) return;
     // ....reset imageDataCache...
     // console.log('>>> reset image data cache by:');
     // console.log({ tileWidth });

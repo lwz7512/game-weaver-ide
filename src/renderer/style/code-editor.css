@@ -28,8 +28,9 @@
 
 
 @media only screen and (max-width: 1024px) {
-  .tile-editor .object-explorer {
+  /* FIXME: cause horizontal scroll bar while resize the window */
+  /* .tile-editor .object-explorer {
     min-width: 180px;
     width: 180px;
-  }
+  } */
 }
