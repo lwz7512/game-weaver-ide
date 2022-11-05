@@ -124,6 +124,33 @@ export class TiledCore extends BaseEditor {
   }
 
   /**
+   * Set editor stage and draw map grid
+   *
+   * @param mapWidth
+   * @param mapHeight
+   * @param tileWidth
+   * @param tileHeight
+   */
+  layout(
+    mapWidth: number,
+    mapHeight: number,
+    tileWidth: number,
+    tileHeight: number
+  ) {
+    this.setGameDimension(mapWidth, mapHeight, tileWidth, tileHeight);
+    this.drawMapGrid();
+  }
+
+  resetApp(width: number, height: number) {
+    const size = `width:${width}px;height:${height}px;`;
+    this.rootElement.setAttribute('style', size);
+    // redraw background and border...
+    this.drawEditorStage();
+    this.drawMapGrid();
+    this.reDrawPickerBackground();
+  }
+
+  /**
    * setup editor needed two main sections:
    *
    * 1. Stage section to draw tiles by click and drag arbitrarily.
@@ -420,24 +447,6 @@ export class TiledCore extends BaseEditor {
     app.stage.addEventListener('pointerdown', this.onPointerDownStage);
     app.stage.addEventListener('pointerup', this.onPointerUpStage);
     app.stage.addEventListener('pointerupoutside', this.onPointerUpStage);
-  }
-
-  /**
-   * Set editor stage and draw map grid
-   *
-   * @param mapWidth
-   * @param mapHeight
-   * @param tileWidth
-   * @param tileHeight
-   */
-  layout(
-    mapWidth: number,
-    mapHeight: number,
-    tileWidth: number,
-    tileHeight: number
-  ) {
-    this.setGameDimension(mapWidth, mapHeight, tileWidth, tileHeight);
-    this.drawMapGrid();
   }
 
   /**
@@ -829,15 +838,6 @@ export class TiledCore extends BaseEditor {
     if (!this.tiles) return null;
 
     return this.tiles[y][x];
-  }
-
-  resetApp(width: number, height: number) {
-    const size = `width:${width}px;height:${height}px;`;
-    this.rootElement.setAttribute('style', size);
-    // redraw background and border...
-    this.drawEditorStage();
-    this.drawMapGrid();
-    this.reDrawPickerBackground();
   }
 
   destroy() {
