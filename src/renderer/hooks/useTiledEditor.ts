@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-import { TiledCore } from '../tiled/Core';
+import { TiledPainter } from '../tiled/Painter';
 import { GWEvent } from '../tiled/Events';
 import { setDrawingSession, getDrawingSession } from '../state/session';
 import { getTileSheetBy } from './useSpriteSheetImage';
@@ -21,7 +21,8 @@ export const useTiledEditor = (
   tileWidth: number,
   tileHeight: number
 ) => {
-  const editorRef = useRef<TiledCore | null>(null);
+  const editorRef = useRef<TiledPainter | null>(null);
+  const [eraseToolSelected, setEraseToolSelected] = useState(false);
 
   /**
    * construct editor
@@ -36,7 +37,7 @@ export const useTiledEditor = (
       const selector = '.tiled-editor-root';
       const root = document.querySelector(selector) as HTMLElement;
       const { width, height } = root.getBoundingClientRect();
-      const editor = new TiledCore(root, width, height);
+      const editor = new TiledPainter(root, width, height);
       editorRef.current = editor; // save the app instance
 
       const session = getDrawingSession();
@@ -60,7 +61,7 @@ export const useTiledEditor = (
     observer.observe(body);
 
     () => {
-      (editorRef.current as TiledCore).destroy();
+      (editorRef.current as TiledPainter).destroy();
       editorRef.current = null; // clear the instance
       observer.unobserve(body);
       console.log('>>>> tiled editer destroy ...');
@@ -75,7 +76,7 @@ export const useTiledEditor = (
       const customEvt = evt as CustomEvent;
       const selectedImage = customEvt.detail;
       const { textures } = getTileSheetBy(selectedImage);
-      const editor = editorRef.current as TiledCore;
+      const editor = editorRef.current as TiledPainter;
       editor.drawTilePicker(tileWidth, tileHeight, textures);
     };
 
@@ -100,10 +101,17 @@ export const useTiledEditor = (
     editorRef.current && editorRef.current.zoomOut();
   };
 
+  const eraseTilesHandler = () => {
+    setEraseToolSelected(!eraseToolSelected);
+    // TODO: ...save erase mode to editor
+  };
+
   return {
     editorRef,
+    eraseToolSelected,
     zoomInHandler,
     zoomOutHandler,
+    eraseTilesHandler,
   };
-  // ...
+  // end of hook ...
 };

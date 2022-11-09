@@ -5,6 +5,9 @@ type ToolButtonProps = {
   icon: IconName;
   mini?: boolean;
   iconSize?: number;
+  color?: string;
+  title?: string;
+  selected?: boolean;
   onClick: () => void;
 };
 
@@ -33,17 +36,22 @@ export const IconToolButton = ({
   onClick,
   mini = false,
   iconSize = 24,
+  color = 'white',
+  title = 'icon tool',
+  selected = false,
 }: ToolButtonProps) => (
   <div className="btn-box mb-1">
     <button
       type="button"
+      title={title}
       className={clsx(
         'focus:outline-none hover:bg-green-500',
-        mini ? 'w-6 h-6 rounded-xl hover:bg-slate-800' : 'px-3 py-2'
+        mini ? 'w-6 h-6 rounded-xl hover:bg-slate-800' : 'px-3 py-2',
+        selected ? 'bg-black' : ''
       )}
       onClick={onClick}
     >
-      <Icon icon={icon} size={iconSize} color="white" />
+      <Icon icon={icon} size={iconSize} color={color} />
     </button>
   </div>
 );

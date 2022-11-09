@@ -26,28 +26,39 @@ export const TiledEditor = ({
   tileWidth,
   tileHeight,
 }: EditorProps) => {
-  const { zoomInHandler, zoomOutHandler } = useTiledEditor(
-    mapWidth,
-    mapHeight,
-    tileWidth,
-    tileHeight
-  );
+  const {
+    zoomInHandler,
+    zoomOutHandler,
+    eraseTilesHandler,
+    eraseToolSelected,
+  } = useTiledEditor(mapWidth, mapHeight, tileWidth, tileHeight);
 
   return (
     <div className="tiled-editor-root flex-1 h-full bg-gray-300 relative">
       {/* empty content to hold pixi application canvas */}
-      <div className="absolute top-4 right-4 w-6 h-14">
+      {/* vertical tool bar */}
+      <div className="absolute top-4 right-4 w-6 h-64 ">
         <IconToolButton
           mini
           icon="zoom-in"
           iconSize={16}
+          title="Zoom In Map"
           onClick={zoomInHandler}
         />
         <IconToolButton
           mini
           icon="zoom-out"
           iconSize={16}
+          title="Zoom Out Map"
           onClick={zoomOutHandler}
+        />
+        <IconToolButton
+          mini
+          icon="eraser"
+          iconSize={16}
+          title="Erase tiles"
+          selected={eraseToolSelected}
+          onClick={eraseTilesHandler}
         />
       </div>
     </div>
