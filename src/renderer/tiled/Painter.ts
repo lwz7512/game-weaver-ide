@@ -19,6 +19,8 @@ export class TiledPainter extends TiledCore {
   onPointerMoveOnPicker: EventHandler = () => null;
   onWheelMoveOnPicker: EventHandler = () => null;
   onClickTilePicker: EventHandler = () => null;
+  // mode flag decide if its painting or erasing
+  eraseTileMode = false;
 
   /**
    * Add interaction of drawing events
@@ -30,6 +32,10 @@ export class TiledPainter extends TiledCore {
     const app = super.create(session);
     this.listen(app);
     return app;
+  }
+
+  setEraseMode(enabled: boolean) {
+    this.eraseTileMode = enabled;
   }
 
   /**
@@ -62,22 +68,29 @@ export class TiledPainter extends TiledCore {
       const hitRect = this.containInGrid(point, grid);
       // if stage untouched, trying to show tile highlighter ...
       if (!this.stagePressed) {
-        if (!rectEquals(hitRect, this.lastHoverRectInMap)) {
-          this.paintHiligherOnGameMap(hitRect, grid);
-          this.lastHoverRectInMap = hitRect;
+        if (rectEquals(hitRect, this.lastHoverRectInMap)) return;
+        if (this.eraseTileMode) {
+          this.paintEraserOnGameMap(hitRect);
+        } else {
+          this.paintHiligherOnGameMap(hitRect);
         }
+        this.lastHoverRectInMap = hitRect;
         return;
       }
       // or touched on map, do nothing!
       if (this.touchedTileMap) {
-        // do continuous painting with with the same texuture
-        // smearing operation
-        if (!rectEquals(hitRect, this.lastHoverRectInMap)) {
-          window.requestAnimationFrame(() =>
-            this.paintTileOnGameMap(hitRect, grid)
-          );
-          this.lastHoverRectInMap = hitRect;
-        }
+        // do continuous painting with with the same texuture, smearing operation
+        if (rectEquals(hitRect, this.lastHoverRectInMap)) return;
+        // save to go
+        window.requestAnimationFrame(() => {
+          if (this.eraseTileMode) {
+            this.paintEraserOnGameMap(hitRect);
+            return this.eraseTileFromGameMap(hitRect, grid);
+          }
+          this.paintTileOnGameMap(hitRect, grid);
+          this.paintHiligherOnGameMap(hitRect);
+        });
+        this.lastHoverRectInMap = hitRect;
         return;
       }
 

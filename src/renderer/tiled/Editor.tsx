@@ -60,6 +60,13 @@ export const TiledEditor = ({
           selected={eraseToolSelected}
           onClick={eraseTilesHandler}
         />
+        <IconToolButton
+          mini
+          icon="help"
+          iconSize={16}
+          title="How to..."
+          onClick={() => null}
+        />
       </div>
     </div>
   );

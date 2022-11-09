@@ -2,7 +2,7 @@
  * Created at 2022/10/10
  */
 import * as PIXI from 'pixi.js';
-import { EventSystem, FederatedPointerEvent } from '@pixi/events';
+import { EventSystem } from '@pixi/events';
 import { Graphics, Rectangle, Sprite } from 'pixi.js';
 import { BaseEditor, rectEquals, GamTilesLayer } from './Base';
 import { DrawingSession } from '../config';
@@ -56,9 +56,10 @@ export class TiledCore extends BaseEditor {
   tileScale = 1;
 
   /**
-   * painted tile coordinates cache
-   * save the relationship between:
-   * x_y : sprite
+   * Painted tile coordinates cache
+   * save the relationship with (x_y : sprite) pair
+   * key `${x}_${y}` indicate the tile index from tile row and column;
+   * value sprite indicate the displayobject in the map
    */
   paintedTilesCache = new Map<string, PIXI.Sprite>();
 
@@ -133,6 +134,11 @@ export class TiledCore extends BaseEditor {
   resetApp(width: number, height: number) {
     const size = `width:${width}px;height:${height}px;`;
     this.rootElement.setAttribute('style', size);
+    const canvas = this.rootElement.querySelector(
+      'canvas'
+    ) as HTMLCanvasElement;
+    canvas.setAttribute('width', `${width}`);
+    canvas.setAttribute('height', `${height}`);
     // redraw background and border...
     this.drawEditorStage();
     this.drawMapGrid();
@@ -498,7 +504,24 @@ export class TiledCore extends BaseEditor {
     }
   }
 
-  paintHiligherOnGameMap(hitRect: PIXI.Rectangle, grid: PIXI.Rectangle[][]) {
+  /**
+   * erase tile from current rectangle
+   *
+   * @param hitRect
+   * @param grid
+   */
+  eraseTileFromGameMap(hitRect: PIXI.Rectangle, grid: PIXI.Rectangle[][]) {
+    const [x, y] = this.findCoordinateFromTileGrid(hitRect, grid);
+    const isExisting = this.paintedTilesCache.has(`${x}_${y}`);
+    if (!isExisting) return; // no tile painted
+
+    const key = `${x}_${y}`;
+    const tile = this.paintedTilesCache.get(key) as Sprite;
+    this.paintedTileMap?.removeChild(tile);
+    this.paintedTilesCache.delete(key);
+  }
+
+  paintHiligherOnGameMap(hitRect: PIXI.Rectangle) {
     if (!this.hoveredMapLayer) return;
     const texture = this.getSelectedTexture();
     if (!texture) return;
@@ -514,6 +537,15 @@ export class TiledCore extends BaseEditor {
     tile.height = hitRect.height;
     tile.alpha = 0.6;
     this.hoveredMapLayer.addChild(tile);
+  }
+
+  paintEraserOnGameMap(hitRect: PIXI.Rectangle) {
+    if (!this.hoveredMapLayer) return;
+    const { x, y, width, height } = hitRect;
+    this.hoveredMapLayer.clear();
+    this.hoveredMapLayer.beginFill(0xffffff);
+    this.hoveredMapLayer.drawRect(x, y, width, height);
+    this.hoveredMapLayer.endFill();
   }
 
   scaleTileMap() {

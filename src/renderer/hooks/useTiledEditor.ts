@@ -31,6 +31,7 @@ export const useTiledEditor = (
     const relayoutEditor = (entries: ResizeObserverEntry[]) => {
       if (editorRef.current) {
         const { width: bw, height: bh } = entries[0].contentRect;
+        // 298 = left module bar width 56px + right panel width 240px + 2px
         editorRef.current.resetApp(bw - 298, bh);
         return;
       }
@@ -64,7 +65,7 @@ export const useTiledEditor = (
       (editorRef.current as TiledPainter).destroy();
       editorRef.current = null; // clear the instance
       observer.unobserve(body);
-      console.log('>>>> tiled editer destroy ...');
+      // console.log('>>>> tiled editer destroy ...');
     };
   }, [mapWidth, mapHeight, tileWidth, tileHeight]);
 
@@ -94,16 +95,17 @@ export const useTiledEditor = (
   }, [tileWidth, tileHeight]);
 
   const zoomInHandler = () => {
-    editorRef.current && editorRef.current.zoomIn();
+    editorRef.current?.zoomIn();
   };
 
   const zoomOutHandler = () => {
-    editorRef.current && editorRef.current.zoomOut();
+    editorRef.current?.zoomOut();
   };
 
   const eraseTilesHandler = () => {
     setEraseToolSelected(!eraseToolSelected);
-    // TODO: ...save erase mode to editor
+    // save erase mode to editor
+    editorRef.current?.setEraseMode(!eraseToolSelected);
   };
 
   return {

@@ -13,11 +13,11 @@ const ProjectsPage = () => {
           onModuleChanged={onModuleChanged}
         />
         <div className="file-explorer bg-gray-300 w-60 p-2">
-          Project explorer
+          Challenge explorer
         </div>
       </div>
       <div className="flex-1 bg-white">
-        <h1 className=" text-center p-8">Welcome to projects page!</h1>
+        <h1 className=" text-center p-8">Welcome to challenges page!</h1>
       </div>
     </div>
   );
