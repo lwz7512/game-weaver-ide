@@ -23,12 +23,13 @@ export const rectEquals = (
   one: PIXI.Rectangle,
   other: PIXI.Rectangle
 ): boolean => {
+  const fix2digit = (n: number) => +n.toFixed(2);
   return (
     other &&
-    one.x === other.x &&
-    one.y === other.y &&
-    one.width === other.width &&
-    one.height === other.height
+    fix2digit(one.x) === fix2digit(other.x) &&
+    fix2digit(one.y) === fix2digit(other.y) &&
+    fix2digit(one.width) === fix2digit(other.width) &&
+    fix2digit(one.height) === fix2digit(other.height)
   );
 };
 

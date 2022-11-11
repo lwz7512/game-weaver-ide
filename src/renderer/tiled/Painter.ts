@@ -36,6 +36,7 @@ export class TiledPainter extends TiledCore {
 
   setEraseMode(enabled: boolean) {
     this.eraseTileMode = enabled;
+    this.hoveredMapLayer?.clear();
   }
 
   /**
@@ -169,6 +170,7 @@ export class TiledPainter extends TiledCore {
       this.tilesStartX += diffX;
       this.tilesStartY += diffY;
       this.translateTilePicker(diffX, diffY, tw, th);
+      this.translateSelectedTileInPicker(diffX, diffY);
     };
 
     this.onWheelMoveOnPicker = (event: Event) => {
@@ -195,7 +197,7 @@ export class TiledPainter extends TiledCore {
       const grid = this.buildTileGridInPicker();
       const hitRect = this.containInGrid(point, grid);
       this.drawTilePickerHoverRects(hitRect);
-      this.lastSelectedRectInPicker = hitRect;
+      this.saveLastHitRectangle(hitRect);
     };
 
     this.onClickPaintOnMap = (event: Event) => {

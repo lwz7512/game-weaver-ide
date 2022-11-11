@@ -75,7 +75,7 @@ export class TiledCore extends BaseEditor {
     const config = {
       width: this.appWidth,
       height: this.appHeight,
-      backgroundColor: 0xd4d4d8, // gray
+      backgroundColor: 0xa1a1aa, // gray: 0xd4d4d8
       resolution: 1,
       resizeTo: parentElement, // adapt to parent element size
     };
@@ -134,9 +134,7 @@ export class TiledCore extends BaseEditor {
   resetApp(width: number, height: number) {
     const size = `width:${width}px;height:${height}px;`;
     this.rootElement.setAttribute('style', size);
-    const canvas = this.rootElement.querySelector(
-      'canvas'
-    ) as HTMLCanvasElement;
+    const canvas = this.app?.view as HTMLCanvasElement;
     canvas.setAttribute('width', `${width}`);
     canvas.setAttribute('height', `${height}`);
     // redraw background and border...
@@ -624,6 +622,29 @@ export class TiledCore extends BaseEditor {
     });
   }
 
+  translateSelectedTileInPicker(diffX: number, diffY: number) {
+    const isEmptyRect = this.checkIsEmptyRect(this.lastSelectedRectInPicker);
+    if (isEmptyRect) return;
+    const { x, y, width, height } = this.lastSelectedRectInPicker;
+    this.lastSelectedRectInPicker = new PIXI.Rectangle(
+      x + diffX,
+      y + diffY,
+      width,
+      height
+    );
+    const hoverTileLayer = this.selectedTileLayer as PIXI.Graphics;
+    hoverTileLayer.clear();
+    hoverTileLayer.beginFill(0x0000ff, 0.5);
+    hoverTileLayer.drawRect(x + diffX, y + diffY, width, height);
+    hoverTileLayer.endFill();
+  }
+
+  saveLastHitRectangle(hitRect: PIXI.Rectangle) {
+    const isEmptyRect = this.checkIsEmptyRect(hitRect);
+    if (isEmptyRect) return;
+    this.lastSelectedRectInPicker = hitRect;
+  }
+
   buildTileGridInPicker(): PIXI.Rectangle[][] {
     if (!this.tiles) return [];
 
@@ -669,7 +690,6 @@ export class TiledCore extends BaseEditor {
 
   getSelectedTexture() {
     if (this.checkIsEmptyRect(this.lastSelectedRectInPicker)) return null;
-
     const tilegrid = this.buildTileGridInPicker();
     const [x, y] = this.findCoordinateFromTileGrid(
       this.lastSelectedRectInPicker,
