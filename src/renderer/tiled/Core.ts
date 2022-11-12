@@ -30,7 +30,6 @@ export class TiledCore extends BaseEditor {
   mapDrawLayer: PIXI.Graphics | null = null;
   hoveredMapLayer: PIXI.Graphics | null = null;
   mapInterectLayer: PIXI.Graphics | null = null;
-  lastHoverRectInMap: PIXI.Rectangle = PIXI.Rectangle.EMPTY;
 
   pickerContainer: PIXI.Container | null = null;
   pickerTileMap: PIXI.Container | null = null;
@@ -38,6 +37,7 @@ export class TiledCore extends BaseEditor {
   selectedTileLayer: PIXI.Graphics | null = null;
   lastHoverRectInPicker: PIXI.Rectangle = PIXI.Rectangle.EMPTY;
   lastSelectedRectInPicker: PIXI.Rectangle = PIXI.Rectangle.EMPTY;
+  lastSelectedTilePosition: PIXI.Point | null = null; // (x: columnIndex, y: rowIndex)
 
   mapScale = 0.6;
   mapMarginX = 100;
@@ -236,8 +236,7 @@ export class TiledCore extends BaseEditor {
     // draw mask to the bottom of map
     maskBtm.drawRect(0, mapAreaH, pickerAreaW + 1, pickerAreaH);
     maskBtm.endFill();
-    const pickerTileMap = this.pickerTileMap as PIXI.Container;
-    pickerTileMap.mask = maskBtm;
+    pickerContainer.mask = maskBtm;
 
     const pickerInteractLayer = this.pickerInteractLayer as PIXI.Graphics;
     pickerInteractLayer.clear();
@@ -592,6 +591,25 @@ export class TiledCore extends BaseEditor {
   }
 
   /**
+   * step4: redraw selected tile
+   */
+  scaleSelectedTileInPicker(tw: number, th: number) {
+    if (!this.lastSelectedTilePosition) return;
+    const gap = 1;
+    const { x, y } = this.lastSelectedTilePosition;
+    const xPos = x * (tw + gap) + this.tilesStartX;
+    const yPos = y * (th + gap) + this.tilesStartY;
+    // save it to latest position
+    this.lastSelectedRectInPicker = new PIXI.Rectangle(xPos, yPos, tw, th);
+    // visualize
+    const hoverTileLayer = this.selectedTileLayer as PIXI.Graphics;
+    hoverTileLayer.clear();
+    hoverTileLayer.beginFill(0x0000ff, 0.5);
+    hoverTileLayer.drawRect(xPos, yPos, tw, th);
+    hoverTileLayer.endFill();
+  }
+
+  /**
    * move tiles no need to consider scale operation
    * @param diffX
    * @param diffY
@@ -626,12 +644,14 @@ export class TiledCore extends BaseEditor {
     const isEmptyRect = this.checkIsEmptyRect(this.lastSelectedRectInPicker);
     if (isEmptyRect) return;
     const { x, y, width, height } = this.lastSelectedRectInPicker;
+    // save it to latest position
     this.lastSelectedRectInPicker = new PIXI.Rectangle(
       x + diffX,
       y + diffY,
       width,
       height
     );
+    // visualize
     const hoverTileLayer = this.selectedTileLayer as PIXI.Graphics;
     hoverTileLayer.clear();
     hoverTileLayer.beginFill(0x0000ff, 0.5);
@@ -643,6 +663,9 @@ export class TiledCore extends BaseEditor {
     const isEmptyRect = this.checkIsEmptyRect(hitRect);
     if (isEmptyRect) return;
     this.lastSelectedRectInPicker = hitRect;
+    const tilegrid = this.buildTileGridInPicker();
+    const [x, y] = this.findCoordinateFromTileGrid(hitRect, tilegrid);
+    this.lastSelectedTilePosition = new PIXI.Point(x, y);
   }
 
   buildTileGridInPicker(): PIXI.Rectangle[][] {
@@ -690,11 +713,7 @@ export class TiledCore extends BaseEditor {
 
   getSelectedTexture() {
     if (this.checkIsEmptyRect(this.lastSelectedRectInPicker)) return null;
-    const tilegrid = this.buildTileGridInPicker();
-    const [x, y] = this.findCoordinateFromTileGrid(
-      this.lastSelectedRectInPicker,
-      tilegrid
-    );
+    const { x, y } = this.lastSelectedTilePosition as PIXI.Point;
     return this.findTextureByCoordinate(x, y);
   }
 

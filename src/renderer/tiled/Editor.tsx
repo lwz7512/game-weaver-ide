@@ -34,7 +34,7 @@ export const TiledEditor = ({
   } = useTiledEditor(mapWidth, mapHeight, tileWidth, tileHeight);
 
   return (
-    <div className="tiled-editor-root flex-1 h-full bg-gray-300 relative">
+    <div className="tiled-editor-root flex-1 h-full bg-gray-300 relative cursor-pointer">
       {/* empty content to hold pixi application canvas */}
       {/* vertical tool bar */}
       <div className="absolute top-4 right-4 w-6 h-64 ">

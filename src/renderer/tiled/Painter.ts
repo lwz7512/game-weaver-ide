@@ -10,6 +10,9 @@ import { TiledCore } from './Core';
 type EventHandler = (event: Event) => void;
 
 export class TiledPainter extends TiledCore {
+  lastHoverRectInMap: PIXI.Rectangle = PIXI.Rectangle.EMPTY;
+  // mode flag decide if its painting or erasing
+  eraseTileMode = false;
   // *** action listeners ***
   onPointerDownStage: EventHandler = () => null;
   onPointerUpStage: EventHandler = () => null;
@@ -19,8 +22,6 @@ export class TiledPainter extends TiledCore {
   onPointerMoveOnPicker: EventHandler = () => null;
   onWheelMoveOnPicker: EventHandler = () => null;
   onClickTilePicker: EventHandler = () => null;
-  // mode flag decide if its painting or erasing
-  eraseTileMode = false;
 
   /**
    * Add interaction of drawing events
@@ -45,6 +46,17 @@ export class TiledPainter extends TiledCore {
    * @param app
    */
   protected listen(app: PIXI.Application) {
+    this.listenOnStageInteraction(app);
+    this.listenOnMapInteraction();
+    this.listenOnPickerInteraction();
+  }
+
+  /* ***********************************************************
+   * 1. Handle stage interaction:
+   * pointer down & up events
+   * @param app
+   */
+  listenOnStageInteraction(app: PIXI.Application) {
     this.onPointerDownStage = (event: Event) => {
       this.stagePressed = true;
       const fdEvent = event as FederatedPointerEvent;
@@ -60,6 +72,18 @@ export class TiledPainter extends TiledCore {
       this.stagePressed = false;
     };
 
+    app.stage.interactive = true;
+    // this.app.stage.hitArea = renderer.screen;
+    app.stage.addEventListener('pointerdown', this.onPointerDownStage);
+    app.stage.addEventListener('pointerup', this.onPointerUpStage);
+    app.stage.addEventListener('pointerupoutside', this.onPointerUpStage);
+  }
+
+  /* ***********************************************************
+   * 2. Handle map interaction:
+   * pointer move, wheel scroll, click events
+   */
+  listenOnMapInteraction() {
     this.onPointerMoveOnMap = (event: Event) => {
       const fdEvent = event as FederatedPointerEvent;
       const currentX = fdEvent.globalX;
@@ -141,6 +165,40 @@ export class TiledPainter extends TiledCore {
       this.scaleTileMap();
     };
 
+    this.onClickPaintOnMap = (event: Event) => {
+      const fdEvent = event as FederatedPointerEvent;
+      const pointerX = fdEvent.globalX;
+      const pointerY = fdEvent.globalY;
+      const sameX = this.clickStartXpos === pointerX;
+      const sameY = this.clickStartYpos === pointerY;
+      if (!sameX && !sameY) return;
+
+      const point = new PIXI.Point(pointerX, pointerY);
+      const grid = this.buildTileGridInMap();
+      const hitRect = this.containInGrid(point, grid);
+      if (this.checkIsNotEmptyRect(hitRect)) {
+        if (this.eraseTileMode) {
+          return this.eraseTileFromGameMap(hitRect, grid);
+        }
+        this.paintTileOnGameMap(hitRect, grid);
+      }
+    };
+
+    if (this.mapInterectLayer) {
+      this.mapInterectLayer.addEventListener(
+        'pointermove',
+        this.onPointerMoveOnMap
+      );
+      this.mapInterectLayer.addEventListener('wheel', this.onWheelMoveOnMap);
+      this.mapInterectLayer.addEventListener('click', this.onClickPaintOnMap);
+    }
+  }
+
+  /* ***********************************************************
+   * 3. Handle tile picker interaction:
+   * pointer move, wheel scroll, click events
+   */
+  listenOnPickerInteraction() {
     this.onPointerMoveOnPicker = (event: Event) => {
       const fdEvent = event as FederatedPointerEvent;
       // drawing the tile highlight rectangle in the `selectedTileLayer`
@@ -182,6 +240,7 @@ export class TiledPainter extends TiledCore {
       const tw = this.tileWidth * this.tileScale;
       const th = this.tileHeight * this.tileScale;
       this.scaleTilePicker(tw, th);
+      this.scaleSelectedTileInPicker(tw, th);
     };
 
     // draw selected cell(border & fill) on background graphics...
@@ -200,31 +259,6 @@ export class TiledPainter extends TiledCore {
       this.saveLastHitRectangle(hitRect);
     };
 
-    this.onClickPaintOnMap = (event: Event) => {
-      const fdEvent = event as FederatedPointerEvent;
-      const pointerX = fdEvent.globalX;
-      const pointerY = fdEvent.globalY;
-      const sameX = this.clickStartXpos === pointerX;
-      const sameY = this.clickStartYpos === pointerY;
-      if (!sameX && !sameY) return;
-
-      const point = new PIXI.Point(pointerX, pointerY);
-      const grid = this.buildTileGridInMap();
-      const hitRect = this.containInGrid(point, grid);
-      if (this.checkIsNotEmptyRect(hitRect)) {
-        this.paintTileOnGameMap(hitRect, grid);
-      }
-    };
-
-    if (this.mapInterectLayer) {
-      this.mapInterectLayer.addEventListener(
-        'pointermove',
-        this.onPointerMoveOnMap
-      );
-      this.mapInterectLayer.addEventListener('wheel', this.onWheelMoveOnMap);
-      this.mapInterectLayer.addEventListener('click', this.onClickPaintOnMap);
-    }
-
     if (this.pickerInteractLayer) {
       this.pickerInteractLayer.addEventListener(
         'pointermove',
@@ -239,12 +273,6 @@ export class TiledPainter extends TiledCore {
         this.onClickTilePicker
       );
     }
-
-    app.stage.interactive = true;
-    // this.app.stage.hitArea = renderer.screen;
-    app.stage.addEventListener('pointerdown', this.onPointerDownStage);
-    app.stage.addEventListener('pointerup', this.onPointerUpStage);
-    app.stage.addEventListener('pointerupoutside', this.onPointerUpStage);
   }
 
   destroy() {

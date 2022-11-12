@@ -74,8 +74,8 @@ export class BaseEditor extends EventTarget {
       for (let j = 0; j < row.length; j += 1) {
         const cell = row[j];
         if (rectEquals(rect, cell)) {
-          coordinate[1] = i;
-          coordinate[0] = j;
+          coordinate[0] = j; // x
+          coordinate[1] = i; // y
         }
       }
     }
