@@ -13,6 +13,7 @@ export class TiledPainter extends TiledCore {
   lastHoverRectInMap: PIXI.Rectangle = PIXI.Rectangle.EMPTY;
   // mode flag decide if its painting or erasing
   eraseTileMode = false;
+  translateMode = false;
   // *** action listeners ***
   onPointerDownStage: EventHandler = () => null;
   onPointerUpStage: EventHandler = () => null;
@@ -38,6 +39,11 @@ export class TiledPainter extends TiledCore {
   setEraseMode(enabled: boolean) {
     this.eraseTileMode = enabled;
     this.hoveredMapLayer?.clear();
+  }
+
+  setTranslateMode(enabled: boolean) {
+    this.translateMode = enabled;
+    this.cleanupHoveredTile();
   }
 
   /**
@@ -97,13 +103,13 @@ export class TiledPainter extends TiledCore {
         if (this.eraseTileMode) {
           this.paintEraserOnGameMap(hitRect);
         } else {
-          this.paintHiligherOnGameMap(hitRect);
+          this.paintHiligherOnGameMap(hitRect, this.translateMode);
         }
         this.lastHoverRectInMap = hitRect;
         return;
       }
-      // or touched on map, do nothing!
-      if (this.touchedTileMap) {
+      // or touched on map, do painting!
+      if (this.touchedTileMap && !this.translateMode) {
         // do continuous painting with with the same texuture, smearing operation
         if (rectEquals(hitRect, this.lastHoverRectInMap)) return;
         // save to go
@@ -122,21 +128,7 @@ export class TiledPainter extends TiledCore {
       // now allowed to translate grid ...
       const diffX = fdEvent.movementX * 0.6;
       const diffY = fdEvent.movementY * 0.6;
-
-      this.mapMarginX += diffX;
-      this.mapMarginY += diffY;
-      // refresh grid
-      this.drawMapGrid();
-
-      // translate tiles
-      this.translateTileMap(diffX, diffY);
-
-      const detail = {
-        mapMarginX: this.mapMarginX,
-        mapMarginY: this.mapMarginY,
-      };
-      // `useTiledEditor` handle this event
-      this.dispatchEvent(new CustomEvent('session', { detail }));
+      this.translateGameMap(diffX, diffY);
     };
 
     this.onWheelMoveOnMap = (event: Event) => {

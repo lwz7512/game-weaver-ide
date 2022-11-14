@@ -31,6 +31,8 @@ export const TiledEditor = ({
     zoomOutHandler,
     eraseTilesHandler,
     eraseToolSelected,
+    translateSelected,
+    translateMapHandler,
   } = useTiledEditor(mapWidth, mapHeight, tileWidth, tileHeight);
 
   return (
@@ -51,6 +53,14 @@ export const TiledEditor = ({
           iconSize={16}
           title="Zoom Out Map"
           onClick={zoomOutHandler}
+        />
+        <IconToolButton
+          mini
+          icon="move"
+          iconSize={16}
+          title="Translate Map"
+          selected={translateSelected}
+          onClick={translateMapHandler}
         />
         <IconToolButton
           mini

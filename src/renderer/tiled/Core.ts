@@ -518,14 +518,14 @@ export class TiledCore extends BaseEditor {
     this.paintedTilesCache.delete(key);
   }
 
-  paintHiligherOnGameMap(hitRect: PIXI.Rectangle) {
+  paintHiligherOnGameMap(hitRect: PIXI.Rectangle, isTranslate?: boolean) {
     if (!this.hoveredMapLayer) return;
+    if (isTranslate) return;
+
     const texture = this.getSelectedTexture();
     if (!texture) return;
     // clean previous sprite first
-    if (this.hoveredMapLayer.children.length) {
-      this.hoveredMapLayer.removeChildAt(0);
-    }
+    this.cleanupHoveredTile();
     // put new highlighter...
     const tile = new Sprite(texture);
     tile.x = hitRect.x;
@@ -534,6 +534,12 @@ export class TiledCore extends BaseEditor {
     tile.height = hitRect.height;
     tile.alpha = 0.6;
     this.hoveredMapLayer.addChild(tile);
+  }
+
+  cleanupHoveredTile() {
+    if (!this.hoveredMapLayer) return;
+    if (!this.hoveredMapLayer.children.length) return;
+    this.hoveredMapLayer.removeChildAt(0);
   }
 
   paintEraserOnGameMap(hitRect: PIXI.Rectangle) {
@@ -657,6 +663,23 @@ export class TiledCore extends BaseEditor {
     hoverTileLayer.beginFill(0x0000ff, 0.5);
     hoverTileLayer.drawRect(x + diffX, y + diffY, width, height);
     hoverTileLayer.endFill();
+  }
+
+  translateGameMap(diffX: number, diffY: number) {
+    this.mapMarginX += diffX;
+    this.mapMarginY += diffY;
+    // refresh grid
+    this.drawMapGrid();
+
+    // translate tiles
+    this.translateTileMap(diffX, diffY);
+
+    const detail = {
+      mapMarginX: this.mapMarginX,
+      mapMarginY: this.mapMarginY,
+    };
+    // `useTiledEditor` handle this event
+    this.dispatchEvent(new CustomEvent('session', { detail }));
   }
 
   saveLastHitRectangle(hitRect: PIXI.Rectangle) {

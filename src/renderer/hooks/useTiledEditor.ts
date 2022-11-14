@@ -23,6 +23,7 @@ export const useTiledEditor = (
 ) => {
   const editorRef = useRef<TiledPainter | null>(null);
   const [eraseToolSelected, setEraseToolSelected] = useState(false);
+  const [translateSelected, setTranslateSelected] = useState(false);
 
   /**
    * construct editor
@@ -108,12 +109,19 @@ export const useTiledEditor = (
     editorRef.current?.setEraseMode(!eraseToolSelected);
   };
 
+  const translateMapHandler = () => {
+    setTranslateSelected(!translateSelected);
+    editorRef.current?.setTranslateMode(!translateSelected);
+  };
+
   return {
     editorRef,
     eraseToolSelected,
+    translateSelected,
     zoomInHandler,
     zoomOutHandler,
     eraseTilesHandler,
+    translateMapHandler,
   };
   // end of hook ...
 };

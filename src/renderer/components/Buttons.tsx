@@ -61,6 +61,7 @@ type ModuleButtonProps = {
   module: string;
   currentModule: string;
   disabled?: boolean;
+  title?: string;
   onModuleChanged: (module: string) => void;
 };
 
@@ -69,6 +70,7 @@ export const ModuleToolButton = ({
   module,
   currentModule,
   disabled = false,
+  title = 'Tool',
   onModuleChanged,
 }: ModuleButtonProps) => {
   const active = currentModule === module;
@@ -86,6 +88,7 @@ export const ModuleToolButton = ({
           active ? 'active' : ''
         )}
         disabled={disabled}
+        title={title}
         onClick={() => onModuleChanged(module)}
       >
         <Icon icon={icon} size={24} color="currentColor" />

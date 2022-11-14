@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Button, ButtonGroup } from '@blueprintjs/core';
+
 // import { TiledPanelResizeBar } from '../components/PreviewPanelHandleBar';
 import LeftSideBar from '../components/LeftSideBar';
 import { InputField } from '../components/InputField';
@@ -106,7 +108,15 @@ const TiledEditorPage = () => {
           />
           <MiniIconButton icon="caret-right" onClick={navigateToNext} />
         </div>
-        {/* spritesheet image slider button */}
+        {/* TODO: layer management buttons */}
+        <ButtonGroup className="px-2 py-3" fill>
+          <Button icon="new-layer" title="New Layer" intent="success" />
+          <Button icon="arrow-up" title="Move Layer Up" intent="warning" />
+          <Button icon="arrow-down" title="Move Layer Down" intent="warning" />
+          <Button icon="trash" title="Delete Layer" intent="danger" />
+          <Button icon="floppy-disk" title="Save Map" intent="primary" />
+          <Button icon="export" title="Export To Json File" intent="success" />
+        </ButtonGroup>
       </div>
     </div>
   );

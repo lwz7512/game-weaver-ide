@@ -32,6 +32,7 @@ const LeftSideBar = ({
         icon="home"
         module={MODULETYPES.WELCOME}
         currentModule={currentModule}
+        title="Welcome"
         onModuleChanged={changeModuleType}
       />
       {/* === CODE MODULE === */}
@@ -40,6 +41,7 @@ const LeftSideBar = ({
         disabled={codeMenuDisabled}
         module={MODULETYPES.CODE}
         currentModule={currentModule}
+        title="Game Coding Environment"
         onModuleChanged={changeModuleType}
       />
       {/* === TILED MODULE === */}
@@ -47,6 +49,7 @@ const LeftSideBar = ({
         icon="style"
         module={MODULETYPES.TILED}
         currentModule={currentModule}
+        title="Game Map Editor"
         onModuleChanged={changeModuleType}
       />
       {/* === CODE BLOCK === */}
@@ -54,6 +57,7 @@ const LeftSideBar = ({
         icon="code-block"
         module={MODULETYPES.BLOCKS}
         currentModule={currentModule}
+        title="Phaser Game Examples"
         onModuleChanged={changeModuleType}
       />
       {/* === LEARNING MODULE === */}
@@ -61,6 +65,7 @@ const LeftSideBar = ({
         icon="learning"
         module={MODULETYPES.LEARN}
         currentModule={currentModule}
+        title="Tutorial and Docs"
         onModuleChanged={changeModuleType}
       />
       {/* === PROJECTS MODULE === */}
@@ -68,6 +73,7 @@ const LeftSideBar = ({
         icon="projects"
         module={MODULETYPES.PROJECTS}
         currentModule={currentModule}
+        title="Coding Challenges"
         onModuleChanged={changeModuleType}
       />
       {/* SPACER */}
@@ -77,6 +83,7 @@ const LeftSideBar = ({
         icon="user"
         module={MODULETYPES.USER}
         currentModule={currentModule}
+        title="User Profile"
         onModuleChanged={changeModuleType}
       />
       {/* === SETTINGS MODULE === */}
@@ -84,6 +91,7 @@ const LeftSideBar = ({
         icon="cog"
         module={MODULETYPES.SETTING}
         currentModule={currentModule}
+        title="Settings"
         onModuleChanged={changeModuleType}
       />
     </div>
