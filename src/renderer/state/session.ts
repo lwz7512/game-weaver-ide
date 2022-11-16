@@ -15,3 +15,5 @@ export const setDrawingSession = (session: GeneralObject) => {
 };
 
 export const getDrawingSession = () => drawingTileSession;
+
+export const getSessionBy = (key: string) => drawingTileSession[key] || '';

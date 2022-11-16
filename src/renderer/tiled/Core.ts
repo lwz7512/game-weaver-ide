@@ -40,8 +40,8 @@ export class TiledCore extends BaseEditor {
   lastSelectedTilePosition: PIXI.Point | null = null; // (x: columnIndex, y: rowIndex)
 
   mapScale = 0.6;
-  mapMarginX = 100;
-  mapMarginY = 100;
+  mapMarginX = 150;
+  mapMarginY = 60;
   mapHeightRatio = 0.7;
 
   stagePressed = false;
@@ -332,7 +332,7 @@ export class TiledCore extends BaseEditor {
     for (let i = 1; i < rowNumOfDots; i += 1) {
       for (let j = 1; j < colNumOfDots; j += 1) {
         robot.moveTo(j * cellSize, i * cellSize);
-        robot.lineStyle(1, 0x666666, 1);
+        robot.lineStyle(1, 0x333333, 1);
         robot.lineTo(j * cellSize + 1, i * cellSize + 1);
         robot.lineStyle(1, 0xffffff, 1);
         robot.lineTo(j * cellSize + 2, i * cellSize + 2);

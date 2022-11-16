@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { TiledPainter } from '../tiled/Painter';
 import { GWEvent } from '../tiled/Events';
 import { setDrawingSession, getDrawingSession } from '../state/session';
-import { getTileSheetBy } from './useSpriteSheetImage';
+import { getTileSheetBy } from '../state/cache';
 
 /**
  * Core tiled editor interaction with page UI
@@ -32,8 +32,10 @@ export const useTiledEditor = (
     const relayoutEditor = (entries: ResizeObserverEntry[]) => {
       if (editorRef.current) {
         const { width: bw, height: bh } = entries[0].contentRect;
+        const editor = editorRef.current;
         // 298 = left module bar width 56px + right panel width 240px + 2px
-        editorRef.current.resetApp(bw - 298, bh);
+        editor.resetApp(bw - 298, bh);
+        editor.layout(mapWidth, mapHeight, tileWidth, tileHeight);
         return;
       }
       const selector = '.tiled-editor-root';

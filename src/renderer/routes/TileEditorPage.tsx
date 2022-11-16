@@ -1,7 +1,5 @@
-import { useState } from 'react';
 import { Button, ButtonGroup } from '@blueprintjs/core';
 
-// import { TiledPanelResizeBar } from '../components/PreviewPanelHandleBar';
 import LeftSideBar from '../components/LeftSideBar';
 import { InputField } from '../components/InputField';
 import { MODULETYPES } from '../config';
@@ -9,16 +7,22 @@ import useLeftSideBar from '../hooks/useLeftSideBar';
 import { TiledEditor } from '../tiled/Editor';
 import { useSpriteSheetImage } from '../hooks/useSpriteSheetImage';
 import { useSpritesPreview } from '../hooks/useSpritesPreview';
+import { useMapDimension } from '../hooks/useMapSession';
 import { MiniIconButton } from '../components/Buttons';
 
 const TiledEditorPage = () => {
   const { onModuleChanged } = useLeftSideBar();
   // define tilemap parameters
-  const [mapHeight, setMapHeight] = useState('20');
-  const [mapWidth, setMapWidth] = useState('30');
-  const [tileHeight, setTileHeight] = useState('32');
-  const [tileWidth, setTileWidth] = useState('32');
-
+  const {
+    mapHeight,
+    setMapHeight,
+    mapWidth,
+    setMapWidth,
+    tileHeight,
+    setTileHeight,
+    tileWidth,
+    setTileWidth,
+  } = useMapDimension();
   const {
     dots,
     selectedImage,
