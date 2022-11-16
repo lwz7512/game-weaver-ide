@@ -47,12 +47,15 @@ export const useSelectedTileSheet = () => {
 
   useEffect(() => {
     if (!selectedImage) return;
-
-    // notify editor to `drawTilePicker`
-    const detail = { detail: selectedImage };
-    const customEvt = new CustomEvent(GWEvent.SELECTEDIMAGE, detail);
-    document.dispatchEvent(customEvt);
-
+    // FIXME: lazyness notify editor to `drawTilePicker`
+    // to waiting for editor creation when switch back from other page
+    // @2022/11/16
+    setTimeout(() => {
+      const detail = { detail: selectedImage };
+      const customEvt = new CustomEvent(GWEvent.SELECTEDIMAGE, detail);
+      document.dispatchEvent(customEvt);
+    });
+    // cache it
     setDrawingSession({ selectedImage });
   }, [selectedImage]);
 

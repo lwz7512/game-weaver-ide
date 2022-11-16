@@ -8,6 +8,11 @@ import { DrawingSession, GeneralObject } from '../config';
 
 const drawingTileSession: DrawingSession = {};
 
+/**
+ * save an object to session cache
+ *
+ * @param session ordinary obj
+ */
 export const setDrawingSession = (session: GeneralObject) => {
   Object.keys(session).forEach((key) => {
     drawingTileSession[key] = session[key];
@@ -15,5 +20,4 @@ export const setDrawingSession = (session: GeneralObject) => {
 };
 
 export const getDrawingSession = () => drawingTileSession;
-
 export const getSessionBy = (key: string) => drawingTileSession[key] || '';

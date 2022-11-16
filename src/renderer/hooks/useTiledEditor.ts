@@ -56,7 +56,6 @@ export const useTiledEditor = (
         const newSession = { ...session, ...customEvt.detail };
         setDrawingSession(newSession);
       });
-      // console.log('>>> recreate editor...');
     };
     // FIXME: observing body is the right way to respond to devtool toggling
     // @2022/11/04
@@ -68,7 +67,6 @@ export const useTiledEditor = (
       (editorRef.current as TiledPainter).destroy();
       editorRef.current = null; // clear the instance
       observer.unobserve(body);
-      // console.log('>>>> tiled editer destroy ...');
     };
   }, [mapWidth, mapHeight, tileWidth, tileHeight]);
 

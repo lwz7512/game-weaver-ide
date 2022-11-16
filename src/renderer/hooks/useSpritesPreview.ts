@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { getPreviewImageTiles } from './useSpriteSheetImage';
+import { getPreviewImageTiles } from '../state/cache';
 
 /**
  * Draw 24 tiles image idata to canvas

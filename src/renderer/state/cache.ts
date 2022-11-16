@@ -1,3 +1,7 @@
+/**
+ * Created @2022/11/15
+ */
+
 import * as PIXI from 'pixi.js';
 
 type FileBlob = {
