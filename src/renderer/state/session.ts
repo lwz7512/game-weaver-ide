@@ -4,9 +4,9 @@
  * Created @2022/10/18
  */
 
-import { DrawingSession, GeneralObject } from '../config';
+import { GeneralObject } from '../config';
 
-const drawingTileSession: DrawingSession = {};
+const drawingTileSession: GeneralObject = {};
 
 /**
  * save an object to session cache
@@ -20,4 +20,4 @@ export const setDrawingSession = (session: GeneralObject) => {
 };
 
 export const getDrawingSession = () => drawingTileSession;
-export const getSessionBy = (key: string) => drawingTileSession[key] || '';
+export const getSessionBy = (key: string) => drawingTileSession[key];

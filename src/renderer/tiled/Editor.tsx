@@ -27,11 +27,11 @@ export const TiledEditor = ({
   tileHeight,
 }: EditorProps) => {
   const {
+    eraseToolSelected,
+    translateSelected,
     zoomInHandler,
     zoomOutHandler,
     eraseTilesHandler,
-    eraseToolSelected,
-    translateSelected,
     translateMapHandler,
   } = useTiledEditor(mapWidth, mapHeight, tileWidth, tileHeight);
 

@@ -20,10 +20,10 @@ export type IFrameContext = {
   handler: (...args: unknown[]) => void;
 };
 
-export type DrawingSession = {
-  [key: string]: number | string;
-};
+// export type DrawingSession = {
+//   [key: string]: number | string;
+// };
 
 export type GeneralObject = {
-  [key: string]: number | string;
+  [key: string]: boolean | number | string | number[] | string[];
 };

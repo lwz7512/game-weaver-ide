@@ -48,6 +48,8 @@ export const useTiledEditor = (
       editor.create(session);
       // now start draw
       editor.layout(mapWidth, mapHeight, tileWidth, tileHeight);
+      // paint from cached layer info
+      editor.paintMapLayer(session);
       // listen editor change
       // add more session data to keep the editor status including tiles...
       editor.addEventListener('session', (event: Event) => {
@@ -71,7 +73,7 @@ export const useTiledEditor = (
   }, [mapWidth, mapHeight, tileWidth, tileHeight]);
 
   /**
-   * draw tiles from tile sheet image
+   * draw tiles from tile sheet image, driven by `useSelectedTileSheet`
    */
   useEffect(() => {
     const selectedImageChangeHandler = (evt: Event) => {

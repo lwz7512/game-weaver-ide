@@ -3,7 +3,12 @@ import { setDrawingSession, getSessionBy } from '../state/session';
 
 import { GWEvent } from '../tiled/Events';
 
+/**
+ * Used in `TiledEditorPage`
+ * @returns
+ */
 export const useMapDimension = () => {
+  // TODO: check these value first from cache
   const [mapHeight, setMapHeight] = useState('20');
   const [mapWidth, setMapWidth] = useState('30');
   const [tileHeight, setTileHeight] = useState('32');
@@ -41,6 +46,11 @@ export const useMapDimension = () => {
   };
 };
 
+/**
+ * Used in `useSpriteSheetImage`
+ *
+ * @returns
+ */
 export const useSelectedTileSheet = () => {
   const cachedSelectedImage = getSessionBy('selectedImage') as string;
   const [selectedImage, setSelectedImage] = useState(cachedSelectedImage);
@@ -55,7 +65,7 @@ export const useSelectedTileSheet = () => {
       const customEvt = new CustomEvent(GWEvent.SELECTEDIMAGE, detail);
       document.dispatchEvent(customEvt);
     });
-    // cache it
+    // cache it while select changed
     setDrawingSession({ selectedImage });
   }, [selectedImage]);
 

@@ -6,7 +6,7 @@ import * as PIXI from 'pixi.js';
 
 import bunnyImage from '../assets/bunny.png';
 
-export type GamTilesLayer = {
+export type GameTilesLayer = {
   id?: number;
   x?: number;
   y?: number;
@@ -16,7 +16,7 @@ export type GamTilesLayer = {
   opacity?: number;
   type?: string;
   visible?: boolean;
-  data: number[]; // one layer tile id, array length is width * height
+  grid: number[][]; // hold painted tile id
 };
 
 export const rectEquals = (
@@ -80,6 +80,27 @@ export class BaseEditor extends EventTarget {
       }
     }
     return coordinate;
+  }
+
+  makeEmptyMapLayerGrid(mapWidth: number, mapHeight: number) {
+    const grid = new Array(mapHeight);
+    return grid.map(() => new Array(mapWidth).fill(0));
+  }
+
+  flattenGrid(grid: number[][]): number[] {
+    return grid.reduce((prev: number[], row: number[]) => {
+      return prev.concat(...row);
+    }, []);
+  }
+
+  rebuildGridFromFlat(flatGrid: number[], columnSize: number): number[][] {
+    if (columnSize === 0) return [];
+    const grid = [];
+    const rowSize = flatGrid.length / columnSize;
+    for (let i = 0; i < rowSize; i += 1) {
+      grid.push(flatGrid.slice(i * columnSize, (i + 1) * columnSize));
+    }
+    return grid;
   }
 
   // more method ....

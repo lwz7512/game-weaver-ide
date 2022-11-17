@@ -4,7 +4,7 @@
 import * as PIXI from 'pixi.js';
 import { FederatedPointerEvent } from '@pixi/events';
 import { rectEquals } from './Base';
-import { DrawingSession } from '../config';
+import { GeneralObject } from '../config';
 import { TiledCore } from './Core';
 
 type EventHandler = (event: Event) => void;
@@ -30,7 +30,7 @@ export class TiledPainter extends TiledCore {
    * @param session
    * @returns
    */
-  create(session?: DrawingSession): PIXI.Application {
+  create(session?: GeneralObject): PIXI.Application {
     const app = super.create(session);
     this.listen(app);
     return app;
