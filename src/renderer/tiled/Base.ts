@@ -4,7 +4,7 @@
 
 import * as PIXI from 'pixi.js';
 
-import bunnyImage from '../assets/bunny.png';
+import { getSessionBy } from '../state/session';
 
 export type GameTilesLayer = {
   id?: number;
@@ -33,25 +33,33 @@ export const rectEquals = (
   );
 };
 
+type LayerTextureType = number[] | number | undefined;
+
+/**
+ * ================= Base Editor Class =========================
+ * to do trivial stuff
+ * =============================================================
+ */
 export class BaseEditor extends EventTarget {
   protected basicText: PIXI.Text | null = null;
 
-  // hold some basic method ...
-
-  checkIsNotEmptyRect(hitRect: PIXI.Rectangle): boolean {
+  protected checkIsNotEmptyRect(hitRect: PIXI.Rectangle): boolean {
     return !rectEquals(hitRect, PIXI.Rectangle.EMPTY);
   }
 
-  checkIsEmptyRect(hitRect: PIXI.Rectangle): boolean {
+  protected checkIsEmptyRect(hitRect: PIXI.Rectangle): boolean {
     return rectEquals(hitRect, PIXI.Rectangle.EMPTY);
   }
 
-  isTouchedGrid(pt: PIXI.Point, grid: PIXI.Rectangle[][]) {
+  protected isTouchedGrid(pt: PIXI.Point, grid: PIXI.Rectangle[][]) {
     const rect = this.containInGrid(pt, grid);
     return this.checkIsNotEmptyRect(rect);
   }
 
-  containInGrid(pt: PIXI.Point, grid: PIXI.Rectangle[][]): PIXI.Rectangle {
+  protected containInGrid(
+    pt: PIXI.Point,
+    grid: PIXI.Rectangle[][]
+  ): PIXI.Rectangle {
     let result = PIXI.Rectangle.EMPTY;
     for (let i = 0; i < grid.length; i += 1) {
       const column = grid[i];
@@ -64,7 +72,7 @@ export class BaseEditor extends EventTarget {
     return result;
   }
 
-  findCoordinateFromTileGrid(
+  protected findCoordinateFromTileGrid(
     rect: PIXI.Rectangle,
     grid: PIXI.Rectangle[][]
   ): number[] {
@@ -82,8 +90,8 @@ export class BaseEditor extends EventTarget {
     return coordinate;
   }
 
-  makeEmptyMapLayerGrid(mapWidth: number, mapHeight: number) {
-    const grid = new Array(mapHeight);
+  protected makeEmptyMapLayerGrid(mapWidth: number, mapHeight: number) {
+    const grid = new Array(mapHeight).fill(0);
     return grid.map(() => new Array(mapWidth).fill(0));
   }
 
@@ -93,14 +101,37 @@ export class BaseEditor extends EventTarget {
     }, []);
   }
 
-  rebuildGridFromFlat(flatGrid: number[], columnSize: number): number[][] {
-    if (columnSize === 0) return [];
+  protected rebuildGridFromFlat(
+    flatGrid: number[],
+    columnSize: number
+  ): number[][] {
+    if (columnSize === 0 || !flatGrid || !flatGrid.length) return [];
     const grid = [];
     const rowSize = flatGrid.length / columnSize;
     for (let i = 0; i < rowSize; i += 1) {
       grid.push(flatGrid.slice(i * columnSize, (i + 1) * columnSize));
     }
     return grid;
+  }
+
+  protected mergeLayerTexturesFromSession(grid: number[][]) {
+    // check layer existence in session
+    const isLayerPainted = getSessionBy('layerPainted') as boolean;
+    if (!isLayerPainted) return;
+    // prepare to rebuild layer from session ...
+    const columnSize = getSessionBy('columnSize') as number;
+    const flatLayer = getSessionBy('layer_1') as number[];
+    const oldLayerGrid = this.rebuildGridFromFlat(flatLayer, columnSize);
+    const isValid = (id: LayerTextureType) => typeof id !== 'undefined';
+    // need to merge two layers
+    for (let i = 0; i < oldLayerGrid.length; i += 1) {
+      const row = oldLayerGrid[i];
+      for (let j = 0; j < row.length; j += 1) {
+        if (isValid(grid[i]) && isValid(grid[i][j])) {
+          grid[i][j] = row[j]; // value reset from old layer
+        }
+      }
+    }
   }
 
   // more method ....
