@@ -462,7 +462,7 @@ export class TiledCore extends BaseEditor {
     }
   }
 
-  drawTilePickerBackground(
+  protected drawTilePickerBackground(
     background: PIXI.Graphics,
     tw: number,
     th: number,

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { setDrawingSession, getSessionBy } from '../state/session';
+import { setDrawingSession, getSessionToStr } from '../state/session';
 
 import { GWEvent } from '../tiled/Events';
 
@@ -8,41 +8,45 @@ import { GWEvent } from '../tiled/Events';
  * @returns
  */
 export const useMapDimension = () => {
-  // TODO: check these value first from cache
-  const [mapHeight, setMapHeight] = useState('20');
-  const [mapWidth, setMapWidth] = useState('30');
-  const [tileHeight, setTileHeight] = useState('32');
-  const [tileWidth, setTileWidth] = useState('32');
+  const iMH = getSessionToStr('mapHeight') || '20';
+  const iMW = getSessionToStr('mapWidth') || '30';
+  const iTH = getSessionToStr('tileHeight') || '32';
+  const iTW = getSessionToStr('tileWidth') || '32';
 
-  useEffect(() => {
-    const session = {
-      mapHeight,
-      mapWidth,
-      tileHeight,
-      tileWidth,
-    };
-    setDrawingSession(session);
-  }, [mapHeight, mapWidth, tileHeight, tileWidth]);
+  const [mapHeight, setMapHeight] = useState(iMH);
+  const [mapWidth, setMapWidth] = useState(iMW);
+  const [tileHeight, setTileHeight] = useState(iTH);
+  const [tileWidth, setTileWidth] = useState(iTW);
 
-  // TODO: if tileWidth, tileHeight changed, all the tiles in `imageDataCache` should update!
-  useEffect(() => {
-    // if (!tileWidth || !tileHeight) return;
-    // ....reset imageDataCache...
-    // console.log('>>> reset image data cache by:');
-    // console.log({ tileWidth });
-    // console.log({ tileHeight });
-    // ...
-  }, [tileWidth, tileHeight]);
+  const mapHeightChangeHandler = (height: string) => {
+    setDrawingSession({ mapHeight: height });
+    setMapHeight(height);
+  };
+
+  const mapWidthChangeHandler = (width: string) => {
+    setDrawingSession({ mapWidth: width });
+    setMapWidth(width);
+  };
+
+  const tileHeightChangeHandler = (height: string) => {
+    setDrawingSession({ tileHeight: height });
+    setTileHeight(height);
+  };
+
+  const tileWidthChangeHandler = (width: string) => {
+    setDrawingSession({ tileWidth: width });
+    setTileWidth(width);
+  };
 
   return {
     mapHeight,
-    setMapHeight,
     mapWidth,
-    setMapWidth,
     tileHeight,
-    setTileHeight,
     tileWidth,
-    setTileWidth,
+    mapHeightChangeHandler,
+    mapWidthChangeHandler,
+    tileHeightChangeHandler,
+    tileWidthChangeHandler,
   };
 };
 
@@ -52,7 +56,7 @@ export const useMapDimension = () => {
  * @returns
  */
 export const useSelectedTileSheet = () => {
-  const cachedSelectedImage = getSessionBy('selectedImage') as string;
+  const cachedSelectedImage = getSessionToStr('selectedImage');
   const [selectedImage, setSelectedImage] = useState(cachedSelectedImage);
 
   useEffect(() => {

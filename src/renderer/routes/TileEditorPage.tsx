@@ -15,13 +15,13 @@ const TiledEditorPage = () => {
   // define tilemap parameters
   const {
     mapHeight,
-    setMapHeight,
     mapWidth,
-    setMapWidth,
     tileHeight,
-    setTileHeight,
     tileWidth,
-    setTileWidth,
+    mapHeightChangeHandler,
+    mapWidthChangeHandler,
+    tileHeightChangeHandler,
+    tileWidthChangeHandler,
   } = useMapDimension();
   const {
     dots,
@@ -47,7 +47,6 @@ const TiledEditorPage = () => {
         tileWidth={+tileWidth}
       />
       <div className="object-explorer bg-gray-200 w-60">
-        {/* <TiledPanelResizeBar targeSelector=".object-explorer" /> */}
         <h1 className="select-none text-base text-center p-2 bg-slate-600 text-white block mb-0 lg:mb-1">
           Spritesheet Explorer
         </h1>
@@ -57,14 +56,16 @@ const TiledEditorPage = () => {
             name="mapHeight"
             suffix="tiles"
             value={mapHeight}
-            onValueChange={(event) => setMapHeight(event.target.value)}
+            onValueChange={(event) =>
+              mapHeightChangeHandler(event.target.value)
+            }
           />
           <InputField
             title="Map Width"
             name="mapWidth"
             suffix="tiles"
             value={mapWidth}
-            onValueChange={(event) => setMapWidth(event.target.value)}
+            onValueChange={(event) => mapWidthChangeHandler(event.target.value)}
           />
         </div>
         <div className="map-attributes-group px-0 lg:px-2 py-0 ">
@@ -73,14 +74,18 @@ const TiledEditorPage = () => {
             name="tileHeight"
             suffix="px"
             value={tileHeight}
-            onValueChange={(event) => setTileHeight(event.target.value)}
+            onValueChange={(event) =>
+              tileHeightChangeHandler(event.target.value)
+            }
           />
           <InputField
             title="Tile Width"
             name="tileWidth"
             suffix="px"
             value={tileWidth}
-            onValueChange={(event) => setTileWidth(event.target.value)}
+            onValueChange={(event) =>
+              tileWidthChangeHandler(event.target.value)
+            }
           />
         </div>
         {/* open file dialog */}
