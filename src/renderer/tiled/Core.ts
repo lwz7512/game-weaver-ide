@@ -481,7 +481,7 @@ export class TiledCore extends BaseEditor {
         const th = this.tileHeight * this.mapScale;
         const x1 = x0 + j * tw;
         const y1 = y0 + i * th;
-        robot.beginFill(0xd3d7d4, 1); // gray: 0xd4d4d8
+        robot.beginFill(0xd5e4f3, 1); // gray: 0xd4d4d8, light green: 0xd3d7d4
         robot.drawRect(x1, y1, tw, th);
       }
     }
@@ -658,17 +658,17 @@ export class TiledCore extends BaseEditor {
     if (!this.hoveredMapLayer) return;
     if (isTranslate) return;
 
+    // clean previous sprite first
+    this.cleanupHoveredTile();
+    // draw highlighter
     const { x, y, width, height } = hitRect;
     // draw a green rectangle
-    this.hoveredMapLayer.clear();
-    this.hoveredMapLayer.beginFill(0x00ff00, 0.6);
+    this.hoveredMapLayer.beginFill(0x00ff00, 0.8);
     this.hoveredMapLayer.drawRect(x, y, width, height);
     this.hoveredMapLayer.endFill();
     // check texture in use
     const texture = this.getSelectedTexture();
     if (!texture) return;
-    // clean previous sprite first
-    this.cleanupHoveredTile();
     // put new highlighter...
     const tile = new Sprite(texture);
     tile.x = x;
@@ -681,6 +681,7 @@ export class TiledCore extends BaseEditor {
 
   protected cleanupHoveredTile() {
     if (!this.hoveredMapLayer) return;
+    this.hoveredMapLayer.clear();
     if (!this.hoveredMapLayer.children.length) return;
     this.hoveredMapLayer.removeChildAt(0);
   }

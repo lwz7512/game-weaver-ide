@@ -14,9 +14,7 @@ export const context2d = (width: number, height: number, dpi = 1) => {
   const canvas = document.createElement('canvas');
   canvas.width = width * realDpi;
   canvas.height = height * realDpi;
-  // canvas.style.width = `${width}px;`;
   const context = canvas.getContext('2d');
-  context && context.scale(dpi, dpi);
   return context as CTX2D;
 };
 
@@ -82,6 +80,8 @@ export const getImageTextures = (
       cell.width = tw;
       cell.height = th;
       const ctx = cell.getContext('2d') as CTX2D;
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
       ctx.putImageData(cellData, 0, 0);
       const texture = PIXI.Texture.from(cell);
       row.push(texture);
