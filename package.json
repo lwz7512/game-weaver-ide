@@ -1,8 +1,8 @@
 {
   "name": "electoron-game-weaver",
-  "productName": "GameWeaver",
+  "productName": "Game Weaver",
   "version": "0.0.1",
-  "description": "All-in-one Javascript Game IDE",
+  "description": "Javascript Coding Education Kit for kids through game challenges",
   "keywords": [
     "electron",
     "boilerplate",
@@ -210,7 +210,7 @@
     "webpack-merge": "^5.8.0"
   },
   "build": {
-    "productName": "GameWeaver",
+    "productName": "Game Weaver",
     "appId": "com.rainbowcoding.GameWeaver",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",

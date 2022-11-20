@@ -114,6 +114,10 @@ export class BaseEditor extends EventTarget {
     return grid;
   }
 
+  protected isRowCellExist(id: LayerTextureType) {
+    return typeof id !== 'undefined';
+  }
+
   protected mergeLayerTexturesFromSession(grid: number[][]) {
     // check layer existence in session
     const isLayerPainted = getSessionBy('layerPainted') as boolean;
@@ -122,7 +126,7 @@ export class BaseEditor extends EventTarget {
     const columnSize = getSessionBy('columnSize') as number;
     const flatLayer = getSessionBy('layer_1') as number[];
     const oldLayerGrid = this.rebuildGridFromFlat(flatLayer, columnSize);
-    const isValid = (id: LayerTextureType) => typeof id !== 'undefined';
+    const isValid = this.isRowCellExist;
     // need to merge two layers
     for (let i = 0; i < oldLayerGrid.length; i += 1) {
       const row = oldLayerGrid[i];

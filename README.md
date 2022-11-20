@@ -1,6 +1,6 @@
 # Game Weaver
 
-> All in one javascript game authoring environment
+> Javascript Coding Education Kit for kids through game challenges
 
 Created @2022/08/16
 
@@ -22,5 +22,10 @@ Created @2022/08/16
 - HTML5 2D game developement based on phaserjs game template(and pixijs);
 - Tilemap form phaserjs game engine authoring;
 - Game development with live preview;
+
+## Version history
+
+- V0.1 - Game code editor & examples module completion @2022/10/08
+- V0.2 - Game map editor completion @2022/??/??
 
 ## More...

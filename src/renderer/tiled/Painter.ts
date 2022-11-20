@@ -10,6 +10,7 @@ import { TiledCore } from './Core';
 type EventHandler = (event: Event) => void;
 
 export class TiledPainter extends TiledCore {
+  // used to decide if need redraw
   lastHoverRectInMap: PIXI.Rectangle = PIXI.Rectangle.EMPTY;
   // mode flag decide if its painting or erasing
   eraseTileMode = false;
@@ -106,6 +107,10 @@ export class TiledPainter extends TiledCore {
           this.paintHiligherOnGameMap(hitRect, this.translateMode);
         }
         this.lastHoverRectInMap = hitRect;
+        // display cell info
+        const [x, y] = this.findCoordinateFromTileGrid(hitRect, grid);
+        const id = this.findTextureIdFromLayer(1, x, y);
+        this.showCurrentCell(`(${y},${x}) [${id}]`);
         return;
       }
       // or touched on map, do painting!

@@ -33,6 +33,8 @@ export class TiledCore extends BaseEditor {
   hoveredMapLayer: PIXI.Graphics | null = null;
   mapInterectLayer: PIXI.Graphics | null = null;
 
+  cellInfoText: PIXI.Text | null = null;
+
   pickerContainer: PIXI.Container | null = null;
   pickerTileMap: PIXI.Container | null = null;
   pickerInteractLayer: PIXI.Graphics | null = null;
@@ -133,6 +135,7 @@ export class TiledCore extends BaseEditor {
   ) {
     this.setGameDimension(mapWidth, mapHeight, tileWidth, tileHeight);
     this.drawMapGrid();
+    this.showCurrentCell('Welcome!');
   }
 
   /**
@@ -341,6 +344,28 @@ export class TiledCore extends BaseEditor {
     pickerInteractLayer.endFill();
   }
 
+  protected showCurrentCell(info: string) {
+    if (!this.mapInterectLayer || !this.screenRect) return;
+    if (this.cellInfoText) {
+      this.cellInfoText.text = info;
+      return;
+    }
+    const style = new PIXI.TextStyle({
+      dropShadow: true,
+      dropShadowBlur: 1,
+      dropShadowColor: '#ffffff',
+      dropShadowDistance: 1,
+      fill: ['#000000'],
+      fontSize: 12,
+    });
+    const mapAreaW = this.screenRect.width;
+    const mapAreaH = this.screenRect.height * this.mapHeightRatio;
+    this.cellInfoText = new PIXI.Text(info, style);
+    this.cellInfoText.x = mapAreaW - 80;
+    this.cellInfoText.y = mapAreaH - 20;
+    this.mapInterectLayer.addChild(this.cellInfoText);
+  }
+
   /**
    * starting point of a game map
    *
@@ -408,7 +433,7 @@ export class TiledCore extends BaseEditor {
     const mapAreaW = screenRect.width;
     const mapAreaH = screenRect.height * this.mapHeightRatio;
     const cellSize = 16;
-    const rowNumOfDots = Math.ceil(mapAreaH / cellSize);
+    const rowNumOfDots = Math.ceil(mapAreaH / cellSize) - 2;
     const colNumOfDots = Math.ceil(mapAreaW / cellSize);
     // draw pixel dots grid
     for (let i = 1; i < rowNumOfDots; i += 1) {
@@ -633,16 +658,23 @@ export class TiledCore extends BaseEditor {
     if (!this.hoveredMapLayer) return;
     if (isTranslate) return;
 
+    const { x, y, width, height } = hitRect;
+    // draw a green rectangle
+    this.hoveredMapLayer.clear();
+    this.hoveredMapLayer.beginFill(0x00ff00, 0.6);
+    this.hoveredMapLayer.drawRect(x, y, width, height);
+    this.hoveredMapLayer.endFill();
+    // check texture in use
     const texture = this.getSelectedTexture();
     if (!texture) return;
     // clean previous sprite first
     this.cleanupHoveredTile();
     // put new highlighter...
     const tile = new Sprite(texture);
-    tile.x = hitRect.x;
-    tile.y = hitRect.y;
-    tile.width = hitRect.width;
-    tile.height = hitRect.height;
+    tile.x = x;
+    tile.y = y;
+    tile.width = width;
+    tile.height = height;
     tile.alpha = 0.6;
     this.hoveredMapLayer.addChild(tile);
   }
@@ -889,5 +921,16 @@ export class TiledCore extends BaseEditor {
   protected findTextureByCoordinate(x: number, y: number) {
     if (!this.tiles) return null;
     return this.tiles[y][x];
+  }
+
+  protected findTextureIdFromLayer(layerId: number, x: number, y: number) {
+    const layer = this.gameMapLayersInfo.find((l) => l.id === layerId);
+    if (!layer) return 0;
+    const { grid } = layer;
+    const isValid = this.isRowCellExist;
+    if (isValid(grid[y]) && isValid(grid[y][x])) {
+      return grid[y][x];
+    }
+    return 0;
   }
 }

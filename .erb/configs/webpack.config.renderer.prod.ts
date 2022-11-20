@@ -141,6 +141,9 @@ const configuration: webpack.Configuration = {
       },
       isBrowser: false,
       isDevelopment: process.env.NODE_ENV !== 'production',
+      templateParameters: {
+        app_title: 'Javascript Coding Education Kit for kids',
+      },
     }),
     new MonacoWebpackPlugin({
       languages: ['typescript', 'javascript', 'html', 'css'],
