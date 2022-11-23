@@ -3,6 +3,7 @@
  */
 
 import * as PIXI from 'pixi.js';
+import { getImageDataGrid, getImageTextures } from '../tiled/ImageBit';
 
 type FileBlob = {
   path: string; // file path in local directory
@@ -11,6 +12,7 @@ type FileBlob = {
 };
 
 type ImageDataTiles = {
+  context: CanvasRenderingContext2D | null;
   tw: number; // tile width
   th: number; // tile height
   tiles: ImageData[][];
@@ -23,6 +25,12 @@ type ImageCache = { [imgURL: string]: ImageDataTiles };
 const imageBlobs: FileBlob[] = [];
 const imageDataCache: ImageCache = {};
 
+/** *******************************************
+ * most useful api for this cache
+ * @param imgURL local image url
+ * @returns cached textures
+ * *********************************************
+ */
 export const getTileSheetBy = (imgURL: string): ImageDataTiles => {
   return imageDataCache[imgURL];
 };
@@ -65,7 +73,7 @@ export const getPrevImageURL = (imgURL: string): string | null => {
  * @param imgURL image path
  */
 export const getPreviewImageTiles = (imgURL: string): ImageDataTiles => {
-  const empty = { tw: 0, th: 0, tiles: [], textures: [] };
+  const empty = { tw: 0, th: 0, tiles: [], textures: [], context: null };
   if (!imgURL) return empty;
 
   const { tw, th, tiles } = imageDataCache[imgURL] || {};
@@ -85,6 +93,7 @@ export const getPreviewImageTiles = (imgURL: string): ImageDataTiles => {
     th,
     tiles: topLeftTiles,
     textures: [],
+    context: null,
   };
 };
 
@@ -105,16 +114,52 @@ export const cacheImageBlob = (
 };
 
 export const cacheImageTextures = (
+  context: CanvasRenderingContext2D,
   imgURL: string,
   tw: number,
-  th: number,
-  tiles: ImageData[][],
-  textures: PIXI.Texture[][]
+  th: number
 ) => {
+  if (!imgURL) return null;
+  const tiles = getImageDataGrid(context, tw, th);
+  const textures = getImageTextures(context, tw, th);
   imageDataCache[imgURL] = {
     tw,
     th,
     tiles,
     textures,
+    context,
   };
+  return textures;
+};
+
+/**
+ * recreate all the tiles and textures for all loaded images
+ * @param tileWidth
+ * @param tileHeight
+ * @param selectedImage
+ * @returns newly created tiles
+ */
+export const resetCachedTextures = (
+  tileWidth: number,
+  tileHeight: number,
+  selectedImage: string
+) => {
+  if (!selectedImage) {
+    // console.log('empty image ....');
+    return null; // could be ''
+  }
+  // console.log(`>>> reset img: ${selectedImage}`);
+  const { tw, th, context, textures } = imageDataCache[selectedImage];
+  if (!context) {
+    // console.log(`context is empty?`);
+    return null; // maybe undefined
+  }
+  if (tileWidth === tw && tileHeight === th) return textures; // already set
+  const tiles = cacheImageTextures(
+    context,
+    selectedImage,
+    tileWidth,
+    tileHeight
+  );
+  return tiles;
 };

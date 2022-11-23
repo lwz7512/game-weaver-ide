@@ -7,7 +7,7 @@ import { Graphics, Rectangle, Sprite } from 'pixi.js';
 import { BaseEditor, rectEquals, GameTilesLayer } from './Base';
 import { GeneralObject } from '../config';
 import { setDrawingSession, getSessionBy } from '../state/session';
-import { getTileSheetBy } from '../state/cache';
+import { getTileSheetBy, resetCachedTextures } from '../state/cache';
 
 export class TiledCore extends BaseEditor {
   rootElement: HTMLElement;
@@ -36,7 +36,7 @@ export class TiledCore extends BaseEditor {
   cellInfoText: PIXI.Text | null = null;
 
   pickerContainer: PIXI.Container | null = null;
-  pickerTileMap: PIXI.Container | null = null;
+  pickerTileMap: PIXI.Graphics | null = null;
   pickerInteractLayer: PIXI.Graphics | null = null;
   selectedTileLayer: PIXI.Graphics | null = null;
   lastHoverRectInPicker: PIXI.Rectangle = PIXI.Rectangle.EMPTY;
@@ -117,6 +117,8 @@ export class TiledCore extends BaseEditor {
       this.mapMarginY = detail.mapMarginY as number;
     }
     // TODO: restore other map info ?
+    // 1. restore selected tile
+    // 2. restore selected eraser
   }
 
   /**
@@ -140,38 +142,22 @@ export class TiledCore extends BaseEditor {
 
   /**
    * Drawing tiles matrix, gap use global settings
-   * And the only place to set `tiles`
+   * And the FIRST PLACE to set `tiles`
    *
    * @param tw
    * @param th
    * @param tiles
    */
   drawTilePicker(tw: number, th: number, tiles: PIXI.Texture[][]) {
-    // initialize tiles
     this.tiles = tiles;
     this.tilesStartX = 0;
     this.tilesStartY = 0;
     this.tileScale = 1;
 
-    const gap = 1;
-    const robot = this.pickerTileMap as PIXI.Container;
+    const robot = this.pickerTileMap as PIXI.Graphics;
     robot.removeChildren(); // cleanup before each draw
-    const background = new PIXI.Graphics();
-    robot.addChild(background);
-    this.drawTilePickerBackground(background, tw, th);
-    // put tiles
-    for (let i = 0; i < tiles.length; i += 1) {
-      const row = tiles[i];
-      for (let j = 0; j < row.length; j += 1) {
-        const xPos = j * (tw + gap);
-        const yPos = i * (th + gap);
-        const texture = tiles[i][j];
-        const tile = new Sprite(texture);
-        tile.x = xPos;
-        tile.y = yPos;
-        robot.addChild(tile);
-      }
-    }
+    this.drawTilePickerBackground(robot, tw, th);
+    this.layoutTileGrid(tw, th, this.tiles);
   }
 
   /**
@@ -202,12 +188,12 @@ export class TiledCore extends BaseEditor {
   }
 
   /**
-   * Resize editor canvas when window resize
+   * TODO: Resize editor canvas when window resize
    *
    * @param width
    * @param height
    */
-  resetApp(width: number, height: number) {
+  resetApp(width: number, height: number, selectedImage: string) {
     const size = `width:${width}px;height:${height}px;`;
     this.rootElement.setAttribute('style', size);
     const canvas = this.app?.view as HTMLCanvasElement;
@@ -216,7 +202,7 @@ export class TiledCore extends BaseEditor {
     // redraw background and border...
     this.drawEditorStage();
     this.drawMapGrid();
-    this.reDrawPickerBackground();
+    this.reDrawTilePicker(selectedImage);
   }
 
   zoomIn() {
@@ -286,7 +272,7 @@ export class TiledCore extends BaseEditor {
     // includes two parts:
     // 1. background graphics
     // 2. tiles sprites
-    this.pickerTileMap = new PIXI.Container();
+    this.pickerTileMap = new PIXI.Graphics();
     // // move it to the bottom of map
     this.pickerContainer.addChild(this.pickerTileMap);
 
@@ -514,13 +500,53 @@ export class TiledCore extends BaseEditor {
     }
   }
 
-  protected reDrawPickerBackground() {
+  /**
+   * FIXME: redraw picker grid...with newly created `tiles`
+   * 2ND PLACE TO reset `tiles`
+   *
+   * @param selectedImage
+   * @returns
+   */
+  protected reDrawTilePicker(selectedImage: string) {
+    // console.log(`redraw tile picker: ${selectedImage}`);
+    // *** RESET `tiles` ***
+    const tempTiles = resetCachedTextures(
+      this.tileWidth,
+      this.tileHeight,
+      selectedImage
+    );
+    // only in available to reset!
+    if (tempTiles) {
+      this.tiles = tempTiles;
+    }
+    if (!this.tiles) return;
+    // redrawing...
     const tw = this.tileWidth * this.tileScale;
     const th = this.tileHeight * this.tileScale;
-    const robot = this.pickerTileMap as PIXI.Container;
-    if (!robot.children.length) return;
-    const background = robot.getChildAt(0) as PIXI.Graphics;
-    this.drawTilePickerBackground(background, tw, th);
+    const robot = this.pickerTileMap as PIXI.Graphics;
+    robot.removeChildren(); // cleanup before each draw
+    this.drawTilePickerBackground(robot, tw, th);
+    this.layoutTileGrid(tw, th, this.tiles);
+  }
+
+  // put tiles
+  protected layoutTileGrid(tw: number, th: number, tiles: PIXI.Texture[][]) {
+    const robot = this.pickerTileMap as PIXI.Graphics;
+    const gap = 1;
+    for (let i = 0; i < tiles.length; i += 1) {
+      const row = tiles[i];
+      for (let j = 0; j < row.length; j += 1) {
+        const xPos = j * (tw + gap);
+        const yPos = i * (th + gap);
+        const texture = tiles[i][j];
+        const tile = new Sprite(texture);
+        tile.x = xPos;
+        tile.y = yPos;
+        tile.width = tw;
+        tile.height = th;
+        robot.addChild(tile);
+      }
+    }
   }
 
   /**
@@ -715,9 +741,9 @@ export class TiledCore extends BaseEditor {
     if (!this.tiles) return;
 
     // ==> Step1: scale all the tiles
-    const robot = this.pickerTileMap as PIXI.Container;
+    const robot = this.pickerTileMap as PIXI.Graphics;
     robot.children.forEach((node, index) => {
-      if (index === 0) return;
+      // if (index === 0) return;
       node.scale.set(this.tileScale, this.tileScale);
     });
     // ==> step2: move tiles to the right position
@@ -729,15 +755,15 @@ export class TiledCore extends BaseEditor {
       for (let j = 0; j < row.length; j += 1) {
         const xPos = j * (tw + gap) + this.tilesStartX;
         const yPos = i * (th + gap) + this.tilesStartY;
-        const tileIndex = i * row.length + j + 1; // after background graphics
+        const tileIndex = i * row.length + j; // after background graphics
         const tileSprite = robot.getChildAt(tileIndex);
         tileSprite.x = xPos;
         tileSprite.y = yPos;
       }
     }
     // step3: redraw background
-    const background = robot.getChildAt(0) as PIXI.Graphics;
-    this.drawTilePickerBackground(background, tw, th);
+    // const background = robot.getChildAt(0) as PIXI.Graphics;
+    this.drawTilePickerBackground(robot, tw, th);
   }
 
   /**

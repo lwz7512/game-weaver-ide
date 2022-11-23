@@ -1,9 +1,5 @@
 import { IpcEvents } from '../../ipc-events';
-import {
-  getImageContext,
-  getImageDataGrid,
-  getImageTextures,
-} from '../tiled/ImageBit';
+import { getImageContext } from '../tiled/ImageBit';
 
 import {
   getTileImageDots,
@@ -14,7 +10,7 @@ import {
   getPrevImageURL,
 } from '../state/cache';
 
-import { useSelectedTileSheet } from './useMapSession';
+import { useSelectedTileSheet } from './useSelectedTileSheet';
 
 /**
  * Open dialog to pickup sprite sheet image file, and cache it
@@ -61,9 +57,7 @@ export const useSpriteSheetImage = (tileWidth: number, tileHeight: number) => {
       // for downloaded spritesheet, should display hint to user to make tile size change.
       // asume it has the same size with the tile inputs now!
       // tile size setting should only have single source and applying for tilegrid,
-      const tiles = getImageDataGrid(context, safeW, safeH);
-      const textures = getImageTextures(context, safeW, safeH);
-      cacheImageTextures(imgURL, safeW, safeH, tiles, textures);
+      cacheImageTextures(context, imgURL, safeW, safeH);
       // save the selected file page
       setSelectedImage(imgURL);
     } else {

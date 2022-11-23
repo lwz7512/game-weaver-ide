@@ -18,6 +18,7 @@ type EditorProps = {
   mapHeight: number; // vert-tile-size
   tileWidth: number; // width in pixel
   tileHeight: number; // height in pixel
+  selectedImage: string;
 };
 
 export const TiledEditor = ({
@@ -25,6 +26,7 @@ export const TiledEditor = ({
   mapHeight,
   tileWidth,
   tileHeight,
+  selectedImage,
 }: EditorProps) => {
   const {
     eraseToolSelected,
@@ -33,7 +35,7 @@ export const TiledEditor = ({
     zoomOutHandler,
     eraseTilesHandler,
     translateMapHandler,
-  } = useTiledEditor(mapWidth, mapHeight, tileWidth, tileHeight);
+  } = useTiledEditor(mapWidth, mapHeight, tileWidth, tileHeight, selectedImage);
 
   return (
     <div className="tiled-editor-root flex-1 h-full bg-gray-300 relative cursor-pointer">

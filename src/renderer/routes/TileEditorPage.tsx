@@ -1,7 +1,7 @@
 import { Button, ButtonGroup } from '@blueprintjs/core';
 
 import LeftSideBar from '../components/LeftSideBar';
-import { InputField } from '../components/InputField';
+import { InputField, SelectInput } from '../components/InputField';
 import { MODULETYPES } from '../config';
 import useLeftSideBar from '../hooks/useLeftSideBar';
 import { TiledEditor } from '../tiled/Editor';
@@ -45,6 +45,7 @@ const TiledEditorPage = () => {
         mapWidth={+mapWidth}
         tileHeight={+tileHeight}
         tileWidth={+tileWidth}
+        selectedImage={selectedImage}
       />
       <div className="object-explorer bg-gray-200 w-60">
         <h1 className="select-none text-base text-center p-2 bg-slate-600 text-white block mb-0 lg:mb-1">
@@ -69,7 +70,7 @@ const TiledEditorPage = () => {
           />
         </div>
         <div className="map-attributes-group px-0 lg:px-2 py-0 ">
-          <InputField
+          <SelectInput
             title="Tile Height"
             name="tileHeight"
             suffix="px"
@@ -78,7 +79,7 @@ const TiledEditorPage = () => {
               tileHeightChangeHandler(event.target.value)
             }
           />
-          <InputField
+          <SelectInput
             title="Tile Width"
             name="tileWidth"
             suffix="px"

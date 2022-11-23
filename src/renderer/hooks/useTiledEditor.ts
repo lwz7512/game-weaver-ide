@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { TiledPainter } from '../tiled/Painter';
 import { GWEvent } from '../tiled/Events';
 import { setDrawingSession, getDrawingSession } from '../state/session';
-import { getTileSheetBy } from '../state/cache';
+import { getTileSheetBy, resetCachedTextures } from '../state/cache';
 
 /**
  * Core tiled editor interaction with page UI
@@ -19,7 +19,8 @@ export const useTiledEditor = (
   mapWidth: number,
   mapHeight: number,
   tileWidth: number,
-  tileHeight: number
+  tileHeight: number,
+  selectedImage: string
 ) => {
   const editorRef = useRef<TiledPainter | null>(null);
   const [eraseToolSelected, setEraseToolSelected] = useState(false);
@@ -34,8 +35,8 @@ export const useTiledEditor = (
         const { width: bw, height: bh } = entries[0].contentRect;
         const editor = editorRef.current;
         // 298 = left module bar width 56px + right panel width 240px + 2px
-        editor.resetApp(bw - 298, bh);
         editor.layout(mapWidth, mapHeight, tileWidth, tileHeight);
+        editor.resetApp(bw - 298, bh, selectedImage);
         return;
       }
       const selector = '.tiled-editor-root';
@@ -70,7 +71,7 @@ export const useTiledEditor = (
       editorRef.current = null; // clear the instance
       observer.unobserve(body);
     };
-  }, [mapWidth, mapHeight, tileWidth, tileHeight]);
+  }, [mapWidth, mapHeight, tileWidth, tileHeight, selectedImage]);
 
   /**
    * draw tiles from tile sheet image, driven by `useSelectedTileSheet`
@@ -78,8 +79,8 @@ export const useTiledEditor = (
   useEffect(() => {
     const selectedImageChangeHandler = (evt: Event) => {
       const customEvt = evt as CustomEvent;
-      const selectedImage = customEvt.detail;
-      const { textures } = getTileSheetBy(selectedImage);
+      const currentImage = customEvt.detail;
+      const { textures } = getTileSheetBy(currentImage);
       const editor = editorRef.current as TiledPainter;
       editor.drawTilePicker(tileWidth, tileHeight, textures);
     };
