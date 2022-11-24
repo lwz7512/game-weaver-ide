@@ -32,7 +32,7 @@ const imageDataCache: ImageCache = {};
  * *********************************************
  */
 export const getTileSheetBy = (imgURL: string): ImageDataTiles => {
-  return imageDataCache[imgURL];
+  return imageDataCache[imgURL] || {};
 };
 
 export const getNextImageURL = (imgURL: string): string | null => {

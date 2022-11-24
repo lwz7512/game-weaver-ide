@@ -36,7 +36,7 @@ export const useTiledEditor = (
         const editor = editorRef.current;
         // 298 = left module bar width 56px + right panel width 240px + 2px
         editor.layout(mapWidth, mapHeight, tileWidth, tileHeight);
-        editor.resetApp(bw - 298, bh, selectedImage);
+        editor.resetApp(bw - 298, bh);
         return;
       }
       const selector = '.tiled-editor-root';
@@ -44,13 +44,15 @@ export const useTiledEditor = (
       const { width, height } = root.getBoundingClientRect();
       const editor = new TiledPainter(root, width, height);
       editorRef.current = editor; // save the app instance
-
+      console.log(`## editor created!`);
       const session = getDrawingSession();
       editor.create(session);
       // now start draw
       editor.layout(mapWidth, mapHeight, tileWidth, tileHeight);
       // paint from cached layer info
       editor.paintMapLayer(session);
+      // reset tile grid
+      editor.resetTileSize(selectedImage);
       // listen editor change
       // add more session data to keep the editor status including tiles...
       editor.addEventListener('session', (event: Event) => {
@@ -66,7 +68,8 @@ export const useTiledEditor = (
     const observer = new ResizeObserver(relayoutEditor);
     observer.observe(body);
 
-    () => {
+    return () => {
+      console.log(`#### unobserve body....`);
       (editorRef.current as TiledPainter).destroy();
       editorRef.current = null; // clear the instance
       observer.unobserve(body);

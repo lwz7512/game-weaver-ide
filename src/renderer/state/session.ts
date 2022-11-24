@@ -25,3 +25,9 @@ export const getSessionToStr = (key: string) => {
   const value = drawingTileSession[key];
   return value ? value.toString() : '';
 };
+export const clearPaintedTiles = (layerId: number) => {
+  delete drawingTileSession.layerPainted;
+  delete drawingTileSession.rowSize;
+  delete drawingTileSession.columnSize;
+  delete drawingTileSession[`layer_${layerId}`];
+};

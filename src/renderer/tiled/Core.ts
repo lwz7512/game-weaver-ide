@@ -6,7 +6,11 @@ import { EventSystem } from '@pixi/events';
 import { Graphics, Rectangle, Sprite } from 'pixi.js';
 import { BaseEditor, rectEquals, GameTilesLayer } from './Base';
 import { GeneralObject } from '../config';
-import { setDrawingSession, getSessionBy } from '../state/session';
+import {
+  setDrawingSession,
+  getSessionBy,
+  clearPaintedTiles,
+} from '../state/session';
 import { getTileSheetBy, resetCachedTextures } from '../state/cache';
 
 export class TiledCore extends BaseEditor {
@@ -138,10 +142,12 @@ export class TiledCore extends BaseEditor {
     this.setGameDimension(mapWidth, mapHeight, tileWidth, tileHeight);
     this.drawMapGrid();
     this.showCurrentCell('Welcome!');
+    const robot = this.pickerTileMap as PIXI.Graphics;
+    this.drawTilePickerBackground(robot, tileWidth, tileHeight);
   }
 
   /**
-   * Drawing tiles matrix, gap use global settings
+   * Drawing tiles matrix, gap use global settings by opening tilesheet image
    * And the FIRST PLACE to set `tiles`
    *
    * @param tw
@@ -188,21 +194,43 @@ export class TiledCore extends BaseEditor {
   }
 
   /**
-   * TODO: Resize editor canvas when window resize
+   * Resize editor canvas when window resize, or reset tile size
    *
    * @param width
    * @param height
    */
-  resetApp(width: number, height: number, selectedImage: string) {
-    const size = `width:${width}px;height:${height}px;`;
-    this.rootElement.setAttribute('style', size);
+  resetApp(newWidth: number, newHeight: number) {
+    const size = `width:${newWidth}px;height:${newHeight}px;`;
     const canvas = this.app?.view as HTMLCanvasElement;
-    canvas.setAttribute('width', `${width}`);
-    canvas.setAttribute('height', `${height}`);
+    this.rootElement.setAttribute('style', size);
+    canvas.setAttribute('width', `${newWidth}`);
+    canvas.setAttribute('height', `${newHeight}`);
+
+    if (!this.app) return;
+    this.screenRect = this.app.renderer.screen;
+
     // redraw background and border...
     this.drawEditorStage();
     this.drawMapGrid();
+  }
+
+  /**
+   * Tile width/height changed
+   *
+   * @param selectedImage current image
+   */
+  resetTileSize(selectedImage: string) {
+    // console.log(`current tileHeight: ${this.tileHeight}`);
+    if (!selectedImage) return; // no tilesheet in use
+    const { tw, th } = getTileSheetBy(selectedImage);
+    if (!tw || !th) return; // not exsiting
+    // size no change, no need to resplit
+    if (tw === this.tileHeight && th === this.tileWidth) return;
+    // console.log(`tile size changed to resplit sheet!`);
     this.reDrawTilePicker(selectedImage);
+    this.clearTileSelection();
+    this.eraseAllTileFromGameMap();
+    clearPaintedTiles(1);
   }
 
   zoomIn() {
@@ -332,7 +360,12 @@ export class TiledCore extends BaseEditor {
 
   protected showCurrentCell(info: string) {
     if (!this.mapInterectLayer || !this.screenRect) return;
+    const mapAreaW = this.screenRect.width;
+    const mapAreaH = this.screenRect.height * this.mapHeightRatio;
+    // update text and position
     if (this.cellInfoText) {
+      this.cellInfoText.x = mapAreaW - 80;
+      this.cellInfoText.y = mapAreaH - 20;
       this.cellInfoText.text = info;
       return;
     }
@@ -344,12 +377,19 @@ export class TiledCore extends BaseEditor {
       fill: ['#000000'],
       fontSize: 12,
     });
-    const mapAreaW = this.screenRect.width;
-    const mapAreaH = this.screenRect.height * this.mapHeightRatio;
     this.cellInfoText = new PIXI.Text(info, style);
     this.cellInfoText.x = mapAreaW - 80;
     this.cellInfoText.y = mapAreaH - 20;
     this.mapInterectLayer.addChild(this.cellInfoText);
+  }
+
+  protected moveCellInfo() {
+    if (!this.screenRect) return;
+    const mapAreaW = this.screenRect.width;
+    const mapAreaH = this.screenRect.height * this.mapHeightRatio;
+    if (!this.cellInfoText) return;
+    this.cellInfoText.x = mapAreaW - 80;
+    this.cellInfoText.y = mapAreaH - 20;
   }
 
   /**
@@ -536,8 +576,8 @@ export class TiledCore extends BaseEditor {
     for (let i = 0; i < tiles.length; i += 1) {
       const row = tiles[i];
       for (let j = 0; j < row.length; j += 1) {
-        const xPos = j * (tw + gap);
-        const yPos = i * (th + gap);
+        const xPos = j * (tw + gap) + this.tilesStartX;
+        const yPos = i * (th + gap) + this.tilesStartY;
         const texture = tiles[i][j];
         const tile = new Sprite(texture);
         tile.x = xPos;
@@ -549,6 +589,12 @@ export class TiledCore extends BaseEditor {
     }
   }
 
+  protected clearTileSelection() {
+    const hoverTileLayer = this.selectedTileLayer as PIXI.Graphics;
+    hoverTileLayer.clear();
+    this.lastSelectedRectInPicker = PIXI.Rectangle.EMPTY;
+  }
+
   /**
    * draw hover rect and selected rect
    * @param hitRect
@@ -557,7 +603,7 @@ export class TiledCore extends BaseEditor {
     const hoverTileLayer = this.selectedTileLayer as PIXI.Graphics;
     if (!rectEquals(hitRect, this.lastSelectedRectInPicker)) {
       hoverTileLayer.clear();
-      hoverTileLayer.beginFill(0x0000ff, 0.5);
+      hoverTileLayer.beginFill(0x0000ff, 0.2);
       hoverTileLayer.drawRect(
         hitRect.x,
         hitRect.y,
@@ -677,6 +723,11 @@ export class TiledCore extends BaseEditor {
     this.paintedTilesCache.delete(key);
   }
 
+  protected eraseAllTileFromGameMap() {
+    this.paintedTilesCache.clear();
+    this.paintedTileMap?.removeChildren();
+  }
+
   protected paintHiligherOnGameMap(
     hitRect: PIXI.Rectangle,
     isTranslate?: boolean
@@ -755,7 +806,7 @@ export class TiledCore extends BaseEditor {
       for (let j = 0; j < row.length; j += 1) {
         const xPos = j * (tw + gap) + this.tilesStartX;
         const yPos = i * (th + gap) + this.tilesStartY;
-        const tileIndex = i * row.length + j; // after background graphics
+        const tileIndex = i * row.length + j;
         const tileSprite = robot.getChildAt(tileIndex);
         tileSprite.x = xPos;
         tileSprite.y = yPos;
@@ -802,15 +853,13 @@ export class TiledCore extends BaseEditor {
     if (!this.tiles) return;
 
     // move tiles
-    const robot = this.pickerTileMap as PIXI.Container;
+    const robot = this.pickerTileMap as PIXI.Graphics;
     robot.children.forEach((node, index) => {
-      if (index === 0) return;
       node.x += diffX;
       node.y += diffY;
     });
     // clear before redraw
-    const background = robot.getChildAt(0) as PIXI.Graphics;
-    this.drawTilePickerBackground(background, tw, th);
+    this.drawTilePickerBackground(robot, tw, th);
   }
 
   protected translateTileMap(diffX: number, diffY: number) {
