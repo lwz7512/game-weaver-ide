@@ -139,24 +139,16 @@ export class TiledPainter extends TiledCore {
     this.onWheelMoveOnMap = (event: Event) => {
       const wheelEvt = event as WheelEvent;
       const scaleDiff = wheelEvt.deltaY * -0.01;
-      this.mapScale += scaleDiff;
+      const currentMapScale = this.mapScale + scaleDiff;
       // Restrict scale
-      this.mapScale = Math.min(Math.max(0.2, this.mapScale), 2);
+      if (currentMapScale < 0.5 || currentMapScale > 2) return; // stop scaleing
+      // safely set the scale
+      this.mapScale = currentMapScale;
       // move to center
       const diffWidth = this.gameHoriTiles * this.tileWidth * scaleDiff * 0.5;
       const diffHeight = this.gameVertTiles * this.tileHeight * scaleDiff * 0.5;
       this.mapMarginX -= diffWidth;
       this.mapMarginY -= diffHeight;
-      // limit position
-      const { fullWidth, fullHeight } = this.getGridFullSize();
-      this.mapMarginX = Math.min(
-        Math.max(-fullWidth * 0.5, this.mapMarginX),
-        fullWidth * 0.5
-      );
-      this.mapMarginY = Math.min(
-        Math.max(-fullHeight * 0.5, this.mapMarginY),
-        fullHeight * 0.5
-      );
 
       this.drawMapGrid();
       this.scaleTileMap();

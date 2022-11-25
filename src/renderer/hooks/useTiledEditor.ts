@@ -32,6 +32,7 @@ export const useTiledEditor = (
   useEffect(() => {
     const relayoutEditor = (entries: ResizeObserverEntry[]) => {
       if (editorRef.current) {
+        // === reset app while window resizing ===
         const { width: bw, height: bh } = entries[0].contentRect;
         const editor = editorRef.current;
         // 298 = left module bar width 56px + right panel width 240px + 2px
@@ -44,7 +45,7 @@ export const useTiledEditor = (
       const { width, height } = root.getBoundingClientRect();
       const editor = new TiledPainter(root, width, height);
       editorRef.current = editor; // save the app instance
-      console.log(`## editor created!`);
+      // console.log(`## editor created!`);
       const session = getDrawingSession();
       editor.create(session);
       // now start draw
@@ -69,7 +70,7 @@ export const useTiledEditor = (
     observer.observe(body);
 
     return () => {
-      console.log(`#### unobserve body....`);
+      console.log(`#### destroy editor while main params chagned ###`);
       (editorRef.current as TiledPainter).destroy();
       editorRef.current = null; // clear the instance
       observer.unobserve(body);
