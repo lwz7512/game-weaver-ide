@@ -141,7 +141,7 @@ export class TiledPainter extends TiledCore {
       const scaleDiff = wheelEvt.deltaY * -0.01;
       const currentMapScale = this.mapScale + scaleDiff;
       // Restrict scale
-      if (currentMapScale < 0.5 || currentMapScale > 2) return; // stop scaleing
+      if (currentMapScale < 0.3 || currentMapScale > 2) return; // stop scaleing
       // safely set the scale
       this.mapScale = currentMapScale;
       // move to center
@@ -152,6 +152,7 @@ export class TiledPainter extends TiledCore {
 
       this.drawMapGrid();
       this.scaleTileMap();
+      this.saveMapDimension();
     };
 
     this.onClickPaintOnMap = (event: Event) => {

@@ -110,6 +110,10 @@ export const useTiledEditor = (
     editorRef.current?.zoomOut();
   };
 
+  const zoomToRealSize = () => {
+    editorRef.current?.zoomToRealSize();
+  };
+
   const eraseTilesHandler = () => {
     setEraseToolSelected(!eraseToolSelected);
     // save erase mode to editor
@@ -127,6 +131,7 @@ export const useTiledEditor = (
     translateSelected,
     zoomInHandler,
     zoomOutHandler,
+    zoomToRealSize,
     eraseTilesHandler,
     translateMapHandler,
   };

@@ -120,6 +120,9 @@ export class TiledCore extends BaseEditor {
     if (detail.mapMarginY) {
       this.mapMarginY = detail.mapMarginY as number;
     }
+    if (detail.mapScale) {
+      this.mapScale = detail.mapScale as number;
+    }
     // TODO: restore other map info ?
     // 1. restore selected tile
     // 2. restore selected eraser
@@ -241,6 +244,7 @@ export class TiledCore extends BaseEditor {
     this.mapMarginY -= fullHeight * 0.05;
     this.mapScale += 0.1;
     this.drawMapGrid();
+    this.saveMapDimension();
   }
 
   zoomOut() {
@@ -251,9 +255,31 @@ export class TiledCore extends BaseEditor {
     this.mapMarginY += fullHeight * 0.05;
     this.mapScale -= 0.1;
     this.drawMapGrid();
+    this.saveMapDimension();
+  }
+
+  zoomToRealSize() {
+    this.mapMarginX = 10;
+    this.mapMarginY = 10;
+    this.mapScale = 1;
+    this.drawMapGrid();
+    this.saveMapDimension();
   }
 
   // *************************** end of public api *************************************
+
+  protected saveMapDimension() {
+    this.saveSessionChange({
+      mapMarginX: this.mapMarginX,
+      mapMarginY: this.mapMarginY,
+      mapScale: this.mapScale,
+    });
+  }
+
+  protected saveSessionChange(props: GeneralObject) {
+    // `useTiledEditor` handle this event
+    this.dispatchEvent(new CustomEvent('session', { detail: props }));
+  }
 
   /**
    * setup editor needed two main sections:
@@ -902,8 +928,7 @@ export class TiledCore extends BaseEditor {
       mapMarginX: this.mapMarginX,
       mapMarginY: this.mapMarginY,
     };
-    // `useTiledEditor` handle this event
-    this.dispatchEvent(new CustomEvent('session', { detail }));
+    this.saveMapDimension();
   }
 
   protected saveLastHitRectangle(hitRect: PIXI.Rectangle) {

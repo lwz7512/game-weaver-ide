@@ -33,6 +33,7 @@ export const TiledEditor = ({
     translateSelected,
     zoomInHandler,
     zoomOutHandler,
+    zoomToRealSize,
     eraseTilesHandler,
     translateMapHandler,
   } = useTiledEditor(mapWidth, mapHeight, tileWidth, tileHeight, selectedImage);
@@ -55,6 +56,13 @@ export const TiledEditor = ({
           iconSize={16}
           title="Zoom Out Map"
           onClick={zoomOutHandler}
+        />
+        <IconToolButton
+          mini
+          icon="zoom-to-fit"
+          iconSize={16}
+          title="100% Size"
+          onClick={zoomToRealSize}
         />
         <IconToolButton
           mini
