@@ -202,12 +202,12 @@ export class TiledCore extends BaseEditor {
    * @param width
    * @param height
    */
-  resetApp(newWidth: number, newHeight: number) {
-    const size = `width:${newWidth}px;height:${newHeight}px;`;
+  resetApp(width: number, height: number) {
+    const size = `width:${width}px;height:${height}px;`;
     const canvas = this.app?.view as HTMLCanvasElement;
     this.rootElement.setAttribute('style', size);
-    canvas.setAttribute('width', `${newWidth}`);
-    canvas.setAttribute('height', `${newHeight}`);
+    canvas.setAttribute('width', `${width}`);
+    canvas.setAttribute('height', `${height}`);
 
     if (!this.app) return;
     this.screenRect = this.app.renderer.screen;
