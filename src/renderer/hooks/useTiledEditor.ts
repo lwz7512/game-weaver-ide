@@ -69,6 +69,10 @@ export const useTiledEditor = (
     const observer = new ResizeObserver(relayoutEditor);
     observer.observe(body);
 
+    // restore the tool states
+    setEraseToolSelected(false);
+    setTranslateSelected(false);
+
     return () => {
       console.log(`#### destroy editor while main params chagned ###`);
       (editorRef.current as TiledPainter).destroy();
@@ -76,31 +80,6 @@ export const useTiledEditor = (
       observer.unobserve(body);
     };
   }, [mapWidth, mapHeight, tileWidth, tileHeight, selectedImage]);
-
-  /**
-   * draw tiles from tile sheet image, driven by `useSelectedTileSheet`
-   */
-  useEffect(() => {
-    const selectedImageChangeHandler = (evt: Event) => {
-      const customEvt = evt as CustomEvent;
-      const currentImage = customEvt.detail;
-      const { textures } = getTileSheetBy(currentImage);
-      const editor = editorRef.current as TiledPainter;
-      editor.drawTilePicker(tileWidth, tileHeight, textures);
-    };
-
-    document.addEventListener(
-      GWEvent.SELECTEDIMAGE,
-      selectedImageChangeHandler
-    );
-
-    return () => {
-      document.removeEventListener(
-        GWEvent.SELECTEDIMAGE,
-        selectedImageChangeHandler
-      );
-    };
-  }, [tileWidth, tileHeight]);
 
   const zoomInHandler = () => {
     editorRef.current?.zoomIn();
@@ -125,6 +104,10 @@ export const useTiledEditor = (
     editorRef.current?.setTranslateMode(!translateSelected);
   };
 
+  const eraseTilesFromLayer = () => {
+    editorRef.current?.eraseTileInCurrentLayer();
+  };
+
   return {
     editorRef,
     eraseToolSelected,
@@ -134,6 +117,7 @@ export const useTiledEditor = (
     zoomToRealSize,
     eraseTilesHandler,
     translateMapHandler,
+    eraseTilesFromLayer,
   };
   // end of hook ...
 };

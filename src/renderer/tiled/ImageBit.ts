@@ -62,7 +62,7 @@ export const getImageDataGrid = (
   return cellMatrix;
 };
 
-export const getImageTextures = (
+export const generateImageTextures = (
   context: CTX2D,
   tw = 32,
   th = 32

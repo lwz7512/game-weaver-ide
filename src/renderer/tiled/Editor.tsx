@@ -36,6 +36,7 @@ export const TiledEditor = ({
     zoomToRealSize,
     eraseTilesHandler,
     translateMapHandler,
+    eraseTilesFromLayer,
   } = useTiledEditor(mapWidth, mapHeight, tileWidth, tileHeight, selectedImage);
 
   return (
@@ -76,9 +77,16 @@ export const TiledEditor = ({
           mini
           icon="eraser"
           iconSize={16}
-          title="Erase tiles"
+          title="Erase tiles one by one"
           selected={eraseToolSelected}
           onClick={eraseTilesHandler}
+        />
+        <IconToolButton
+          mini
+          icon="graph-remove"
+          iconSize={16}
+          title="Erase all tiles in current layer"
+          onClick={eraseTilesFromLayer}
         />
         <IconToolButton
           mini

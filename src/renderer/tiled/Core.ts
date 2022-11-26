@@ -11,7 +11,11 @@ import {
   getSessionBy,
   clearPaintedTiles,
 } from '../state/session';
-import { getTileSheetBy, resetCachedTextures } from '../state/cache';
+import {
+  getTileSheetBy,
+  resetCachedTextures,
+  ImageDataTiles,
+} from '../state/cache';
 
 export class TiledCore extends BaseEditor {
   rootElement: HTMLElement;
@@ -150,26 +154,6 @@ export class TiledCore extends BaseEditor {
   }
 
   /**
-   * Drawing tiles matrix, gap use global settings by opening tilesheet image
-   * And the FIRST PLACE to set `tiles`
-   *
-   * @param tw
-   * @param th
-   * @param tiles
-   */
-  drawTilePicker(tw: number, th: number, tiles: PIXI.Texture[][]) {
-    this.tiles = tiles;
-    this.tilesStartX = 0;
-    this.tilesStartY = 0;
-    this.tileScale = 1;
-
-    const robot = this.pickerTileMap as PIXI.Graphics;
-    robot.removeChildren(); // cleanup before each draw
-    this.drawTilePickerBackground(robot, tw, th);
-    this.layoutTileGrid(tw, th, this.tiles);
-  }
-
-  /**
    * repaint game layer while return to editor from other page
    * @param session
    * @returns
@@ -223,16 +207,9 @@ export class TiledCore extends BaseEditor {
    * @param selectedImage current image
    */
   resetTileSize(selectedImage: string) {
-    // console.log(`current tileHeight: ${this.tileHeight}`);
     if (!selectedImage) return; // no tilesheet in use
-    const { tw, th } = getTileSheetBy(selectedImage);
-    if (!tw || !th) return; // not exsiting
-    // size no change, no need to resplit
-    if (tw === this.tileHeight && th === this.tileWidth) return;
-    // console.log(`tile size changed to resplit sheet!`);
     this.reDrawTilePicker(selectedImage);
     this.clearTileSelection();
-    this.eraseAllTileFromGameMap();
     clearPaintedTiles(1);
   }
 
@@ -244,6 +221,7 @@ export class TiledCore extends BaseEditor {
     this.mapMarginY -= fullHeight * 0.05;
     this.mapScale += 0.1;
     this.drawMapGrid();
+    this.scaleTileMap();
     this.saveMapDimension();
   }
 
@@ -255,6 +233,7 @@ export class TiledCore extends BaseEditor {
     this.mapMarginY += fullHeight * 0.05;
     this.mapScale -= 0.1;
     this.drawMapGrid();
+    this.scaleTileMap();
     this.saveMapDimension();
   }
 
@@ -263,7 +242,12 @@ export class TiledCore extends BaseEditor {
     this.mapMarginY = 10;
     this.mapScale = 1;
     this.drawMapGrid();
+    this.scaleTileMap();
     this.saveMapDimension();
+  }
+
+  eraseTileInCurrentLayer() {
+    this.eraseAllTileFromGameMap();
   }
 
   // *************************** end of public api *************************************
@@ -574,25 +558,28 @@ export class TiledCore extends BaseEditor {
    * @returns
    */
   protected reDrawTilePicker(selectedImage: string) {
-    // console.log(`redraw tile picker: ${selectedImage}`);
-    // *** RESET `tiles` ***
-    const tempTiles = resetCachedTextures(
-      this.tileWidth,
-      this.tileHeight,
-      selectedImage
-    );
-    // only in available to reset!
-    if (tempTiles) {
-      this.tiles = tempTiles;
+    const cache = getTileSheetBy(selectedImage);
+    if (!cache) return console.warn('no textures cached!');
+    // only in case of tile size changed, to reset cache
+    if (cache.tw !== this.tileWidth || cache.th !== this.tileHeight) {
+      console.log(`resplit the tilesheet!`);
+      this.tiles = resetCachedTextures(
+        this.tileWidth,
+        this.tileHeight,
+        selectedImage
+      );
+    } else {
+      console.log(`got textures from cache!`);
+      this.tiles = cache.textures;
     }
-    if (!this.tiles) return;
     // redrawing...
-    const tw = this.tileWidth * this.tileScale;
-    const th = this.tileHeight * this.tileScale;
+    const stw = this.tileWidth * this.tileScale;
+    const sth = this.tileHeight * this.tileScale;
     const robot = this.pickerTileMap as PIXI.Graphics;
     robot.removeChildren(); // cleanup before each draw
-    this.drawTilePickerBackground(robot, tw, th);
-    this.layoutTileGrid(tw, th, this.tiles);
+    this.drawTilePickerBackground(robot, stw, sth);
+    if (!this.tiles) return;
+    this.layoutTileGrid(stw, sth, this.tiles);
   }
 
   // put tiles
@@ -615,6 +602,9 @@ export class TiledCore extends BaseEditor {
     }
   }
 
+  /**
+   * clear selected tile
+   */
   protected clearTileSelection() {
     const hoverTileLayer = this.selectedTileLayer as PIXI.Graphics;
     hoverTileLayer.clear();
@@ -749,6 +739,9 @@ export class TiledCore extends BaseEditor {
     this.paintedTilesCache.delete(key);
   }
 
+  /**
+   * TODO: Need to specify which layer to clear...
+   */
   protected eraseAllTileFromGameMap() {
     this.paintedTilesCache.clear();
     this.paintedTileMap?.removeChildren();

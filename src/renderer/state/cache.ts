@@ -3,7 +3,7 @@
  */
 
 import * as PIXI from 'pixi.js';
-import { getImageDataGrid, getImageTextures } from '../tiled/ImageBit';
+import { getImageDataGrid, generateImageTextures } from '../tiled/ImageBit';
 
 type FileBlob = {
   path: string; // file path in local directory
@@ -11,7 +11,7 @@ type FileBlob = {
   blob: Blob; // to get image data
 };
 
-type ImageDataTiles = {
+export type ImageDataTiles = {
   context: CanvasRenderingContext2D | null;
   tw: number; // tile width
   th: number; // tile height
@@ -121,7 +121,7 @@ export const cacheImageTextures = (
 ) => {
   if (!imgURL) return null;
   const tiles = getImageDataGrid(context, tw, th);
-  const textures = getImageTextures(context, tw, th);
+  const textures = generateImageTextures(context, tw, th);
   imageDataCache[imgURL] = {
     tw,
     th,

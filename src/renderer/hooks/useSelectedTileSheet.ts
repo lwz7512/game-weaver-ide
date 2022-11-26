@@ -17,11 +17,11 @@ export const useSelectedTileSheet = () => {
     // FIXME: lazyness notify editor to `drawTilePicker`
     // to waiting for editor creation when switch back from other page
     // @2022/11/16
-    setTimeout(() => {
-      const detail = { detail: selectedImage };
-      const customEvt = new CustomEvent(GWEvent.SELECTEDIMAGE, detail);
-      document.dispatchEvent(customEvt);
-    });
+    // setTimeout(() => {
+    //   const detail = { detail: selectedImage };
+    //   const customEvt = new CustomEvent(GWEvent.SELECTEDIMAGE, detail);
+    //   document.dispatchEvent(customEvt);
+    // });
     // cache it while select changed
     setDrawingSession({ selectedImage });
   }, [selectedImage]);
