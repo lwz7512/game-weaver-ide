@@ -24,6 +24,12 @@
   .full-width-btn {
     @apply w-full px-4 py-2 text-white bg-sky-600 select-none focus:outline-none rounded-sm hover:bg-sky-500;
   }
+  .layer-item {
+    @apply bg-white border-b border-slate-300 select-none;
+  }
+  .tab-item {
+    @apply inline-block select-none border-l-2 px-3 py-1 text-sm rounded-tl-sm rounded-tr-sm hover:border-green-600 focus:outline-none;
+  }
 }
 
 @import "~@blueprintjs/core/lib/css/blueprint.css";

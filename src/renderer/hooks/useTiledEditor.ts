@@ -54,14 +54,6 @@ export const useTiledEditor = (
       editor.paintMapLayer(session);
       // reset tile grid
       editor.resetTileSize(selectedImage);
-      // listen editor change
-      // add more session data to keep the editor status including tiles...
-      editor.addEventListener('session', (event: Event) => {
-        const customEvt = event as CustomEvent;
-        // save the session
-        const newSession = { ...session, ...customEvt.detail };
-        setDrawingSession(newSession);
-      });
     };
     // FIXME: observing body is the right way to respond to devtool toggling
     // @2022/11/04

@@ -1,3 +1,5 @@
+import clsx from 'clsx';
+import { useState } from 'react';
 import { Button, ButtonGroup } from '@blueprintjs/core';
 
 import LeftSideBar from '../components/LeftSideBar';
@@ -7,6 +9,7 @@ import useLeftSideBar from '../hooks/useLeftSideBar';
 import { TiledEditor } from '../tiled/Editor';
 import { useSpriteSheetImage } from '../hooks/useSpriteSheetImage';
 import { useSpritesPreview } from '../hooks/useSpritesPreview';
+import { useMapLayers } from '../hooks/useMapLayers';
 import { useMapDimension } from '../hooks/useMapSession';
 import { MiniIconButton } from '../components/Buttons';
 
@@ -32,14 +35,19 @@ const TiledEditorPage = () => {
   } = useSpriteSheetImage(+tileWidth || 0, +tileHeight || 0);
   useSpritesPreview(selectedImage, dots);
 
+  const { layers, selectLayerHandler } = useMapLayers();
+  const [tabType, setTabType] = useState('layers');
+
   return (
     <div className="tile-editor w-full h-screen flex">
+      {/* left side bar */}
       <div className="left-sidepanel flex">
         <LeftSideBar
           activeModule={MODULETYPES.TILED}
           onModuleChanged={onModuleChanged}
         />
       </div>
+      {/* center map editor */}
       <TiledEditor
         mapHeight={+mapHeight}
         mapWidth={+mapWidth}
@@ -47,9 +55,10 @@ const TiledEditorPage = () => {
         tileWidth={+tileWidth}
         selectedImage={selectedImage}
       />
+      {/* right side panel */}
       <div className="object-explorer bg-gray-200 w-60">
-        <h1 className="select-none text-base text-center p-2 bg-slate-600 text-white block mb-0 lg:mb-1">
-          Spritesheet Explorer
+        <h1 className="select-none text-base text-center p-2 bg-slate-600 text-white block mb-0">
+          Game Map Settings
         </h1>
         <div className="map-attributes-group px-0 lg:px-2 py-1 lg:py-2 ">
           <InputField
@@ -127,6 +136,81 @@ const TiledEditorPage = () => {
           <Button icon="floppy-disk" title="Save Map" intent="primary" />
           <Button icon="export" title="Export To Json File" intent="success" />
         </ButtonGroup>
+        {/* layer | history switching */}
+        <div className="text-base px-2 flex gap-0">
+          <button
+            type="button"
+            className={clsx(
+              'tab-item no-transform hover:bg-green-600',
+              tabType === 'layers' ? 'border-green-600 bg-white' : ''
+            )}
+            onClick={() => setTabType('layers')}
+          >
+            Layers
+          </button>
+          <button
+            type="button"
+            className={clsx(
+              'tab-item no-transform hover:bg-blue-600',
+              tabType === 'history' ? 'border-blue-600 bg-white' : ''
+            )}
+            onClick={() => setTabType('history')}
+          >
+            History
+          </button>
+        </div>
+        {/* layers management */}
+        {tabType === 'layers' && (
+          <ul className="layers w-full px-2 text-sm text-slate-500 leading-6 h-64 overflow-scroll">
+            {layers.map((l) => (
+              <li
+                key={l.id}
+                className={clsx(
+                  'layer-item',
+                  l.selected ? 'bg-slate-600 text-white' : ''
+                )}
+              >
+                <input
+                  value={l.name}
+                  readOnly
+                  className={clsx(
+                    'bg-none focus:outline-none select-none cursor-default py-1 px-2',
+                    l.selected ? 'bg-green-600 w-40' : 'w-full'
+                  )}
+                  onClick={() => selectLayerHandler(l.id)}
+                />
+                <div
+                  className={clsx(
+                    'px-1',
+                    l.selected ? 'inline-block' : 'hidden'
+                  )}
+                >
+                  <MiniIconButton
+                    icon="lock"
+                    color="text-white"
+                    onClick={() => null}
+                  />
+                  <span className="px-2" />
+                  <MiniIconButton
+                    icon="eye-open"
+                    color="text-white"
+                    onClick={() => null}
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+        {/* history files */}
+        {tabType === 'history' && (
+          <ul className="layers w-full px-2 text-sm text-slate-500 leading-6 h-64 overflow-scroll">
+            <li className="layer-item bg-blue-600 text-white py-1 px-2">
+              Map 1
+            </li>
+            <li className="layer-item py-1 px-2">Map 2</li>
+            <li className="layer-item py-1 px-2">Map 3</li>
+          </ul>
+        )}
       </div>
     </div>
   );
