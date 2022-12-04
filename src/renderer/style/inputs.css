@@ -56,3 +56,8 @@ button.selected, button.selected:hover, .game-folder.selected {
 .input-field {
   min-width: 160px;
 }
+
+.black-selection::selection {
+  color: wheat;
+  background: black;
+}

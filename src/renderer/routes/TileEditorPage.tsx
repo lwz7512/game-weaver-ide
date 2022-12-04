@@ -12,6 +12,8 @@ import { useSpritesPreview } from '../hooks/useSpritesPreview';
 import { useMapLayers } from '../hooks/useMapLayers';
 import { useMapDimension } from '../hooks/useMapSession';
 import { MiniIconButton } from '../components/Buttons';
+import { LayerHistoryTabs } from '../components/Tabs';
+import { LayerItem } from '../components/LayerItem';
 
 const TiledEditorPage = () => {
   const { onModuleChanged } = useLeftSideBar();
@@ -35,7 +37,7 @@ const TiledEditorPage = () => {
   } = useSpriteSheetImage(+tileWidth || 0, +tileHeight || 0);
   useSpritesPreview(selectedImage, dots);
 
-  const { layers, selectLayerHandler } = useMapLayers();
+  const { layers, selectLayerHandler, layerNameChangeHandler } = useMapLayers();
   const [tabType, setTabType] = useState('layers');
 
   return (
@@ -137,67 +139,17 @@ const TiledEditorPage = () => {
           <Button icon="export" title="Export To Json File" intent="success" />
         </ButtonGroup>
         {/* layer | history switching */}
-        <div className="text-base px-2 flex gap-0">
-          <button
-            type="button"
-            className={clsx(
-              'tab-item no-transform hover:bg-green-600',
-              tabType === 'layers' ? 'border-green-600 bg-white' : ''
-            )}
-            onClick={() => setTabType('layers')}
-          >
-            Layers
-          </button>
-          <button
-            type="button"
-            className={clsx(
-              'tab-item no-transform hover:bg-blue-600',
-              tabType === 'history' ? 'border-blue-600 bg-white' : ''
-            )}
-            onClick={() => setTabType('history')}
-          >
-            History
-          </button>
-        </div>
+        <LayerHistoryTabs tabType={tabType} tabChangeHandler={setTabType} />
         {/* layers management */}
         {tabType === 'layers' && (
           <ul className="layers w-full px-2 text-sm text-slate-500 leading-6 h-64 overflow-scroll">
             {layers.map((l) => (
-              <li
+              <LayerItem
                 key={l.id}
-                className={clsx(
-                  'layer-item',
-                  l.selected ? 'bg-slate-600 text-white' : ''
-                )}
-              >
-                <input
-                  value={l.name}
-                  readOnly
-                  className={clsx(
-                    'bg-none focus:outline-none select-none cursor-default py-1 px-2',
-                    l.selected ? 'bg-green-600 w-40' : 'w-full'
-                  )}
-                  onClick={() => selectLayerHandler(l.id)}
-                />
-                <div
-                  className={clsx(
-                    'px-1',
-                    l.selected ? 'inline-block' : 'hidden'
-                  )}
-                >
-                  <MiniIconButton
-                    icon="lock"
-                    color="text-white"
-                    onClick={() => null}
-                  />
-                  <span className="px-2" />
-                  <MiniIconButton
-                    icon="eye-open"
-                    color="text-white"
-                    onClick={() => null}
-                  />
-                </div>
-              </li>
+                layer={l}
+                selectHandler={selectLayerHandler}
+                inputChangeHandler={layerNameChangeHandler}
+              />
             ))}
           </ul>
         )}

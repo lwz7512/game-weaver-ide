@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { useState } from 'react';
 import { Icon, IconName } from '@blueprintjs/core';
 
 type ToolButtonProps = {
@@ -26,12 +27,43 @@ export const MiniIconButton = ({
 }: MiniButtonProps) => (
   <button
     type="button"
-    className={`inline-block w-4 h-4 hover:text-green-600 focus:outline-none ${color}`}
+    className={`inline-block w-5 h-5 hover:text-green-600 focus:outline-none ${color}`}
     onClick={onClick}
   >
     <Icon icon={icon} size={size} />
   </button>
 );
+
+type ToggleButtonProps = {
+  defaultIcon: IconName;
+  inverseIcon: IconName;
+  size?: number;
+  color?: string;
+  isOpen: boolean;
+  onToggle: () => void;
+};
+
+export const ToggleIconButton = ({
+  defaultIcon,
+  inverseIcon,
+  size = 20,
+  color = 'text-gray-600',
+  isOpen,
+  onToggle,
+}: ToggleButtonProps) => {
+  return (
+    <button
+      type="button"
+      className={clsx(
+        'inline-block w-5 h-5 hover:text-green-600 focus:outline-none ',
+        color
+      )}
+      onClick={() => onToggle()}
+    >
+      <Icon icon={isOpen ? defaultIcon : inverseIcon} size={size} />
+    </button>
+  );
+};
 
 export const IconToolButton = ({
   icon,
