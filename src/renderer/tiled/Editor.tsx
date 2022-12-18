@@ -8,6 +8,7 @@ import { install } from '@pixi/unsafe-eval'; // FIXME: THIS IS NECESSARY!
 
 import { IconToolButton } from '../components/Buttons';
 import { useTiledEditor } from '../hooks/useTiledEditor';
+import { useDomEvents } from '../hooks/useDomEvents';
 
 // Apply the patch to PIXI
 install({ ShaderSystem });
@@ -29,6 +30,7 @@ export const TiledEditor = ({
   selectedImage,
 }: EditorProps) => {
   const {
+    editorRef,
     eraseToolSelected,
     translateSelected,
     zoomInHandler,
@@ -38,6 +40,9 @@ export const TiledEditor = ({
     translateMapHandler,
     eraseTilesFromLayer,
   } = useTiledEditor(mapWidth, mapHeight, tileWidth, tileHeight, selectedImage);
+
+  // handling events for editor
+  useDomEvents(editorRef);
 
   return (
     <div className="tiled-editor-root flex-1 h-full bg-gray-300 relative cursor-pointer">

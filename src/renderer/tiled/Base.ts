@@ -16,6 +16,8 @@ export type GameTilesLayer = {
   opacity?: number;
   type?: string;
   visible?: boolean;
+  locked?: boolean; // locked
+  selected?: boolean; // selected
   grid: number[][]; // hold painted tile id
 };
 

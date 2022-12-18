@@ -1,4 +1,3 @@
-import clsx from 'clsx';
 import { useState } from 'react';
 import { Button, ButtonGroup } from '@blueprintjs/core';
 
@@ -37,19 +36,29 @@ const TiledEditorPage = () => {
   } = useSpriteSheetImage(+tileWidth || 0, +tileHeight || 0);
   useSpritesPreview(selectedImage, dots);
 
-  const { layers, selectLayerHandler, layerNameChangeHandler } = useMapLayers();
+  const {
+    layers,
+    selectLayerHandler,
+    layerNameChangeHandler,
+    addNewLayer,
+    deleteCurrentLayer,
+    moveLayerDown,
+    moveLayerUp,
+  } = useMapLayers();
+
+  // tab switch
   const [tabType, setTabType] = useState('layers');
 
   return (
     <div className="tile-editor w-full h-screen flex">
-      {/* left side bar */}
+      {/* === left side bar === */}
       <div className="left-sidepanel flex">
         <LeftSideBar
           activeModule={MODULETYPES.TILED}
           onModuleChanged={onModuleChanged}
         />
       </div>
-      {/* center map editor */}
+      {/* === center map editor === */}
       <TiledEditor
         mapHeight={+mapHeight}
         mapWidth={+mapWidth}
@@ -57,7 +66,7 @@ const TiledEditorPage = () => {
         tileWidth={+tileWidth}
         selectedImage={selectedImage}
       />
-      {/* right side panel */}
+      {/* === right side panel === */}
       <div className="object-explorer bg-gray-200 w-60">
         <h1 className="select-none text-base text-center p-2 bg-slate-600 text-white block mb-0">
           Game Map Settings
@@ -131,18 +140,52 @@ const TiledEditorPage = () => {
         </div>
         {/* TODO: layer management buttons */}
         <ButtonGroup className="px-2 py-3" fill>
-          <Button icon="new-layer" title="New Layer" intent="success" />
-          <Button icon="arrow-up" title="Move Layer Up" intent="warning" />
-          <Button icon="arrow-down" title="Move Layer Down" intent="warning" />
-          <Button icon="trash" title="Delete Layer" intent="danger" />
-          <Button icon="floppy-disk" title="Save Map" intent="primary" />
-          <Button icon="export" title="Export To Json File" intent="success" />
+          <Button
+            icon="new-layer"
+            title="New Layer"
+            intent="success"
+            className="focus:outline-0"
+            onClick={addNewLayer}
+          />
+          <Button
+            icon="arrow-up"
+            title="Move Layer Up"
+            intent="warning"
+            className="focus:outline-0"
+            onClick={moveLayerUp}
+          />
+          <Button
+            icon="arrow-down"
+            title="Move Layer Down"
+            intent="warning"
+            className="focus:outline-0"
+            onClick={moveLayerDown}
+          />
+          <Button
+            icon="trash"
+            title="Delete Layer"
+            intent="danger"
+            className="focus:outline-0"
+            onClick={deleteCurrentLayer}
+          />
+          <Button
+            icon="floppy-disk"
+            title="Save Map"
+            intent="primary"
+            className="focus:outline-0"
+          />
+          <Button
+            icon="export"
+            title="Export To Json File"
+            intent="success"
+            className="focus:outline-0"
+          />
         </ButtonGroup>
         {/* layer | history switching */}
         <LayerHistoryTabs tabType={tabType} tabChangeHandler={setTabType} />
         {/* layers management */}
         {tabType === 'layers' && (
-          <ul className="layers w-full px-2 text-sm text-slate-500 leading-6 h-64 overflow-scroll">
+          <ul className="map-layers">
             {layers.map((l) => (
               <LayerItem
                 key={l.id}
@@ -155,7 +198,7 @@ const TiledEditorPage = () => {
         )}
         {/* history files */}
         {tabType === 'history' && (
-          <ul className="layers w-full px-2 text-sm text-slate-500 leading-6 h-64 overflow-scroll">
+          <ul className="map-layers">
             <li className="layer-item bg-blue-600 text-white py-1 px-2">
               Map 1
             </li>

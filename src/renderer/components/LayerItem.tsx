@@ -5,8 +5,8 @@ import { MapLayer } from '../hooks/useMapLayers';
 
 type LayerProps = {
   layer: MapLayer;
-  selectHandler: (id: string) => void;
-  inputChangeHandler: (id: string, value: string) => void;
+  selectHandler: (id: number) => void;
+  inputChangeHandler: (id: number, value: string) => void;
 };
 
 export const LayerItem = ({
@@ -34,6 +34,7 @@ export const LayerItem = ({
     const key = event.code;
     if (key === 'Enter') {
       setEditable(false);
+      inputRef.current?.setSelectionRange(0, 0);
     }
   };
 

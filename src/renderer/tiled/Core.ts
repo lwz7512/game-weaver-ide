@@ -18,55 +18,54 @@ import {
 } from '../state/cache';
 
 export class TiledCore extends BaseEditor {
-  rootElement: HTMLElement;
+  protected rootElement: HTMLElement;
 
-  appWidth: number;
-  appHeight: number;
+  protected appWidth: number;
+  protected appHeight: number;
 
-  gameHoriTiles = 0; // horizontal tiles count
-  gameVertTiles = 0; // vertical tiles count
-
-  tileWidth = 0; // one tile width in pixel
-  tileHeight = 0; // one tile height in pixel
+  protected gameHoriTiles = 0; // horizontal tiles count
+  protected gameVertTiles = 0; // vertical tiles count
+  protected tileWidth = 0; // one tile width in pixel
+  protected tileHeight = 0; // one tile height in pixel
 
   // game map data for multiple layers
-  gameMapLayersInfo: GameTilesLayer[] = [];
+  protected gameMapLayersInfo: GameTilesLayer[] = [];
 
-  app: PIXI.Application | null; // hold the only instance of tile app here!
-  screenRect: Rectangle | null = null;
+  protected app: PIXI.Application | null; // hold the only instance of tile app here!
+  protected screenRect: Rectangle | null = null;
 
-  mapContainer: PIXI.Container | null = null;
-  paintedTileMap: PIXI.Container | null = null;
-  mapDrawLayer: PIXI.Graphics | null = null;
-  hoveredMapLayer: PIXI.Graphics | null = null;
-  mapInterectLayer: PIXI.Graphics | null = null;
+  protected mapContainer: PIXI.Container | null = null;
+  protected paintedTileMap: PIXI.Container | null = null;
+  protected mapDrawLayer: PIXI.Graphics | null = null;
+  protected hoveredMapLayer: PIXI.Graphics | null = null;
+  protected mapInterectLayer: PIXI.Graphics | null = null;
 
-  cellInfoText: PIXI.Text | null = null;
+  protected cellInfoText: PIXI.Text | null = null;
 
-  pickerContainer: PIXI.Container | null = null;
-  pickerTileMap: PIXI.Graphics | null = null;
-  pickerInteractLayer: PIXI.Graphics | null = null;
-  selectedTileLayer: PIXI.Graphics | null = null;
-  lastHoverRectInPicker: PIXI.Rectangle = PIXI.Rectangle.EMPTY;
-  lastSelectedRectInPicker: PIXI.Rectangle = PIXI.Rectangle.EMPTY;
-  lastSelectedTilePosition: PIXI.Point | null = null; // (x: columnIndex, y: rowIndex)
+  protected pickerContainer: PIXI.Container | null = null;
+  protected pickerTileMap: PIXI.Graphics | null = null;
+  protected pickerInteractLayer: PIXI.Graphics | null = null;
+  protected selectedTileLayer: PIXI.Graphics | null = null;
+  protected lastHoverRectInPicker: PIXI.Rectangle = PIXI.Rectangle.EMPTY;
+  protected lastSelectedRectInPicker: PIXI.Rectangle = PIXI.Rectangle.EMPTY;
+  protected lastSelectedTilePosition: PIXI.Point | null = null; // (x: columnIndex, y: rowIndex)
 
-  mapScale = 0.6;
-  mapMarginX = 60;
-  mapMarginY = 60;
-  mapHeightRatio = 0.7;
+  protected mapScale = 0.6;
+  protected mapMarginX = 60;
+  protected mapMarginY = 60;
+  protected mapHeightRatio = 0.7;
 
-  stagePressed = false;
-  clickStartXpos = 0;
-  clickStartYpos = 0;
-  touchedTileMap = false;
+  protected stagePressed = false;
+  protected clickStartXpos = 0;
+  protected clickStartYpos = 0;
+  protected touchedTileMap = false;
 
   /** loaded tilesheet grid */
   /** initialized in `drawTilePicker` */
-  tiles: PIXI.Texture[][] | null = null;
-  tilesStartX = 0;
-  tilesStartY = 0;
-  tileScale = 1;
+  protected tiles: PIXI.Texture[][] | null = null;
+  protected tilesStartX = 0;
+  protected tilesStartY = 0;
+  protected tileScale = 1;
 
   /**
    * Painted tile coordinates cache
@@ -74,7 +73,7 @@ export class TiledCore extends BaseEditor {
    * key `${x}_${y}` indicate the tile index from tile row and column;
    * value sprite indicate the displayobject in the map
    */
-  paintedTilesCache = new Map<string, PIXI.Sprite>();
+  protected paintedTilesCache = new Map<string, PIXI.Sprite>();
 
   // pinch: Pinch | null = null;
   // and more members...
@@ -288,6 +287,8 @@ export class TiledCore extends BaseEditor {
 
     // put all the selected tile in this layer
     this.paintedTileMap = new PIXI.Container();
+    // make container sortable by zIndex
+    this.paintedTileMap.sortableChildren = true;
     this.mapContainer.addChild(this.paintedTileMap);
 
     // hold the hovered rectangle over cells
@@ -422,18 +423,39 @@ export class TiledCore extends BaseEditor {
     this.tileHeight = tileHeight;
     // cleanup
     this.gameMapLayersInfo.length = 0;
+    this.addNewGameLayer(1, 'Layer - 1');
+    this.selectGameLayer(1);
+  }
+
+  protected addNewGameLayer(id: number, name: string) {
     // empty grid to hold texture ids
-    const grid = this.makeEmptyMapLayerGrid(mapWidth, mapHeight);
+    const grid = this.makeEmptyMapLayerGrid(
+      this.gameHoriTiles,
+      this.gameVertTiles
+    );
     // trying to merge old layer
     this.mergeLayerTexturesFromSession(grid);
     // build one layer data as default one
     const layer: GameTilesLayer = {
-      id: 1,
-      width: mapWidth,
-      height: mapHeight,
+      id,
+      name,
+      width: this.gameHoriTiles,
+      height: this.gameVertTiles,
       grid,
     };
     this.gameMapLayersInfo.push(layer);
+  }
+
+  protected selectGameLayer(id: number) {
+    // deselect all first
+    this.gameMapLayersInfo.forEach((l) => {
+      l.selected = false;
+    });
+    // select the one
+    const layer = this.gameMapLayersInfo.find((l) => l.id === id);
+    if (layer) {
+      layer.selected = true;
+    }
   }
 
   protected getGridFullSize() {
@@ -642,6 +664,13 @@ export class TiledCore extends BaseEditor {
     }
   }
 
+  /**
+   * paint texture to map layers
+   *
+   * @param hitRect
+   * @param grid
+   * @returns
+   */
   protected paintTileOnGameMap(
     hitRect: PIXI.Rectangle,
     grid: PIXI.Rectangle[][]
@@ -654,14 +683,24 @@ export class TiledCore extends BaseEditor {
     const texture = this.getSelectedTexture();
     // and translate, scale...
     if (!texture) return;
+    // *** paint on current layer ***
+    const selectedLayer = this.checkSelectedLayerIndex();
+    if (!selectedLayer) return console.warn('No selected layer!');
 
-    this.paintOneTextureBy(y, x, hitRect, texture);
+    // check which layer is selected
+    this.paintOneTextureBy(selectedLayer, y, x, hitRect, texture);
     // record texture id into grid array
     const textureId = this.getSelectedTextureId();
-    this.savePaintedTileFor(1, x, y, textureId);
+    this.savePaintedTileFor(selectedLayer, x, y, textureId);
+  }
+
+  protected checkSelectedLayerIndex() {
+    const layer = this.gameMapLayersInfo.findIndex((l) => !!l.selected);
+    return layer || 0;
   }
 
   protected paintOneTextureBy(
+    zIndex: number,
     row: number,
     column: number,
     cell: PIXI.Rectangle,
@@ -674,6 +713,7 @@ export class TiledCore extends BaseEditor {
     tile.y = cell.y;
     tile.width = cell.width;
     tile.height = cell.height;
+    tile.zIndex = zIndex;
     const key = `${column}_${row}`;
     this.paintedTileMap.addChild(tile);
     this.paintedTilesCache.set(key, tile);
@@ -697,7 +737,7 @@ export class TiledCore extends BaseEditor {
     const x1 = x0 + columnIndex * tw;
     const y1 = y0 + rowIndex * th;
     const cell = new PIXI.Rectangle(x1, y1, tw, th);
-    this.paintOneTextureBy(rowIndex, columnIndex, cell, texture);
+    this.paintOneTextureBy(1, rowIndex, columnIndex, cell, texture);
   }
 
   protected savePaintedTileFor(

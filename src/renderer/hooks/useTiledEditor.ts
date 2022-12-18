@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { TiledPainter } from '../tiled/Painter';
-import { GWEvent } from '../tiled/Events';
-import { setDrawingSession, getDrawingSession } from '../state/session';
-import { getTileSheetBy, resetCachedTextures } from '../state/cache';
+import { getDrawingSession } from '../state/session';
 
 /**
  * Core tiled editor interaction with page UI
@@ -67,9 +65,9 @@ export const useTiledEditor = (
 
     return () => {
       console.log(`#### destroy editor while main params chagned ###`);
-      (editorRef.current as TiledPainter).destroy();
-      editorRef.current = null; // clear the instance
       observer.unobserve(body);
+      editorRef.current && editorRef.current.destroy();
+      editorRef.current = null; // clear the instance
     };
   }, [mapWidth, mapHeight, tileWidth, tileHeight, selectedImage]);
 

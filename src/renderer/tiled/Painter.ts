@@ -47,6 +47,63 @@ export class TiledPainter extends TiledCore {
     this.cleanupHoveredTile();
   }
 
+  addNewLayer(id: number, name: string) {
+    this.addNewGameLayer(id, name);
+    this.selectGameLayer(id);
+    console.log(this.gameMapLayersInfo);
+  }
+
+  deleteLayer(id: number) {
+    const layers = this.gameMapLayersInfo;
+    if (layers.length === 1) return;
+    // delete one
+    const index = layers.findIndex((l) => l.id === id);
+    layers.splice(index, 1);
+    // select next
+    if (layers[index]) {
+      layers[index].selected = true;
+    } else {
+      layers[0].selected = true;
+    }
+    console.log(this.gameMapLayersInfo);
+  }
+
+  renameLayer(id: number, name: string) {
+    const layers = this.gameMapLayersInfo;
+    const layer = layers.find((l) => l.id === id);
+    if (layer) {
+      layer.name = name;
+    }
+  }
+
+  selectLayer(id: number) {
+    const layers = this.gameMapLayersInfo;
+    layers.forEach((l) => {
+      l.selected = false;
+      if (l.id === id) {
+        l.selected = true;
+      }
+    });
+  }
+
+  moveSelectedLayerUp() {
+    const layers = this.gameMapLayersInfo;
+    const selectedIndex = layers.findIndex((l) => l.selected);
+    if (selectedIndex === 0) return; // start of layers
+    const prevLayer = layers[selectedIndex - 1];
+    layers[selectedIndex - 1] = layers[selectedIndex];
+    layers[selectedIndex] = prevLayer;
+  }
+
+  moveSelectedLayerDown() {
+    const layers = this.gameMapLayersInfo;
+    const selectedIndex = layers.findIndex((l) => l.selected);
+    if (selectedIndex === layers.length - 1) return; // end of layers
+    const nextLayer = layers[selectedIndex + 1];
+    layers[selectedIndex + 1] = layers[selectedIndex];
+    layers[selectedIndex] = nextLayer;
+  }
+
   /**
    * add action to two main layers:
    * move, pointer down/up, click...
@@ -123,6 +180,7 @@ export class TiledPainter extends TiledCore {
             this.paintEraserOnGameMap(hitRect);
             return this.eraseTileFromGameMap(hitRect, grid);
           }
+          // *** NOTE: DOING TEXTURE PAINTING HERE ***
           this.paintTileOnGameMap(hitRect, grid);
           this.paintHiligherOnGameMap(hitRect);
         });
@@ -170,6 +228,7 @@ export class TiledPainter extends TiledCore {
         if (this.eraseTileMode) {
           return this.eraseTileFromGameMap(hitRect, grid);
         }
+        // *** NOTE: DOING TEXTURE PAINTING HERE ***
         this.paintTileOnGameMap(hitRect, grid);
       }
     };

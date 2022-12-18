@@ -1,5 +1,4 @@
 import clsx from 'clsx';
-// import { useState } from 'react';
 
 type LayerHistoryProps = {
   tabType: string;
@@ -15,8 +14,8 @@ export const LayerHistoryTabs = ({
       <button
         type="button"
         className={clsx(
-          'tab-item no-transform hover:bg-green-600',
-          tabType === 'layers' ? 'border-green-600 bg-white' : ''
+          'green-tab',
+          tabType === 'layers' ? 'border-green-600 bg-white' : 'text-gray-500'
         )}
         onClick={() => tabChangeHandler('layers')}
       >
@@ -25,7 +24,7 @@ export const LayerHistoryTabs = ({
       <button
         type="button"
         className={clsx(
-          'tab-item no-transform hover:bg-blue-600',
+          'blue-tab',
           tabType === 'history' ? 'border-blue-600 bg-white' : 'text-gray-500'
         )}
         onClick={() => tabChangeHandler('history')}
