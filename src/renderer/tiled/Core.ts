@@ -4,13 +4,10 @@
 import * as PIXI from 'pixi.js';
 import { EventSystem } from '@pixi/events';
 import { Graphics, Rectangle, Sprite } from 'pixi.js';
-import { BaseEditor, rectEquals, GameTilesLayer } from './Base';
+import { BaseEditor, rectEquals } from './Base';
 import { GeneralObject } from '../config';
-import {
-  setDrawingSession,
-  getSessionBy,
-  clearPaintedTiles,
-} from '../state/session';
+import { getSessionBy, clearPaintedTiles } from '../state/session';
+import { SpriteX } from './SpriteX';
 import {
   getTileSheetBy,
   resetCachedTextures,
@@ -27,9 +24,6 @@ export class TiledCore extends BaseEditor {
   protected gameVertTiles = 0; // vertical tiles count
   protected tileWidth = 0; // one tile width in pixel
   protected tileHeight = 0; // one tile height in pixel
-
-  // game map data for multiple layers
-  protected gameMapLayersInfo: GameTilesLayer[] = [];
 
   protected app: PIXI.Application | null; // hold the only instance of tile app here!
   protected screenRect: Rectangle | null = null;
@@ -66,14 +60,6 @@ export class TiledCore extends BaseEditor {
   protected tilesStartX = 0;
   protected tilesStartY = 0;
   protected tileScale = 1;
-
-  /**
-   * Painted tile coordinates cache
-   * save the relationship with (x_y : sprite) pair
-   * key `${x}_${y}` indicate the tile index from tile row and column;
-   * value sprite indicate the displayobject in the map
-   */
-  protected paintedTilesCache = new Map<string, PIXI.Sprite>();
 
   // pinch: Pinch | null = null;
   // and more members...
@@ -375,7 +361,7 @@ export class TiledCore extends BaseEditor {
     const mapAreaH = this.screenRect.height * this.mapHeightRatio;
     // update text and position
     if (this.cellInfoText) {
-      this.cellInfoText.x = mapAreaW - 80;
+      this.cellInfoText.x = mapAreaW - 90;
       this.cellInfoText.y = mapAreaH - 20;
       this.cellInfoText.text = info;
       return;
@@ -389,7 +375,7 @@ export class TiledCore extends BaseEditor {
       fontSize: 12,
     });
     this.cellInfoText = new PIXI.Text(info, style);
-    this.cellInfoText.x = mapAreaW - 80;
+    this.cellInfoText.x = mapAreaW - 90;
     this.cellInfoText.y = mapAreaH - 20;
     this.mapInterectLayer.addChild(this.cellInfoText);
   }
@@ -399,7 +385,7 @@ export class TiledCore extends BaseEditor {
     const mapAreaW = this.screenRect.width;
     const mapAreaH = this.screenRect.height * this.mapHeightRatio;
     if (!this.cellInfoText) return;
-    this.cellInfoText.x = mapAreaW - 80;
+    this.cellInfoText.x = mapAreaW - 90;
     this.cellInfoText.y = mapAreaH - 20;
   }
 
@@ -421,41 +407,6 @@ export class TiledCore extends BaseEditor {
     this.gameVertTiles = mapHeight;
     this.tileWidth = tileWidth;
     this.tileHeight = tileHeight;
-    // cleanup
-    this.gameMapLayersInfo.length = 0;
-    this.addNewGameLayer(1, 'Layer - 1');
-    this.selectGameLayer(1);
-  }
-
-  protected addNewGameLayer(id: number, name: string) {
-    // empty grid to hold texture ids
-    const grid = this.makeEmptyMapLayerGrid(
-      this.gameHoriTiles,
-      this.gameVertTiles
-    );
-    // trying to merge old layer
-    this.mergeLayerTexturesFromSession(grid);
-    // build one layer data as default one
-    const layer: GameTilesLayer = {
-      id,
-      name,
-      width: this.gameHoriTiles,
-      height: this.gameVertTiles,
-      grid,
-    };
-    this.gameMapLayersInfo.push(layer);
-  }
-
-  protected selectGameLayer(id: number) {
-    // deselect all first
-    this.gameMapLayersInfo.forEach((l) => {
-      l.selected = false;
-    });
-    // select the one
-    const layer = this.gameMapLayersInfo.find((l) => l.id === id);
-    if (layer) {
-      layer.selected = true;
-    }
   }
 
   protected getGridFullSize() {
@@ -665,42 +616,50 @@ export class TiledCore extends BaseEditor {
   }
 
   /**
-   * paint texture to map layers
+   * paint texture to a safe layer
    *
    * @param hitRect
    * @param grid
+   * @param layerId current selected layer id
    * @returns
    */
   protected paintTileOnGameMap(
     hitRect: PIXI.Rectangle,
-    grid: PIXI.Rectangle[][]
+    grid: PIXI.Rectangle[][],
+    layerId: number
   ) {
     // get texture and paint to this rect
     const [x, y] = this.findCoordinateFromTileGrid(hitRect, grid);
-    const isExisting = this.paintedTilesCache.has(`${x}_${y}`);
-    if (isExisting) return console.warn('repeated paint!');
+    // const isExisting = this.paintedTilesCache.has(`${x}_${y}`);
+    // if (isExisting) return console.warn('repeated paint!');
 
     const texture = this.getSelectedTexture();
     // and translate, scale...
-    if (!texture) return;
-    // *** paint on current layer ***
-    const selectedLayer = this.checkSelectedLayerIndex();
-    if (!selectedLayer) return console.warn('No selected layer!');
+    if (!texture)
+      return {
+        layerId,
+        columnIndex: x,
+        rowIndex: y,
+        textureId: 0,
+      };
 
     // check which layer is selected
-    this.paintOneTextureBy(selectedLayer, y, x, hitRect, texture);
+    const tile = this.paintOneTextureBy(layerId, y, x, hitRect, texture);
     // record texture id into grid array
     const textureId = this.getSelectedTextureId();
-    this.savePaintedTileFor(selectedLayer, x, y, textureId);
+
+    return {
+      columnIndex: x,
+      rowIndex: y,
+      layerId,
+      textureId,
+      tile,
+    };
   }
 
-  protected checkSelectedLayerIndex() {
-    const layer = this.gameMapLayersInfo.findIndex((l) => !!l.selected);
-    return layer || 0;
-  }
-
+  // FIXME: paint one spriteX ...
   protected paintOneTextureBy(
-    zIndex: number,
+    layerId: number,
     row: number,
     column: number,
     cell: PIXI.Rectangle,
@@ -708,15 +667,16 @@ export class TiledCore extends BaseEditor {
   ) {
     if (!this.paintedTileMap) return;
 
-    const tile = new Sprite(texture);
+    const key = `${column}_${row}`;
+    const tile = new SpriteX(texture, layerId);
+    tile.setUniqueKey(key);
     tile.x = cell.x;
     tile.y = cell.y;
     tile.width = cell.width;
     tile.height = cell.height;
-    tile.zIndex = zIndex;
-    const key = `${column}_${row}`;
     this.paintedTileMap.addChild(tile);
-    this.paintedTilesCache.set(key, tile);
+
+    return tile;
   }
 
   /**
@@ -740,25 +700,6 @@ export class TiledCore extends BaseEditor {
     this.paintOneTextureBy(1, rowIndex, columnIndex, cell, texture);
   }
 
-  protected savePaintedTileFor(
-    layerId: number,
-    columnIndex: number,
-    rowIndex: number,
-    tileIndex: number
-  ) {
-    const layer = this.gameMapLayersInfo.find((l) => l.id === layerId);
-    if (!layer) return console.warn('No layer found!');
-    // save texuture id to grid
-    layer.grid[rowIndex][columnIndex] = tileIndex;
-    // save to session
-    setDrawingSession({
-      layerPainted: true,
-      rowSize: layer.grid.length,
-      columnSize: layer.grid[0].length,
-      [`layer_${layerId}`]: this.flattenGrid(layer.grid),
-    });
-  }
-
   /**
    * erase tile from current rectangle
    *
@@ -770,20 +711,20 @@ export class TiledCore extends BaseEditor {
     grid: PIXI.Rectangle[][]
   ) {
     const [x, y] = this.findCoordinateFromTileGrid(hitRect, grid);
-    const isExisting = this.paintedTilesCache.has(`${x}_${y}`);
-    if (!isExisting) return; // no tile painted
+    // const isExisting = this.paintedTilesCache.has(`${x}_${y}`);
+    // if (!isExisting) return; // no tile painted
 
     const key = `${x}_${y}`;
-    const tile = this.paintedTilesCache.get(key) as Sprite;
-    this.paintedTileMap?.removeChild(tile);
-    this.paintedTilesCache.delete(key);
+    // const tile = this.paintedTilesCache.get(key) as Sprite;
+    // this.paintedTileMap?.removeChild(tile);
+    // this.paintedTilesCache.delete(key);
   }
 
   /**
    * TODO: Need to specify which layer to clear...
    */
   protected eraseAllTileFromGameMap() {
-    this.paintedTilesCache.clear();
+    // this.paintedTilesCache.clear();
     this.paintedTileMap?.removeChildren();
   }
 
@@ -833,14 +774,14 @@ export class TiledCore extends BaseEditor {
 
   protected scaleTileMap() {
     const grid = this.buildTileGridInMap();
-    this.paintedTilesCache.forEach((tile, coordinate) => {
-      const [x, y] = coordinate.split('_');
-      const rect = grid[+y][+x];
-      tile.x = rect.x;
-      tile.y = rect.y;
-      tile.width = rect.width;
-      tile.height = rect.height;
-    });
+    // this.paintedTilesCache.forEach((tile, coordinate) => {
+    //   const [x, y] = coordinate.split('_');
+    //   const rect = grid[+y][+x];
+    //   tile.x = rect.x;
+    //   tile.y = rect.y;
+    //   tile.width = rect.width;
+    //   tile.height = rect.height;
+    // });
   }
 
   /**
@@ -1055,16 +996,5 @@ export class TiledCore extends BaseEditor {
   protected findTextureByCoordinate(x: number, y: number) {
     if (!this.tiles) return null;
     return this.tiles[y][x];
-  }
-
-  protected findTextureIdFromLayer(layerId: number, x: number, y: number) {
-    const layer = this.gameMapLayersInfo.find((l) => l.id === layerId);
-    if (!layer) return 0;
-    const { grid } = layer;
-    const isValid = this.isRowCellExist;
-    if (isValid(grid[y]) && isValid(grid[y][x])) {
-      return grid[y][x];
-    }
-    return 0;
   }
 }

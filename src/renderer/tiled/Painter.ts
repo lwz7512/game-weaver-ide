@@ -6,6 +6,13 @@ import { FederatedPointerEvent } from '@pixi/events';
 import { rectEquals } from './Base';
 import { GeneralObject } from '../config';
 import { TiledCore } from './Core';
+import { LayerManager } from './Layers';
+import { SpriteX } from './SpriteX';
+import {
+  setDrawingSession,
+  getSessionBy,
+  clearPaintedTiles,
+} from '../state/session';
 
 type EventHandler = (event: Event) => void;
 
@@ -25,6 +32,9 @@ export class TiledPainter extends TiledCore {
   onWheelMoveOnPicker: EventHandler = () => null;
   onClickTilePicker: EventHandler = () => null;
 
+  /** manager layers operation in one place */
+  protected layerManager: LayerManager | undefined;
+
   /**
    * Add interaction of drawing events
    *
@@ -35,6 +45,17 @@ export class TiledPainter extends TiledCore {
     const app = super.create(session);
     this.listen(app);
     return app;
+  }
+
+  layout(
+    mapWidth: number,
+    mapHeight: number,
+    tileWidth: number,
+    tileHeight: number
+  ) {
+    super.layout(mapWidth, mapHeight, tileWidth, tileHeight);
+    this.layerManager = new LayerManager(mapWidth, mapHeight);
+    this.layerManager.addNewLayer(1, 'Layer - 1');
   }
 
   setEraseMode(enabled: boolean) {
@@ -48,60 +69,27 @@ export class TiledPainter extends TiledCore {
   }
 
   addNewLayer(id: number, name: string) {
-    this.addNewGameLayer(id, name);
-    this.selectGameLayer(id);
-    console.log(this.gameMapLayersInfo);
+    this.layerManager?.addNewLayer(id, name);
   }
 
   deleteLayer(id: number) {
-    const layers = this.gameMapLayersInfo;
-    if (layers.length === 1) return;
-    // delete one
-    const index = layers.findIndex((l) => l.id === id);
-    layers.splice(index, 1);
-    // select next
-    if (layers[index]) {
-      layers[index].selected = true;
-    } else {
-      layers[0].selected = true;
-    }
-    console.log(this.gameMapLayersInfo);
+    this.layerManager?.deleteLayer(id);
   }
 
   renameLayer(id: number, name: string) {
-    const layers = this.gameMapLayersInfo;
-    const layer = layers.find((l) => l.id === id);
-    if (layer) {
-      layer.name = name;
-    }
+    this.layerManager?.renameLayer(id, name);
   }
 
   selectLayer(id: number) {
-    const layers = this.gameMapLayersInfo;
-    layers.forEach((l) => {
-      l.selected = false;
-      if (l.id === id) {
-        l.selected = true;
-      }
-    });
+    this.layerManager?.selectLayer(id);
   }
 
   moveSelectedLayerUp() {
-    const layers = this.gameMapLayersInfo;
-    const selectedIndex = layers.findIndex((l) => l.selected);
-    if (selectedIndex === 0) return; // start of layers
-    const prevLayer = layers[selectedIndex - 1];
-    layers[selectedIndex - 1] = layers[selectedIndex];
-    layers[selectedIndex] = prevLayer;
+    this.layerManager?.moveSelectedLayerUp();
   }
 
   moveSelectedLayerDown() {
-    const layers = this.gameMapLayersInfo;
-    const selectedIndex = layers.findIndex((l) => l.selected);
-    if (selectedIndex === layers.length - 1) return; // end of layers
-    const nextLayer = layers[selectedIndex + 1];
-    layers[selectedIndex + 1] = layers[selectedIndex];
-    layers[selectedIndex] = nextLayer;
+    this.layerManager?.moveSelectedLayerDown();
   }
 
   /**
@@ -113,6 +101,37 @@ export class TiledPainter extends TiledCore {
     this.listenOnStageInteraction(app);
     this.listenOnMapInteraction();
     this.listenOnPickerInteraction();
+  }
+
+  /**
+   * update layer info
+   * @param layerId
+   * @param columnIndex
+   * @param rowIndex
+   * @param tileIndex
+   */
+  protected savePaintedTileFor(
+    layerId: number,
+    columnIndex: number,
+    rowIndex: number,
+    tileId: number,
+    tile: SpriteX | undefined
+  ) {
+    const layer = this.layerManager?.addOneTile(
+      layerId,
+      columnIndex,
+      rowIndex,
+      tileId,
+      tile
+    );
+    if (!layer) return;
+    // FIXME: refactor to cache game structure ...
+    setDrawingSession({
+      layerPainted: true,
+      rowSize: layer.grid.length,
+      columnSize: layer.grid[0].length,
+      [`layer_${layerId}`]: this.flattenGrid(layer.grid),
+    });
   }
 
   /* ***********************************************************
@@ -155,6 +174,7 @@ export class TiledPainter extends TiledCore {
       const point = new PIXI.Point(currentX, currentY);
       const grid = this.buildTileGridInMap();
       const hitRect = this.containInGrid(point, grid);
+      const currentLayerId = this.layerManager?.getCurrentLayerId() || 1;
       // if stage untouched, trying to show tile highlighter ...
       if (!this.stagePressed) {
         if (rectEquals(hitRect, this.lastHoverRectInMap)) return;
@@ -166,8 +186,12 @@ export class TiledPainter extends TiledCore {
         this.lastHoverRectInMap = hitRect;
         // display cell info
         const [x, y] = this.findCoordinateFromTileGrid(hitRect, grid);
-        const id = this.findTextureIdFromLayer(1, x, y);
-        this.showCurrentCell(`(${y},${x}) [${id}]`);
+        const id = this.layerManager?.findTextureIdFromLayer(
+          currentLayerId,
+          x,
+          y
+        );
+        this.showCurrentCell(`(${y},${x}) [${id}] - L${currentLayerId}`);
         return;
       }
       // or touched on map, do painting!
@@ -181,8 +205,16 @@ export class TiledPainter extends TiledCore {
             return this.eraseTileFromGameMap(hitRect, grid);
           }
           // *** NOTE: DOING TEXTURE PAINTING HERE ***
-          this.paintTileOnGameMap(hitRect, grid);
           this.paintHiligherOnGameMap(hitRect);
+          const { layerId, columnIndex, rowIndex, textureId, tile } =
+            this.paintTileOnGameMap(hitRect, grid, currentLayerId);
+          this.savePaintedTileFor(
+            layerId,
+            columnIndex,
+            rowIndex,
+            textureId,
+            tile
+          );
         });
         this.lastHoverRectInMap = hitRect;
         return;
@@ -224,12 +256,21 @@ export class TiledPainter extends TiledCore {
       const point = new PIXI.Point(pointerX, pointerY);
       const grid = this.buildTileGridInMap();
       const hitRect = this.containInGrid(point, grid);
+      const currentLayerId = this.layerManager?.getCurrentLayerId() || 1;
       if (this.checkIsNotEmptyRect(hitRect)) {
         if (this.eraseTileMode) {
           return this.eraseTileFromGameMap(hitRect, grid);
         }
         // *** NOTE: DOING TEXTURE PAINTING HERE ***
-        this.paintTileOnGameMap(hitRect, grid);
+        const { layerId, columnIndex, rowIndex, textureId, tile } =
+          this.paintTileOnGameMap(hitRect, grid, currentLayerId);
+        this.savePaintedTileFor(
+          layerId,
+          columnIndex,
+          rowIndex,
+          textureId,
+          tile
+        );
       }
     };
 

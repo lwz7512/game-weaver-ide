@@ -25,7 +25,6 @@ export const useMapLayers = () => {
       if (l.id === id) l.selected = true;
       return l;
     });
-    console.log(currentLayers);
     setLayers(currentLayers);
     document.dispatchEvent(
       new CustomEvent(GWEvent.SELECTLAYER, { detail: id })

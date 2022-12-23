@@ -4,8 +4,6 @@
 
 import * as PIXI from 'pixi.js';
 
-import { getSessionBy } from '../state/session';
-
 export type GameTilesLayer = {
   id?: number;
   x?: number;
@@ -19,6 +17,7 @@ export type GameTilesLayer = {
   locked?: boolean; // locked
   selected?: boolean; // selected
   grid: number[][]; // hold painted tile id
+  zIndex: number; // current y position of
 };
 
 export const rectEquals = (
@@ -34,8 +33,6 @@ export const rectEquals = (
     fix2digit(one.height) === fix2digit(other.height)
   );
 };
-
-type LayerTextureType = number[] | number | undefined;
 
 /**
  * ================= Base Editor Class =========================
@@ -101,43 +98,6 @@ export class BaseEditor extends EventTarget {
     return grid.reduce((prev: number[], row: number[]) => {
       return prev.concat(...row);
     }, []);
-  }
-
-  protected rebuildGridFromFlat(
-    flatGrid: number[],
-    columnSize: number
-  ): number[][] {
-    if (columnSize === 0 || !flatGrid || !flatGrid.length) return [];
-    const grid = [];
-    const rowSize = flatGrid.length / columnSize;
-    for (let i = 0; i < rowSize; i += 1) {
-      grid.push(flatGrid.slice(i * columnSize, (i + 1) * columnSize));
-    }
-    return grid;
-  }
-
-  protected isRowCellExist(id: LayerTextureType) {
-    return typeof id !== 'undefined';
-  }
-
-  protected mergeLayerTexturesFromSession(grid: number[][]) {
-    // check layer existence in session
-    const isLayerPainted = getSessionBy('layerPainted') as boolean;
-    if (!isLayerPainted) return;
-    // prepare to rebuild layer from session ...
-    const columnSize = getSessionBy('columnSize') as number;
-    const flatLayer = getSessionBy('layer_1') as number[];
-    const oldLayerGrid = this.rebuildGridFromFlat(flatLayer, columnSize);
-    const isValid = this.isRowCellExist;
-    // need to merge two layers
-    for (let i = 0; i < oldLayerGrid.length; i += 1) {
-      const row = oldLayerGrid[i];
-      for (let j = 0; j < row.length; j += 1) {
-        if (isValid(grid[i]) && isValid(grid[i][j])) {
-          grid[i][j] = row[j]; // value reset from old layer
-        }
-      }
-    }
   }
 
   // more method ....
