@@ -6,4 +6,6 @@ export enum GWEvent {
   SELECTLAYER = 'selectLayer',
   MOVEUPLAYER = 'moveUpLayer',
   MOVEDOWNLAYER = 'moveDownLayer',
+  TOGGLELOCKLAYER = 'lockLayer',
+  TOGGLEDISPLAYLAYER = 'displayLayer',
 }

@@ -43,15 +43,30 @@ export class LayerManager {
   }
 
   clearOneTile(layerId: number, col: number, row: number) {
-    // TODO: ...
+    const layer = this.gameMapLayersInfo.find((l) => l.id === layerId);
+    if (!layer) {
+      console.warn('No layer found!');
+      return;
+    }
+    layer.grid[row][col] = 0;
   }
 
-  lockLayer(id: number) {
-    // TODO: ...
+  lockLayer(layerId: number, lockOrNot: boolean) {
+    const layer = this.gameMapLayersInfo.find((l) => l.id === layerId);
+    if (!layer) {
+      console.warn('No layer found!');
+      return;
+    }
+    layer.locked = lockOrNot;
   }
 
-  hideLayer(id: number) {
-    // TODO: ...
+  visualizeLayer(layerId: number, hideOrNot: boolean) {
+    const layer = this.gameMapLayersInfo.find((l) => l.id === layerId);
+    if (!layer) {
+      console.warn('No layer found!');
+      return;
+    }
+    layer.locked = true;
   }
 
   addNewLayer(id: number, name: string) {
@@ -91,6 +106,7 @@ export class LayerManager {
         l.selected = true;
       }
     });
+    // console.log(this.gameMapLayersInfo);
   }
 
   moveSelectedLayerUp() {
@@ -100,6 +116,7 @@ export class LayerManager {
     const prevLayer = layers[selectedIndex - 1];
     layers[selectedIndex - 1] = layers[selectedIndex];
     layers[selectedIndex] = prevLayer;
+    // console.log(this.gameMapLayersInfo);
   }
 
   moveSelectedLayerDown() {
@@ -109,6 +126,25 @@ export class LayerManager {
     const nextLayer = layers[selectedIndex + 1];
     layers[selectedIndex + 1] = layers[selectedIndex];
     layers[selectedIndex] = nextLayer;
+    // console.log(this.gameMapLayersInfo);
+  }
+
+  toggleLayerVisible(layerId: number, visible: boolean) {
+    const layers = this.gameMapLayersInfo;
+    const targetLayer = layers.find((l) => l.id === layerId);
+    if (targetLayer) {
+      targetLayer.visible = visible;
+    }
+    // console.log(this.gameMapLayersInfo);
+  }
+
+  toggleLayerAvailable(layerId: number, locked: boolean) {
+    const layers = this.gameMapLayersInfo;
+    const targetLayer = layers.find((l) => l.id === layerId);
+    if (targetLayer) {
+      targetLayer.locked = locked;
+    }
+    // console.log(this.gameMapLayersInfo);
   }
 
   getCurrentLayerId() {
@@ -146,6 +182,9 @@ export class LayerManager {
       width: this.mapWidth,
       height: this.mapHeight,
       grid,
+      selected: true,
+      visible: true,
+      locked: false,
       zIndex: id,
     };
     this.gameMapLayersInfo.push(layer);

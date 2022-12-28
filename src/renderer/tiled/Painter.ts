@@ -92,6 +92,14 @@ export class TiledPainter extends TiledCore {
     this.layerManager?.moveSelectedLayerDown();
   }
 
+  toggleLayerVisible(layerId: number, visible: boolean) {
+    this.layerManager?.toggleLayerVisible(layerId, visible);
+  }
+
+  toggleLayerAvailable(layerId: number, locked: boolean) {
+    this.layerManager?.toggleLayerAvailable(layerId, locked);
+  }
+
   /**
    * add action to two main layers:
    * move, pointer down/up, click...

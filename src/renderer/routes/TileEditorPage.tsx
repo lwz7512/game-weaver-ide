@@ -44,6 +44,8 @@ const TiledEditorPage = () => {
     deleteCurrentLayer,
     moveLayerDown,
     moveLayerUp,
+    toggleAvailabilityHandler,
+    toggleVisibilityHandler,
   } = useMapLayers();
 
   // tab switch
@@ -192,6 +194,8 @@ const TiledEditorPage = () => {
                 layer={l}
                 selectHandler={selectLayerHandler}
                 inputChangeHandler={layerNameChangeHandler}
+                availableToggleHandler={toggleAvailabilityHandler}
+                visibleToggleHandler={toggleVisibilityHandler}
               />
             ))}
           </ul>

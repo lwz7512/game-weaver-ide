@@ -7,12 +7,16 @@ type LayerProps = {
   layer: MapLayer;
   selectHandler: (id: number) => void;
   inputChangeHandler: (id: number, value: string) => void;
+  availableToggleHandler: (id: number, value: boolean) => void;
+  visibleToggleHandler: (id: number, value: boolean) => void;
 };
 
 export const LayerItem = ({
   layer,
   selectHandler,
   inputChangeHandler,
+  availableToggleHandler,
+  visibleToggleHandler,
 }: LayerProps) => {
   const [unlocked, setUnlocked] = useState(true);
   const [visible, setVisible] = useState(true);
@@ -36,6 +40,16 @@ export const LayerItem = ({
       setEditable(false);
       inputRef.current?.setSelectionRange(0, 0);
     }
+  };
+
+  const lockLayerHandler = () => {
+    setUnlocked(!unlocked);
+    availableToggleHandler(layer.id, !unlocked);
+  };
+
+  const showLayerHandler = () => {
+    setVisible(!visible);
+    visibleToggleHandler(layer.id, !visible);
   };
 
   return (
@@ -66,7 +80,7 @@ export const LayerItem = ({
           inverseIcon="unlock"
           color="text-white"
           isOpen={unlocked}
-          onToggle={() => setUnlocked(!unlocked)}
+          onToggle={lockLayerHandler}
         />
         <span className="layer-tool-separator" />
         <ToggleIconButton
@@ -74,7 +88,7 @@ export const LayerItem = ({
           inverseIcon="eye-off"
           color="text-white"
           isOpen={visible}
-          onToggle={() => setVisible(!visible)}
+          onToggle={showLayerHandler}
         />
       </div>
     </li>

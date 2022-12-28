@@ -100,6 +100,22 @@ export const useMapLayers = () => {
     document.dispatchEvent(new CustomEvent(GWEvent.MOVEDOWNLAYER));
   };
 
+  const toggleVisibilityHandler = (layerId: number, visible: boolean) => {
+    const targetLayer = layers.find((l) => l.id === layerId);
+    const evt = new CustomEvent(GWEvent.TOGGLEDISPLAYLAYER, {
+      detail: { layerId, visible },
+    });
+    targetLayer && document.dispatchEvent(evt);
+  };
+
+  const toggleAvailabilityHandler = (layerId: number, locked: boolean) => {
+    const targetLayer = layers.find((l) => l.id === layerId);
+    const evt = new CustomEvent(GWEvent.TOGGLELOCKLAYER, {
+      detail: { layerId, locked },
+    });
+    targetLayer && document.dispatchEvent(evt);
+  };
+
   return {
     layers,
     selectLayerHandler,
@@ -108,5 +124,7 @@ export const useMapLayers = () => {
     deleteCurrentLayer,
     moveLayerUp,
     moveLayerDown,
+    toggleVisibilityHandler,
+    toggleAvailabilityHandler,
   };
 };
