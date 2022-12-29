@@ -8,6 +8,7 @@ import { BaseEditor, rectEquals } from './Base';
 import { GeneralObject } from '../config';
 import { getSessionBy, clearPaintedTiles } from '../state/session';
 import { SpriteX } from './SpriteX';
+import { TileLegend } from '.';
 import {
   getTileSheetBy,
   resetCachedTextures,
@@ -621,8 +622,6 @@ export class TiledCore extends BaseEditor {
   ) {
     // get texture and paint to this rect
     const [x, y] = this.findCoordinateFromTileGrid(hitRect, grid);
-    // const isExisting = this.paintedTilesCache.has(`${x}_${y}`);
-    // if (isExisting) return console.warn('repeated paint!');
 
     const texture = this.getSelectedTexture();
     // and translate, scale...
@@ -756,20 +755,28 @@ export class TiledCore extends BaseEditor {
 
   /**
    * draw tiles horizontally at the bottom left corner
-   * @param textureIds
+   * @param textures
    */
-  protected revealTilesUnderMouse(textureIds: number[]) {
+  protected revealTilesUnderMouse(textures: TileLegend[]) {
     if (!this.screenRect) return;
     const mapAreaH = this.screenRect.height * this.mapHeightRatio;
-    textureIds.forEach((id, index) => {
-      const texture = this.getTextureBy(id);
+    textures.forEach((tl, index) => {
+      if (!this.hoveredMapLayer) return;
+      // draw rect
+      const tileXPos = 8 + index * 21;
+      const tileYPos = mapAreaH - 24;
+      const bgColor = tl.active ? 0x5ec169 : 0xeeeeee;
+      this.hoveredMapLayer.beginFill(bgColor, 1);
+      this.hoveredMapLayer.drawRect(tileXPos, tileYPos, 20, 20);
+      this.hoveredMapLayer.endFill();
+      // draw tile legend
+      const texture = this.getTextureBy(tl.textureId);
       if (!texture) return;
       const tile = new Sprite(texture);
-      tile.x = 16 + index * 21;
-      tile.y = mapAreaH - 24;
+      tile.x = tileXPos;
+      tile.y = tileYPos;
       tile.width = 20;
       tile.height = 20;
-      if (!this.hoveredMapLayer) return;
       this.hoveredMapLayer.addChild(tile);
     });
   }

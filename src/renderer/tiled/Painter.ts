@@ -219,15 +219,7 @@ export class TiledPainter extends TiledCore {
           }
           // *** NOTE: DOING TEXTURE PAINTING HERE ***
           this.paintHiligherOnGameMap(hitRect);
-          const { layerId, columnIndex, rowIndex, textureId, tile } =
-            this.paintTileOnGameMap(hitRect, grid, currentLayerId);
-          this.savePaintedTileFor(
-            layerId,
-            columnIndex,
-            rowIndex,
-            textureId,
-            tile
-          );
+          this.safelyPaintTile(currentLayerId, hitRect, grid);
         });
         this.lastHoverRectInMap = hitRect;
         return;
@@ -275,15 +267,7 @@ export class TiledPainter extends TiledCore {
           return this.eraseTileFromGameMap(hitRect, grid);
         }
         // *** NOTE: DOING TEXTURE PAINTING HERE ***
-        const { layerId, columnIndex, rowIndex, textureId, tile } =
-          this.paintTileOnGameMap(hitRect, grid, currentLayerId);
-        this.savePaintedTileFor(
-          layerId,
-          columnIndex,
-          rowIndex,
-          textureId,
-          tile
-        );
+        this.safelyPaintTile(currentLayerId, hitRect, grid);
       }
     };
 
@@ -295,6 +279,19 @@ export class TiledPainter extends TiledCore {
       this.mapInterectLayer.addEventListener('wheel', this.onWheelMoveOnMap);
       this.mapInterectLayer.addEventListener('click', this.onClickPaintOnMap);
     }
+  }
+
+  safelyPaintTile(
+    currentLayerId: number,
+    hitRect: PIXI.Rectangle,
+    grid: PIXI.Rectangle[][]
+  ) {
+    const [x, y] = this.findCoordinateFromTileGrid(hitRect, grid);
+    const painted = this.layerManager?.checkTileExistence(currentLayerId, x, y);
+    if (painted) return;
+    const { layerId, columnIndex, rowIndex, textureId, tile } =
+      this.paintTileOnGameMap(hitRect, grid, currentLayerId);
+    this.savePaintedTileFor(layerId, columnIndex, rowIndex, textureId, tile);
   }
 
   /* ***********************************************************

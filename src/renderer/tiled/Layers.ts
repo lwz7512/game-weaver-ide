@@ -1,7 +1,7 @@
 import { Sprite, Texture } from 'pixi.js';
-import { GameTilesLayer } from './Base';
 import { SpriteX } from './SpriteX';
 import { getSessionBy } from '../state/session';
+import { TileLegend, GameTilesLayer } from '.';
 
 type LayerTextureType = number[] | number | undefined;
 
@@ -40,6 +40,10 @@ export class LayerManager {
     const key = `${layerId}_${col}_${row}`;
     tile && this.paintedTilesCache.set(key, tile);
     return layer;
+  }
+
+  checkTileExistence(layerId: number, col: number, row: number) {
+    return this.paintedTilesCache.has(`${layerId}_${col}_${row}`);
   }
 
   clearOneTile(layerId: number, col: number, row: number) {
@@ -129,15 +133,29 @@ export class LayerManager {
     // console.log(this.gameMapLayersInfo);
   }
 
+  /**
+   * hide sprite of this layer
+   * @param layerId
+   * @param visible
+   */
   toggleLayerVisible(layerId: number, visible: boolean) {
     const layers = this.gameMapLayersInfo;
     const targetLayer = layers.find((l) => l.id === layerId);
     if (targetLayer) {
       targetLayer.visible = visible;
     }
-    // console.log(this.gameMapLayersInfo);
+    this.paintedTilesCache.forEach((s) => {
+      if (s.getLayerId() === layerId) {
+        s.visible = visible;
+      }
+    });
   }
 
+  /**
+   * disable layer to put tiles
+   * @param layerId
+   * @param locked
+   */
   toggleLayerAvailable(layerId: number, locked: boolean) {
     const layers = this.gameMapLayersInfo;
     const targetLayer = layers.find((l) => l.id === layerId);
@@ -164,21 +182,28 @@ export class LayerManager {
   }
 
   findTextureIdsFromLayers(x: number, y: number) {
-    const ids: number[] = [];
+    const legends: TileLegend[] = [];
     const layers = this.gameMapLayersInfo;
     const isValid = this.isRowCellExist;
-    layers.forEach(({ grid }) => {
+    layers.forEach(({ grid, selected }) => {
       if (isValid(grid[y]) && isValid(grid[y][x])) {
-        ids.push(grid[y][x]);
+        legends.push({
+          textureId: grid[y][x],
+          active: selected,
+        });
       } else {
-        ids.push(0);
+        legends.push({
+          textureId: 0,
+          active: selected,
+        });
       }
     });
-    return ids;
+    return legends;
   }
 
   /**
    * rest zIndex of each sprite rendering level
+   * after adjustment of layer order
    */
   protected resetTileRenderIndex() {
     // TODO: ...
