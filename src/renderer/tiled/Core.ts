@@ -139,7 +139,7 @@ export class TiledCore extends BaseEditor {
   }
 
   /**
-   * repaint game layer while return to editor from other page
+   * FIXME: repaint game layer while return to editor from other page
    * @param session
    * @returns
    */
@@ -155,14 +155,15 @@ export class TiledCore extends BaseEditor {
     // TODO: process multiple layers...
     const layerTiles = getSessionBy('layer_1') as number[];
     const rowSize = getSessionBy('rowSize') as number;
-    const columnSize = getSessionBy('columnSize') as number;
-    for (let i = 0; i < rowSize; i += 1) {
-      for (let j = 0; j < columnSize; j += 1) {
-        const tileIndex = layerTiles[j + i * columnSize];
-        const texture = this.getTextureBy(tileIndex);
-        texture && this.paintTextureTo(texture, i, j);
-      }
-    }
+    // FIXME: paint texture by textureId !!
+    // const columnSize = getSessionBy('columnSize') as number;
+    // for (let i = 0; i < rowSize; i += 1) {
+    //   for (let j = 0; j < columnSize; j += 1) {
+    //     const tileIndex = layerTiles[j + i * columnSize];
+    //     const texture = this.getTextureBy(tileIndex);
+    //     texture && this.paintTextureTo(texture, i, j);
+    //   }
+    // }
   }
 
   /**
@@ -236,19 +237,6 @@ export class TiledCore extends BaseEditor {
   }
 
   // *************************** end of public api *************************************
-
-  protected saveMapDimension() {
-    this.saveSessionChange({
-      mapMarginX: this.mapMarginX,
-      mapMarginY: this.mapMarginY,
-      mapScale: this.mapScale,
-    });
-  }
-
-  protected saveSessionChange(props: GeneralObject) {
-    // `useTiledEditor` handle this event
-    this.dispatchEvent(new CustomEvent('session', { detail: props }));
-  }
 
   /**
    * setup editor needed two main sections:
@@ -380,6 +368,9 @@ export class TiledCore extends BaseEditor {
     this.mapInterectLayer.addChild(this.cellInfoText);
   }
 
+  /**
+   * @deprecated
+   */
   protected moveCellInfo() {
     if (!this.screenRect) return;
     const mapAreaW = this.screenRect.width;
@@ -760,7 +751,27 @@ export class TiledCore extends BaseEditor {
     if (!this.hoveredMapLayer) return;
     this.hoveredMapLayer.clear();
     if (!this.hoveredMapLayer.children.length) return;
-    this.hoveredMapLayer.removeChildAt(0);
+    this.hoveredMapLayer.removeChildren();
+  }
+
+  /**
+   * draw tiles horizontally at the bottom left corner
+   * @param textureIds
+   */
+  protected revealTilesUnderMouse(textureIds: number[]) {
+    if (!this.screenRect) return;
+    const mapAreaH = this.screenRect.height * this.mapHeightRatio;
+    textureIds.forEach((id, index) => {
+      const texture = this.getTextureBy(id);
+      if (!texture) return;
+      const tile = new Sprite(texture);
+      tile.x = 16 + index * 21;
+      tile.y = mapAreaH - 24;
+      tile.width = 20;
+      tile.height = 20;
+      if (!this.hoveredMapLayer) return;
+      this.hoveredMapLayer.addChild(tile);
+    });
   }
 
   protected paintEraserOnGameMap(hitRect: PIXI.Rectangle) {
@@ -772,6 +783,9 @@ export class TiledCore extends BaseEditor {
     this.hoveredMapLayer.endFill();
   }
 
+  /**
+   * FIXME: to reset the tiles saved in cache!
+   */
   protected scaleTileMap() {
     const grid = this.buildTileGridInMap();
     // this.paintedTilesCache.forEach((tile, coordinate) => {
@@ -836,6 +850,19 @@ export class TiledCore extends BaseEditor {
     hoverTileLayer.endFill();
   }
 
+  protected saveMapDimension() {
+    this.saveSessionChange({
+      mapMarginX: this.mapMarginX,
+      mapMarginY: this.mapMarginY,
+      mapScale: this.mapScale,
+    });
+  }
+
+  protected saveSessionChange(props: GeneralObject) {
+    // `useTiledEditor` handle this event
+    this.dispatchEvent(new CustomEvent('session', { detail: props }));
+  }
+
   /**
    * move tiles no need to consider scale operation
    * @param diffX
@@ -898,10 +925,6 @@ export class TiledCore extends BaseEditor {
     // translate tiles
     this.translateTileMap(diffX, diffY);
 
-    const detail = {
-      mapMarginX: this.mapMarginX,
-      mapMarginY: this.mapMarginY,
-    };
     this.saveMapDimension();
   }
 
@@ -965,16 +988,17 @@ export class TiledCore extends BaseEditor {
 
   /**
    * figure out texture from current tiles
-   * @param index texture index start from 1
+   *
+   * @param textureId start from 1
    * @returns texture resource
    */
-  protected getTextureBy(index: number) {
-    if (!index) return null; // possible 0
+  protected getTextureBy(textureId: number) {
+    if (!textureId) return null; // possible 0
     if (!this.tiles) return null;
 
     const columns = this.tiles[0].length;
-    const rowIndex = Math.floor((index - 1) / columns);
-    const columnIndex = (index - 1) % columns;
+    const rowIndex = Math.floor((textureId - 1) / columns);
+    const columnIndex = (textureId - 1) % columns;
     return this.tiles[rowIndex][columnIndex];
   }
 

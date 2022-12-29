@@ -163,6 +163,20 @@ export class LayerManager {
     return 0;
   }
 
+  findTextureIdsFromLayers(x: number, y: number) {
+    const ids: number[] = [];
+    const layers = this.gameMapLayersInfo;
+    const isValid = this.isRowCellExist;
+    layers.forEach(({ grid }) => {
+      if (isValid(grid[y]) && isValid(grid[y][x])) {
+        ids.push(grid[y][x]);
+      } else {
+        ids.push(0);
+      }
+    });
+    return ids;
+  }
+
   /**
    * rest zIndex of each sprite rendering level
    */

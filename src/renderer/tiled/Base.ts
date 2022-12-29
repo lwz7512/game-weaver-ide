@@ -71,6 +71,12 @@ export class BaseEditor extends EventTarget {
     return result;
   }
 
+  /**
+   * figure out the hit rect position(col, row) in tile grid
+   * @param rect
+   * @param grid
+   * @returns [columnIndex, rowIndex]
+   */
   protected findCoordinateFromTileGrid(
     rect: PIXI.Rectangle,
     grid: PIXI.Rectangle[][]
@@ -81,8 +87,8 @@ export class BaseEditor extends EventTarget {
       for (let j = 0; j < row.length; j += 1) {
         const cell = row[j];
         if (rectEquals(rect, cell)) {
-          coordinate[0] = j; // x
-          coordinate[1] = i; // y
+          coordinate[0] = j; // x, columnIndex
+          coordinate[1] = i; // y, rowIndex
         }
       }
     }

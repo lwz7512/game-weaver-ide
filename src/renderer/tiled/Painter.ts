@@ -183,7 +183,7 @@ export class TiledPainter extends TiledCore {
       const grid = this.buildTileGridInMap();
       const hitRect = this.containInGrid(point, grid);
       const currentLayerId = this.layerManager?.getCurrentLayerId() || 1;
-      // if stage untouched, trying to show tile highlighter ...
+      // CASE 1: if stage untouched, trying to show tile highlighter ...
       if (!this.stagePressed) {
         if (rectEquals(hitRect, this.lastHoverRectInMap)) return;
         if (this.eraseTileMode) {
@@ -191,6 +191,7 @@ export class TiledPainter extends TiledCore {
         } else {
           this.paintHiligherOnGameMap(hitRect, this.translateMode);
         }
+        // save visited cell after painting!!
         this.lastHoverRectInMap = hitRect;
         // display cell info
         const [x, y] = this.findCoordinateFromTileGrid(hitRect, grid);
@@ -200,9 +201,13 @@ export class TiledPainter extends TiledCore {
           y
         );
         this.showCurrentCell(`(${y},${x}) [${id}] - L${currentLayerId}`);
+        // display tiles under mouse
+        const textureIds =
+          this.layerManager?.findTextureIdsFromLayers(x, y) || [];
+        this.revealTilesUnderMouse(textureIds.reverse());
         return;
       }
-      // or touched on map, do painting!
+      // CASE 2: or touched on map, do painting!
       if (this.touchedTileMap && !this.translateMode) {
         // do continuous painting with with the same texuture, smearing operation
         if (rectEquals(hitRect, this.lastHoverRectInMap)) return;
@@ -228,7 +233,7 @@ export class TiledPainter extends TiledCore {
         return;
       }
 
-      // now allowed to translate grid ...
+      // CASE 3: touched on the blank canvas, now allowed to translate grid ...
       const diffX = fdEvent.movementX * 0.6;
       const diffY = fdEvent.movementY * 0.6;
       this.translateGameMap(diffX, diffY);
