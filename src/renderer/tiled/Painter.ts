@@ -1,5 +1,7 @@
 /**
  * Created at 2022/11/08
+ *
+ * 1. completed `layerManager` @2022/12/31
  */
 import * as PIXI from 'pixi.js';
 import { FederatedPointerEvent } from '@pixi/events';
@@ -8,11 +10,7 @@ import { GeneralObject } from '../config';
 import { TiledCore } from './Core';
 import { LayerManager } from './Layers';
 import { SpriteX } from './SpriteX';
-import {
-  setDrawingSession,
-  getSessionBy,
-  clearPaintedTiles,
-} from '../state/session';
+import { setDrawingSession } from '../state/session';
 
 type EventHandler = (event: Event) => void;
 

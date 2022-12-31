@@ -50,8 +50,6 @@ export const useTiledEditor = (
       editor.layout(mapWidth, mapHeight, tileWidth, tileHeight);
       // paint from cached layer info
       editor.paintMapLayer(session);
-      // reset tile grid
-      editor.resetTileSize(selectedImage);
     };
     // FIXME: observing body is the right way to respond to devtool toggling
     // @2022/11/04
@@ -69,7 +67,19 @@ export const useTiledEditor = (
       editorRef.current && editorRef.current.destroy();
       editorRef.current = null; // clear the instance
     };
-  }, [mapWidth, mapHeight, tileWidth, tileHeight, selectedImage]);
+  }, [mapWidth, mapHeight, tileWidth, tileHeight]);
+
+  /**
+   * reset tile picker and clear game map
+   */
+  useEffect(() => {
+    const editor = editorRef.current;
+    if (!editor || !selectedImage) return;
+    // reset tile grid
+    editor.resetTileSize(selectedImage);
+  }, [selectedImage]);
+
+  // ====== PUBLIC APIs for UI ======
 
   const zoomInHandler = () => {
     editorRef.current?.zoomInMapAndTitles();

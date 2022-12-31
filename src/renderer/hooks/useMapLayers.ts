@@ -42,8 +42,11 @@ export const useMapLayers = () => {
   };
 
   const addNewLayer = () => {
-    const lastLayerId = layers.slice(-1)[0].id;
-    const newLayerId = +lastLayerId + 1;
+    const maxLayerId = layers.reduce(
+      (prev, l) => (l.id > prev ? l.id : prev),
+      0
+    );
+    const newLayerId = +maxLayerId + 1;
     const newLayerName = `Layer - ${newLayerId}`;
     layers.forEach((l) => {
       l.selected = false;
