@@ -72,11 +72,11 @@ export const useTiledEditor = (
   }, [mapWidth, mapHeight, tileWidth, tileHeight, selectedImage]);
 
   const zoomInHandler = () => {
-    editorRef.current?.zoomIn();
+    editorRef.current?.zoomInMapAndTitles();
   };
 
   const zoomOutHandler = () => {
-    editorRef.current?.zoomOut();
+    editorRef.current?.zoomOutMapAndTiles();
   };
 
   const zoomToRealSize = () => {

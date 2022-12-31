@@ -3,7 +3,7 @@
  */
 import * as PIXI from 'pixi.js';
 import { EventSystem } from '@pixi/events';
-import { Graphics, Rectangle, Sprite } from 'pixi.js';
+import { Graphics, Sprite } from 'pixi.js';
 import { BaseEditor, rectEquals } from './Base';
 import { GeneralObject } from '../config';
 import { getSessionBy, clearPaintedTiles } from '../state/session';
@@ -27,7 +27,7 @@ export class TiledCore extends BaseEditor {
   protected tileHeight = 0; // one tile height in pixel
 
   protected app: PIXI.Application | null; // hold the only instance of tile app here!
-  protected screenRect: Rectangle | null = null;
+  protected screenRect: PIXI.Rectangle | null = null;
 
   protected mapContainer: PIXI.Container | null = null;
   protected paintedTileMap: PIXI.Container | null = null;
@@ -201,27 +201,27 @@ export class TiledCore extends BaseEditor {
   }
 
   zoomIn() {
-    if (this.mapScale > 2) return;
+    if (this.mapScale > 2) return false;
 
     const { fullWidth, fullHeight } = this.getGridFullSize();
     this.mapMarginX -= fullWidth * 0.05;
     this.mapMarginY -= fullHeight * 0.05;
     this.mapScale += 0.1;
     this.drawMapGrid();
-    this.scaleTileMap();
     this.saveMapDimension();
+    return true;
   }
 
   zoomOut() {
-    if (this.mapScale < 0.3) return;
+    if (this.mapScale < 0.3) return false;
 
     const { fullWidth, fullHeight } = this.getGridFullSize();
     this.mapMarginX += fullWidth * 0.05;
     this.mapMarginY += fullHeight * 0.05;
     this.mapScale -= 0.1;
     this.drawMapGrid();
-    this.scaleTileMap();
     this.saveMapDimension();
+    return true;
   }
 
   zoomToRealSize() {
@@ -229,12 +229,7 @@ export class TiledCore extends BaseEditor {
     this.mapMarginY = 10;
     this.mapScale = 1;
     this.drawMapGrid();
-    this.scaleTileMap();
     this.saveMapDimension();
-  }
-
-  eraseTileInCurrentLayer() {
-    this.eraseAllTileFromGameMap();
   }
 
   // *************************** end of public api *************************************
@@ -647,7 +642,6 @@ export class TiledCore extends BaseEditor {
     };
   }
 
-  // FIXME: paint one spriteX ...
   protected paintOneTextureBy(
     layerId: number,
     row: number,
@@ -691,27 +685,14 @@ export class TiledCore extends BaseEditor {
   }
 
   /**
-   * erase tile from current rectangle
-   *
-   * @param hitRect
-   * @param grid
+   * erase tile from current container
    */
-  protected eraseTileFromGameMap(
-    hitRect: PIXI.Rectangle,
-    grid: PIXI.Rectangle[][]
-  ) {
-    const [x, y] = this.findCoordinateFromTileGrid(hitRect, grid);
-    // const isExisting = this.paintedTilesCache.has(`${x}_${y}`);
-    // if (!isExisting) return; // no tile painted
-
-    const key = `${x}_${y}`;
-    // const tile = this.paintedTilesCache.get(key) as Sprite;
-    // this.paintedTileMap?.removeChild(tile);
-    // this.paintedTilesCache.delete(key);
+  protected eraseTileFromGameMap(tile: Sprite) {
+    this.paintedTileMap?.removeChild(tile);
   }
 
   /**
-   * TODO: Need to specify which layer to clear...
+   * @deprecated
    */
   protected eraseAllTileFromGameMap() {
     // this.paintedTilesCache.clear();
@@ -788,21 +769,6 @@ export class TiledCore extends BaseEditor {
     this.hoveredMapLayer.beginFill(0xffffff);
     this.hoveredMapLayer.drawRect(x, y, width, height);
     this.hoveredMapLayer.endFill();
-  }
-
-  /**
-   * FIXME: to reset the tiles saved in cache!
-   */
-  protected scaleTileMap() {
-    const grid = this.buildTileGridInMap();
-    // this.paintedTilesCache.forEach((tile, coordinate) => {
-    //   const [x, y] = coordinate.split('_');
-    //   const rect = grid[+y][+x];
-    //   tile.x = rect.x;
-    //   tile.y = rect.y;
-    //   tile.width = rect.width;
-    //   tile.height = rect.height;
-    // });
   }
 
   /**
@@ -1027,5 +993,9 @@ export class TiledCore extends BaseEditor {
   protected findTextureByCoordinate(x: number, y: number) {
     if (!this.tiles) return null;
     return this.tiles[y][x];
+  }
+
+  protected clearTilesFromMap(tiles: Sprite[]) {
+    tiles.forEach((tile) => this.paintedTileMap?.removeChild(tile));
   }
 }

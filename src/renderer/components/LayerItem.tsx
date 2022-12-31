@@ -44,7 +44,7 @@ export const LayerItem = ({
 
   const lockLayerHandler = () => {
     setUnlocked(!unlocked);
-    availableToggleHandler(layer.id, !unlocked);
+    availableToggleHandler(layer.id, unlocked);
   };
 
   const showLayerHandler = () => {
@@ -76,8 +76,8 @@ export const LayerItem = ({
       />
       <div className={clsx('px-1 inline-block')}>
         <ToggleIconButton
-          defaultIcon="lock"
-          inverseIcon="unlock"
+          defaultIcon="unlock"
+          inverseIcon="lock"
           color="text-white"
           isOpen={unlocked}
           onToggle={lockLayerHandler}

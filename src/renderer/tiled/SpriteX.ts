@@ -20,12 +20,4 @@ export class SpriteX extends Sprite {
   public getLayerId() {
     return this.layerId;
   }
-
-  public moveDown() {
-    this.zIndex += 1;
-  }
-
-  public moveUp() {
-    this.zIndex -= 1;
-  }
 }

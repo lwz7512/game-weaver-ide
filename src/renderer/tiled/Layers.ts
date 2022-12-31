@@ -1,4 +1,4 @@
-import { Sprite, Texture } from 'pixi.js';
+import { Rectangle } from 'pixi.js';
 import { SpriteX } from './SpriteX';
 import { getSessionBy } from '../state/session';
 import { TileLegend, GameTilesLayer } from '.';
@@ -46,6 +46,24 @@ export class LayerManager {
     return this.paintedTilesCache.has(`${layerId}_${col}_${row}`);
   }
 
+  getTileBy(layerId: number, col: number, row: number) {
+    return this.paintedTilesCache.get(`${layerId}_${col}_${row}`);
+  }
+
+  checkLayerLocked(layerId: number) {
+    const layer = this.gameMapLayersInfo.find((l) => l.id === layerId);
+    return !!layer?.locked;
+  }
+
+  checkLayerVisible(layerId: number) {
+    const layer = this.gameMapLayersInfo.find((l) => l.id === layerId);
+    return !!layer?.visible;
+  }
+
+  checkLayerAvailable(layerId: number) {
+    return !this.checkLayerLocked(layerId) && this.checkLayerVisible(layerId);
+  }
+
   clearOneTile(layerId: number, col: number, row: number) {
     const layer = this.gameMapLayersInfo.find((l) => l.id === layerId);
     if (!layer) {
@@ -53,6 +71,8 @@ export class LayerManager {
       return;
     }
     layer.grid[row][col] = 0;
+    // clear from cache
+    this.paintedTilesCache.delete(`${layerId}_${col}_${row}`);
   }
 
   lockLayer(layerId: number, lockOrNot: boolean) {
@@ -76,7 +96,6 @@ export class LayerManager {
   addNewLayer(id: number, name: string) {
     this.createNewLayer(id, name);
     this.selectGameLayer(id);
-    // console.log(this.gameMapLayersInfo);
   }
 
   deleteLayer(id: number) {
@@ -91,7 +110,6 @@ export class LayerManager {
     } else {
       layers[0].selected = true;
     }
-    // console.log(this.gameMapLayersInfo);
   }
 
   renameLayer(id: number, name: string) {
@@ -110,7 +128,6 @@ export class LayerManager {
         l.selected = true;
       }
     });
-    // console.log(this.gameMapLayersInfo);
   }
 
   moveSelectedLayerUp() {
@@ -118,9 +135,16 @@ export class LayerManager {
     const selectedIndex = layers.findIndex((l) => l.selected);
     if (selectedIndex === 0) return; // start of layers
     const prevLayer = layers[selectedIndex - 1];
-    layers[selectedIndex - 1] = layers[selectedIndex];
+    const currentLayer = layers[selectedIndex];
+    // exchange layer z-index property
+    const currentZindex = currentLayer.zIndex;
+    currentLayer.zIndex = prevLayer.zIndex;
+    prevLayer.zIndex = currentZindex;
+    // exchange layer position
+    layers[selectedIndex - 1] = currentLayer;
     layers[selectedIndex] = prevLayer;
-    // console.log(this.gameMapLayersInfo);
+    // update all the z-index of sprites
+    this.syncSpriteZindexWithLayer();
   }
 
   moveSelectedLayerDown() {
@@ -128,9 +152,16 @@ export class LayerManager {
     const selectedIndex = layers.findIndex((l) => l.selected);
     if (selectedIndex === layers.length - 1) return; // end of layers
     const nextLayer = layers[selectedIndex + 1];
+    const currentLayer = layers[selectedIndex];
+    // exchange layer z-index property
+    const currentZindex = currentLayer.zIndex;
+    currentLayer.zIndex = nextLayer.zIndex;
+    nextLayer.zIndex = currentZindex;
+    // exchange layer position
     layers[selectedIndex + 1] = layers[selectedIndex];
     layers[selectedIndex] = nextLayer;
-    // console.log(this.gameMapLayersInfo);
+    // update all the z-index of sprites
+    this.syncSpriteZindexWithLayer();
   }
 
   /**
@@ -201,12 +232,62 @@ export class LayerManager {
     return legends;
   }
 
+  clearTilesInCurrentLayer() {
+    const currentLayerId = this.getCurrentLayerId();
+    return this.removeSpritesByLayerId(currentLayerId);
+  }
+
+  removeSpritesByLayerId(layrId: number) {
+    const target: string[] = [];
+    const tiles: SpriteX[] = [];
+    this.paintedTilesCache.forEach((tile, key) => {
+      if (tile.getLayerId() === layrId) {
+        target.push(key);
+        tiles.push(tile);
+      }
+    });
+    target.forEach((key) => {
+      this.paintedTilesCache.delete(key);
+    });
+    return tiles;
+  }
+
+  scaleAllTiles(grid: Rectangle[][]) {
+    this.paintedTilesCache.forEach((tile, key) => {
+      const [, x, y] = key.split('_');
+      const rect = grid[+y][+x];
+      tile.x = rect.x;
+      tile.y = rect.y;
+      tile.width = rect.width;
+      tile.height = rect.height;
+    });
+  }
+
   /**
    * rest zIndex of each sprite rendering level
    * after adjustment of layer order
    */
-  protected resetTileRenderIndex() {
-    // TODO: ...
+  protected syncSpriteZindexWithLayer() {
+    this.gameMapLayersInfo.forEach((l) => {
+      const sprites = this.getSpritesByLayerId(l.id);
+      sprites.forEach((tile) => {
+        tile.zIndex = l.zIndex;
+      });
+    });
+  }
+
+  /**
+   * @param layerId
+   * @returns
+   */
+  protected getSpritesByLayerId(layerId: number) {
+    const result: SpriteX[] = [];
+    this.paintedTilesCache.forEach((tile, key) => {
+      if (tile.getLayerId() === layerId) {
+        result.push(tile);
+      }
+    });
+    return result;
   }
 
   protected createNewLayer(id: number, name: string) {

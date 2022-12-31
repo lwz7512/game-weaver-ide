@@ -74,6 +74,13 @@ export class TiledPainter extends TiledCore {
 
   deleteLayer(id: number) {
     this.layerManager?.deleteLayer(id);
+    const tiles = this.layerManager?.removeSpritesByLayerId(id);
+    tiles && this.clearTilesFromMap(tiles);
+  }
+
+  eraseTileInCurrentLayer() {
+    const tiles = this.layerManager?.clearTilesInCurrentLayer();
+    tiles && this.clearTilesFromMap(tiles);
   }
 
   renameLayer(id: number, name: string) {
@@ -215,7 +222,7 @@ export class TiledPainter extends TiledCore {
         window.requestAnimationFrame(() => {
           if (this.eraseTileMode) {
             this.paintEraserOnGameMap(hitRect);
-            return this.eraseTileFromGameMap(hitRect, grid);
+            return this.safelyEraseTile(currentLayerId, hitRect, grid);
           }
           // *** NOTE: DOING TEXTURE PAINTING HERE ***
           this.paintHiligherOnGameMap(hitRect);
@@ -264,7 +271,7 @@ export class TiledPainter extends TiledCore {
       const currentLayerId = this.layerManager?.getCurrentLayerId() || 1;
       if (this.checkIsNotEmptyRect(hitRect)) {
         if (this.eraseTileMode) {
-          return this.eraseTileFromGameMap(hitRect, grid);
+          return this.safelyEraseTile(currentLayerId, hitRect, grid);
         }
         // *** NOTE: DOING TEXTURE PAINTING HERE ***
         this.safelyPaintTile(currentLayerId, hitRect, grid);
@@ -281,17 +288,67 @@ export class TiledPainter extends TiledCore {
     }
   }
 
-  safelyPaintTile(
+  protected safelyPaintTile(
     currentLayerId: number,
     hitRect: PIXI.Rectangle,
     grid: PIXI.Rectangle[][]
   ) {
+    const layerAvailable =
+      this.layerManager?.checkLayerAvailable(currentLayerId);
+    if (!layerAvailable) return;
+
     const [x, y] = this.findCoordinateFromTileGrid(hitRect, grid);
     const painted = this.layerManager?.checkTileExistence(currentLayerId, x, y);
     if (painted) return;
+
     const { layerId, columnIndex, rowIndex, textureId, tile } =
       this.paintTileOnGameMap(hitRect, grid, currentLayerId);
     this.savePaintedTileFor(layerId, columnIndex, rowIndex, textureId, tile);
+  }
+
+  protected safelyEraseTile(
+    currentLayerId: number,
+    hitRect: PIXI.Rectangle,
+    grid: PIXI.Rectangle[][]
+  ) {
+    const layerAvailable =
+      this.layerManager?.checkLayerAvailable(currentLayerId);
+    if (!layerAvailable) return;
+    const [x, y] = this.findCoordinateFromTileGrid(hitRect, grid);
+    const isExisting = this.layerManager?.checkTileExistence(
+      currentLayerId,
+      x,
+      y
+    );
+    if (!isExisting) return; // no tile painted
+    const tile = this.layerManager?.getTileBy(currentLayerId, x, y);
+    tile && this.eraseTileFromGameMap(tile);
+    this.layerManager?.clearOneTile(currentLayerId, x, y);
+  }
+
+  zoomInMapAndTitles() {
+    const result = this.zoomIn();
+    if (!result) return;
+    this.scaleTileMap();
+  }
+
+  zoomOutMapAndTiles() {
+    const result = this.zoomOut();
+    if (!result) return;
+    this.scaleTileMap();
+  }
+
+  zoomToRealSize(): void {
+    super.zoomToRealSize();
+    this.scaleTileMap();
+  }
+
+  /**
+   * reset the tiles saved in cache!
+   */
+  protected scaleTileMap() {
+    const grid = this.buildTileGridInMap();
+    this.layerManager?.scaleAllTiles(grid);
   }
 
   /* ***********************************************************
