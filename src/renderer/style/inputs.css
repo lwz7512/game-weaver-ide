@@ -61,3 +61,7 @@ button.selected, button.selected:hover, .game-folder.selected {
   color: wheat;
   background: black;
 }
+
+label.bp4-label .bp4-input.inline-block {
+  display: inline-block;
+}

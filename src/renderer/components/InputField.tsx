@@ -51,14 +51,14 @@ export const SelectInput = ({
       htmlFor={title}
       className="input-field block w-36 py-1 px-0 relative mb-0 ml-0"
     >
-      <span className="w-24 inline-block bg-slate-600 text-white leading-5 p-5px pl-2 text-sm select-none">
+      <span className="w-24 inline-block bg-slate-600 text-white leading-5 py-1 pl-2 text-sm select-none">
         {title}:
       </span>
       <select
         name={name}
         id={title}
         value={value}
-        className="w-16 inline-block border border-gray-500 pl-1 pr-0 py-1 leading-5 focus:outline-none"
+        className="w-16 inline-block border border-gray-500 pl-1 pr-0 py-1 leading-5 focus:outline-none text-sm"
         onChange={onValueChange}
       >
         <option value="16">16px</option>

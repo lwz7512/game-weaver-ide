@@ -13,6 +13,24 @@ import { useMapDimension } from '../hooks/useMapSession';
 import { MiniIconButton } from '../components/Buttons';
 import { LayerHistoryTabs } from '../components/Tabs';
 import { LayerItem } from '../components/LayerItem';
+import { SaveGamePop } from '../components/SaveGamePop';
+import { useMapFile } from '../hooks/useMapFile';
+
+type MapFieldProp = {
+  name: string;
+  value: string;
+};
+
+const MapFieldRow = ({ name, value }: MapFieldProp) => (
+  <li className="border-b border-gray-400 flex">
+    <span className="p-1 w-20 bg-amber-100 inline-block border-r border-gray-400">
+      {name}:
+    </span>
+    <span className="p-1 w-36 inline-block " title={value}>
+      {value}
+    </span>
+  </li>
+);
 
 const TiledEditorPage = () => {
   const { onModuleChanged } = useLeftSideBar();
@@ -51,6 +69,9 @@ const TiledEditorPage = () => {
   // tab switch
   const [tabType, setTabType] = useState('layers');
 
+  const { mapName, createNewMapHandler, mapSaveHandler, newMapSaved } =
+    useMapFile('/user/lwz/gamespace');
+
   return (
     <div className="tile-editor w-full h-screen flex">
       {/* === left side bar === */}
@@ -69,60 +90,99 @@ const TiledEditorPage = () => {
         selectedImage={selectedImage}
       />
       {/* === right side panel === */}
-      <div className="object-explorer bg-gray-200 w-60">
+      <div className="object-explorer bg-gray-200 w-60 border-l-2 border-slate-500">
         <h1 className="select-none text-base text-center p-2 bg-slate-600 text-white block mb-0">
-          Game Map Settings
+          {newMapSaved ? mapName : 'New Game Map'}
         </h1>
-        <div className="map-attributes-group px-0 lg:px-2 py-1 lg:py-2 ">
-          <InputField
-            title="Map Height"
-            name="mapHeight"
-            suffix="tiles"
-            value={mapHeight}
-            onValueChange={(event) =>
-              mapHeightChangeHandler(event.target.value)
-            }
+        <ButtonGroup className="" fill>
+          <Button
+            icon="map-create"
+            title="New Map"
+            intent="success"
+            className="focus:outline-0 no-transform rounded-l-none"
+            onClick={createNewMapHandler}
           />
-          <InputField
-            title="Map Width"
-            name="mapWidth"
-            suffix="tiles"
-            value={mapWidth}
-            onValueChange={(event) => mapWidthChangeHandler(event.target.value)}
+          <SaveGamePop
+            gameFileDirectory="/user/lwz/gamespace"
+            onMapNameConfirm={mapSaveHandler}
           />
-        </div>
-        <div className="map-attributes-group px-0 lg:px-2 py-0 ">
-          <SelectInput
-            title="Tile Height"
-            name="tileHeight"
-            suffix="px"
-            value={tileHeight}
-            onValueChange={(event) =>
-              tileHeightChangeHandler(event.target.value)
-            }
+          <Button
+            icon="export"
+            title="Export Map To Json File"
+            intent="warning"
+            className="focus:outline-0 no-transform rounded-r-none"
           />
-          <SelectInput
-            title="Tile Width"
-            name="tileWidth"
-            suffix="px"
-            value={tileWidth}
-            onValueChange={(event) =>
-              tileWidthChangeHandler(event.target.value)
-            }
-          />
-        </div>
+        </ButtonGroup>
+        {/* game properties grid */}
+        {!newMapSaved && (
+          <ul className="bg-white h-40 mt-1 text-xs">
+            <MapFieldRow name="Map Name" value="Dummy jumper" />
+            <MapFieldRow name="Map Width" value="40tiles" />
+            <MapFieldRow name="Map Height" value="30tiles" />
+            <MapFieldRow name="Tile Width" value="32px" />
+            <MapFieldRow name="Tile Hight" value="32px" />
+            <MapFieldRow
+              name="Save Path"
+              value="/usr/liwenzhi/gamespace/my-first-game/dummy-jumper.json"
+            />
+          </ul>
+        )}
+        {newMapSaved && (
+          <>
+            <div className="map-attributes-group px-0 lg:px-2 py-1 ">
+              <InputField
+                title="Map Height"
+                name="mapHeight"
+                suffix="tiles"
+                value={mapHeight}
+                onValueChange={(event) =>
+                  mapHeightChangeHandler(event.target.value)
+                }
+              />
+              <InputField
+                title="Map Width"
+                name="mapWidth"
+                suffix="tiles"
+                value={mapWidth}
+                onValueChange={(event) =>
+                  mapWidthChangeHandler(event.target.value)
+                }
+              />
+            </div>
+            <div className="map-attributes-group px-0 lg:px-2 py-1 ">
+              <SelectInput
+                title="Tile Height"
+                name="tileHeight"
+                suffix="px"
+                value={tileHeight}
+                onValueChange={(event) =>
+                  tileHeightChangeHandler(event.target.value)
+                }
+              />
+              <SelectInput
+                title="Tile Width"
+                name="tileWidth"
+                suffix="px"
+                value={tileWidth}
+                onValueChange={(event) =>
+                  tileWidthChangeHandler(event.target.value)
+                }
+              />
+            </div>
+          </>
+        )}
         {/* open file dialog */}
-        <div className="p-2 my-1 flex ">
+        <div className="pb-2 my-1 flex ">
           <button
             type="button"
-            className="blue-btn no-transform rounded-r-none"
+            className="blue-btn no-transform rounded-r-none px-4 rounded-none"
             onClick={openFileDialog}
           >
             Open Local
           </button>
           <button
             type="button"
-            className="orange-btn no-transform rounded-l-none"
+            className="orange-btn no-transform rounded-l-none flex-1 rounded-none"
             onClick={() => console.log('TODO: ...')}
           >
             Download Remote
@@ -130,7 +190,7 @@ const TiledEditorPage = () => {
         </div>
         {/* sprites sheet preview, use width, height attributes only! */}
         {/* DO NOT USE CSS CLASS!!! */}
-        <div className="flex items-center px-1 ">
+        <div className="flex items-center">
           <MiniIconButton icon="caret-left" onClick={navigateToPrev} />
           <canvas
             id="spritesPreview"
@@ -141,12 +201,12 @@ const TiledEditorPage = () => {
           <MiniIconButton icon="caret-right" onClick={navigateToNext} />
         </div>
         {/* TODO: layer management buttons */}
-        <ButtonGroup className="px-2 py-3" fill>
+        <ButtonGroup className="py-3" fill>
           <Button
             icon="new-layer"
             title="New Layer"
             intent="success"
-            className="focus:outline-0"
+            className="focus:outline-0 rounded-l-none"
             onClick={addNewLayer}
           />
           <Button
@@ -167,20 +227,8 @@ const TiledEditorPage = () => {
             icon="trash"
             title="Delete Layer"
             intent="danger"
-            className="focus:outline-0"
+            className="focus:outline-0 rounded-r-none"
             onClick={deleteCurrentLayer}
-          />
-          <Button
-            icon="floppy-disk"
-            title="Save Map"
-            intent="primary"
-            className="focus:outline-0"
-          />
-          <Button
-            icon="export"
-            title="Export To Json File"
-            intent="success"
-            className="focus:outline-0"
           />
         </ButtonGroup>
         {/* layer | history switching */}
