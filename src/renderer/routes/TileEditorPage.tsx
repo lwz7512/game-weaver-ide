@@ -26,13 +26,18 @@ const MapFieldRow = ({ name, value }: MapFieldProp) => (
     <span className="p-1 w-20 bg-amber-100 inline-block border-r border-gray-400">
       {name}:
     </span>
-    <span className="p-1 w-36 inline-block " title={value}>
+    <span
+      className="px-1 w-36 h-6 leading-6 inline-block overflow-hidden"
+      title={value}
+    >
       {value}
     </span>
   </li>
 );
 
 const TiledEditorPage = () => {
+  // tab switch
+  const [tabType, setTabType] = useState('layers');
   const { onModuleChanged } = useLeftSideBar();
   // define tilemap parameters
   const {
@@ -66,11 +71,13 @@ const TiledEditorPage = () => {
     toggleVisibilityHandler,
   } = useMapLayers();
 
-  // tab switch
-  const [tabType, setTabType] = useState('layers');
-
-  const { mapName, createNewMapHandler, mapSaveHandler, newMapSaved } =
-    useMapFile('/user/lwz/gamespace');
+  const {
+    mapName,
+    mapFilePath,
+    createNewMapHandler,
+    mapSaveHandler,
+    newMapSaved,
+  } = useMapFile('/user/lwz/gamespace');
 
   return (
     <div className="tile-editor w-full h-screen flex">
@@ -103,6 +110,7 @@ const TiledEditorPage = () => {
             onClick={createNewMapHandler}
           />
           <SaveGamePop
+            savedMapName={mapName}
             gameFileDirectory="/user/lwz/gamespace"
             onMapNameConfirm={mapSaveHandler}
           />
@@ -114,20 +122,17 @@ const TiledEditorPage = () => {
           />
         </ButtonGroup>
         {/* game properties grid */}
-        {!newMapSaved && (
+        {newMapSaved && (
           <ul className="bg-white h-40 mt-1 text-xs">
-            <MapFieldRow name="Map Name" value="Dummy jumper" />
-            <MapFieldRow name="Map Width" value="40tiles" />
-            <MapFieldRow name="Map Height" value="30tiles" />
-            <MapFieldRow name="Tile Width" value="32px" />
-            <MapFieldRow name="Tile Hight" value="32px" />
-            <MapFieldRow
-              name="Save Path"
-              value="/usr/liwenzhi/gamespace/my-first-game/dummy-jumper.json"
-            />
+            <MapFieldRow name="Map Name" value={mapName} />
+            <MapFieldRow name="Map Width" value={`${mapWidth}tiles`} />
+            <MapFieldRow name="Map Height" value={`${mapHeight}tiles`} />
+            <MapFieldRow name="Tile Width" value={`${tileWidth}px`} />
+            <MapFieldRow name="Tile Hight" value={`${tileHeight}px`} />
+            <MapFieldRow name="Save Path" value={mapFilePath} />
           </ul>
         )}
-        {newMapSaved && (
+        {!newMapSaved && (
           <>
             <div className="map-attributes-group px-0 lg:px-2 py-1 ">
               <InputField

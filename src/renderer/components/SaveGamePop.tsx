@@ -1,29 +1,37 @@
-import { ChangeEvent, useEffect, useState, useRef } from 'react';
+import React, { ChangeEvent, useEffect, useState, useRef } from 'react';
 import { Button, Intent, H5, Classes as CoreClasses } from '@blueprintjs/core';
 import { Popover2, Classes as PopoverClasses } from '@blueprintjs/popover2';
 import clsx from 'clsx';
 import { kebabCase } from '../utils';
 
+type MapProperties = {
+  mapName: string;
+  savePath: string;
+};
+
 type SaveGameProps = {
+  savedMapName?: string;
   gameFileDirectory: string;
   onMapNameConfirm: (name: string, path: string) => void;
 };
 
 export const SaveGamePop = ({
+  savedMapName,
   gameFileDirectory,
   onMapNameConfirm,
 }: SaveGameProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [mapName, setMapName] = useState('');
-  const [completeMapPath, setCompleteMapPath] = useState('');
+  const [mapName, setMapName] = useState(savedMapName || '');
+  const [completeMapPath, setCompleteMapPath] = useState(gameFileDirectory);
 
   const mapNameChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const newName = event.target.value;
     setMapName(newName);
-    setCompleteMapPath(`${gameFileDirectory}/${kebabCase(newName)}`);
+    setCompleteMapPath(`${gameFileDirectory}/${kebabCase(newName)}.json`);
   };
 
-  const mapNameConfirmHandler = () => {
+  const mapNameConfirmHandler = (event: React.MouseEvent) => {
+    if (!mapName) return event.stopPropagation(); // prevent saving empty
     onMapNameConfirm(mapName, completeMapPath);
   };
 
@@ -50,6 +58,7 @@ export const SaveGamePop = ({
                 type="text"
                 ref={inputRef}
                 className={clsx(CoreClasses.INPUT, 'inline-block ml-8 w-60')}
+                value={mapName}
                 onChange={mapNameChangeHandler}
               />
             </label>

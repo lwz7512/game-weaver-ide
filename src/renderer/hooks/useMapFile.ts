@@ -4,12 +4,14 @@ import { kebabCase } from '../utils';
 export const useMapFile = (wokspacePath: string) => {
   const [mapName, setMapName] = useState('');
   const [newMapSaved, setNewMapSaved] = useState(false);
-  const [mapFileLoaded, setMapFileLoaded] = useState(false);
+  const [mapFilePath, setMapFilePath] = useState('');
+  // const [mapFileLoaded, setMapFileLoaded] = useState(false);
 
   const mapSaveHandler = (name: string, path: string) => {
-    // TODO:
     setNewMapSaved(true);
     setMapName(name);
+    setMapFilePath(path);
+    // TODO: save to file system...
   };
 
   const createNewMapHandler = () => {
@@ -18,6 +20,7 @@ export const useMapFile = (wokspacePath: string) => {
 
   return {
     mapName,
+    mapFilePath,
     newMapSaved,
     mapSaveHandler,
     createNewMapHandler,
