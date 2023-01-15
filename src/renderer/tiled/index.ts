@@ -1,12 +1,28 @@
-export type GameTilesLayer = {
+/**
+ * Game weaver map structure
+ */
+export type GWMap = {
+  name: string;
+  /** hori-tile-size */
+  mapWidth: number;
+  /** vert-tile-size */
+  mapHeight: number;
+  /** width in pixel */
+  tileWidth: number;
+  /** height in pixel */
+  tileHeight: number;
+  /** tilesheet file path */
+  tilesetImage: string;
+  layers: GameWeaverLayer[];
+};
+
+export type GameWeaverLayer = {
   id: number;
   x?: number;
   y?: number;
   name: string;
   height: number; // vertical tiles amount
   width: number; // horizontal tiles amount
-  opacity?: number;
-  type?: string; // ???
   visible: boolean;
   locked: boolean; // locked
   selected: boolean; // selected
@@ -14,6 +30,57 @@ export type GameTilesLayer = {
   zIndex: number; // current y position of
 };
 
+export type TileSet = {
+  name: string;
+  columns: number;
+  firstgid: number; // 1
+  image: string;
+  imageheight: number;
+  imagewidth: number;
+  margin: number;
+  spacing: number;
+  tilecount: number;
+  tileheight: number;
+  tilewidth: number;
+};
+
+/**
+ * Structure for phaserjs game map
+ */
+export type PhaserMap = {
+  type: string; // map
+  width: number;
+  height: number;
+  infinite: boolean;
+  orientation: string; // orthogonal
+  renderorder: string; // right-down
+  tileheight: number;
+  tilewidth: number;
+  layers: PhaserMapLayer[];
+  tilesets: TileSet[];
+  /** phaser version */
+  version: string;
+};
+
+/**
+ * for phaserjs game json export
+ */
+export type PhaserMapLayer = {
+  id: number;
+  x: number;
+  y: number;
+  name: string;
+  height: number;
+  width: number;
+  opacity: number;
+  visible: boolean;
+  data: number[];
+  type: string;
+};
+
+/**
+ * layer tile legend for map
+ */
 export type TileLegend = {
   textureId: number;
   active: boolean;

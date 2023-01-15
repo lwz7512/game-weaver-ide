@@ -11,6 +11,7 @@ import { TiledCore } from './Core';
 import { LayerManager } from './Layers';
 import { SpriteX } from './SpriteX';
 import { setDrawingSession } from '../state/session';
+import { GWMap, PhaserMap } from '.';
 
 type EventHandler = (event: Event) => void;
 
@@ -103,6 +104,44 @@ export class TiledPainter extends TiledCore {
 
   toggleLayerAvailable(layerId: number, locked: boolean) {
     this.layerManager?.toggleLayerAvailable(layerId, locked);
+  }
+
+  /**
+   * Export game weaver object to phaser map data...
+   * @returns layer info
+   */
+  getPhaserMapInfo(): PhaserMap {
+    const layers = this.layerManager ? this.layerManager.toPhaserLayers() : [];
+    return {
+      type: 'map',
+      width: this.gameHoriTiles,
+      height: this.gameVertTiles,
+      infinite: false,
+      orientation: 'orthogonal',
+      renderorder: 'right-down',
+      tileheight: this.tileHeight,
+      tilewidth: this.tileWidth,
+      layers,
+      tilesets: [], // TODO: need to retieve tilesheet image file info...
+      version: '0.1',
+    };
+  }
+
+  /**
+   * Get Game Weaver Map object to serialize as json file
+   * @returns GWMap object
+   */
+  getGWMapInfo(name: string, selectedImage: string): GWMap {
+    const layers = this.layerManager ? this.layerManager.getRawLayers() : [];
+    return {
+      name,
+      mapWidth: this.gameHoriTiles,
+      mapHeight: this.gameVertTiles,
+      tileWidth: this.tileWidth,
+      tileHeight: this.tileHeight,
+      tilesetImage: selectedImage,
+      layers,
+    };
   }
 
   /**

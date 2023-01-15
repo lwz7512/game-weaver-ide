@@ -27,3 +27,17 @@ export type IFrameContext = {
 export type GeneralObject = {
   [key: string]: boolean | number | string | number[] | string[];
 };
+
+/**
+ * for now only support one source image.
+ * TODO: support multiple souce images...
+ * @2023/01/14
+ */
+export type GameMapXportParams = {
+  /** single source only */
+  sourceImage: string;
+  mapHeight: string;
+  mapWidth: string;
+  tileHeight: string;
+  tileWidth: string;
+};

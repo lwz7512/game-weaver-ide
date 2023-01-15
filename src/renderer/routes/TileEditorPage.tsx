@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { Button, ButtonGroup } from '@blueprintjs/core';
-
 import LeftSideBar from '../components/LeftSideBar';
 import { InputField, SelectInput } from '../components/InputField';
-import { MODULETYPES } from '../config';
+import { MODULETYPES, GameMapXportParams } from '../config';
 import useLeftSideBar from '../hooks/useLeftSideBar';
 import { TiledEditor } from '../tiled/Editor';
 import { useSpriteSheetImage } from '../hooks/useSpriteSheetImage';
@@ -15,6 +14,7 @@ import { LayerHistoryTabs } from '../components/Tabs';
 import { LayerItem } from '../components/LayerItem';
 import { SaveGamePop } from '../components/SaveGamePop';
 import { useMapFile } from '../hooks/useMapFile';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 type MapFieldProp = {
   name: string;
@@ -39,6 +39,7 @@ const TiledEditorPage = () => {
   // tab switch
   const [tabType, setTabType] = useState('layers');
   const { onModuleChanged } = useLeftSideBar();
+  const { spacePath } = useLocalStorage();
   // define tilemap parameters
   const {
     mapHeight,
@@ -71,13 +72,24 @@ const TiledEditorPage = () => {
     toggleVisibilityHandler,
   } = useMapLayers();
 
+  // TODO: compose game parameters ....
+  const mapParams: GameMapXportParams = {
+    mapHeight,
+    mapWidth,
+    tileHeight,
+    tileWidth,
+    sourceImage: selectedImage,
+  };
+
   const {
     mapName,
     mapFilePath,
+    newMapSaved,
     createNewMapHandler,
     mapSaveHandler,
-    newMapSaved,
-  } = useMapFile('/user/lwz/gamespace');
+    mapExportHandler,
+    tileMapEditorSetter,
+  } = useMapFile(spacePath, mapParams);
 
   return (
     <div className="tile-editor w-full h-screen flex">
@@ -95,6 +107,7 @@ const TiledEditorPage = () => {
         tileHeight={+tileHeight}
         tileWidth={+tileWidth}
         selectedImage={selectedImage}
+        editorInstanceSaver={tileMapEditorSetter}
       />
       {/* === right side panel === */}
       <div className="object-explorer bg-gray-200 w-60 border-l-2 border-slate-500">
@@ -111,7 +124,7 @@ const TiledEditorPage = () => {
           />
           <SaveGamePop
             savedMapName={mapName}
-            gameFileDirectory="/user/lwz/gamespace"
+            gameFileDirectory={spacePath}
             onMapNameConfirm={mapSaveHandler}
           />
           <Button
@@ -119,6 +132,7 @@ const TiledEditorPage = () => {
             title="Export Map To Json File"
             intent="warning"
             className="focus:outline-0 no-transform rounded-r-none"
+            onClick={mapExportHandler}
           />
         </ButtonGroup>
         {/* game properties grid */}

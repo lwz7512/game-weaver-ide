@@ -1,14 +1,15 @@
 import { Rectangle } from 'pixi.js';
 import { SpriteX } from './SpriteX';
 import { getSessionBy } from '../state/session';
-import { TileLegend, GameTilesLayer } from '.';
+import { TileLegend, GameWeaverLayer, PhaserMapLayer } from '.';
+import { flattenGrid } from './Utils';
 
 type LayerTextureType = number[] | number | undefined;
 
 export class LayerManager {
   protected mapWidth = 0;
   protected mapHeight = 0;
-  protected gameMapLayersInfo: GameTilesLayer[] = [];
+  protected gameMapLayersInfo: GameWeaverLayer[] = [];
 
   /**
    * Painted tile coordinates cache
@@ -21,6 +22,33 @@ export class LayerManager {
   constructor(width: number, height: number) {
     this.mapWidth = width;
     this.mapHeight = height;
+  }
+
+  /**
+   * Retrieve raw & reflectable layer info to persist in map file
+   * @returns raw layers with complete info
+   */
+  getRawLayers() {
+    return this.gameMapLayersInfo;
+  }
+
+  /**
+   * Convert layers into serializable layers
+   * @returns serializable map layers for phaser game
+   */
+  toPhaserLayers(): PhaserMapLayer[] {
+    return this.gameMapLayersInfo.map((layer) => ({
+      x: 0,
+      y: 0,
+      id: layer.id,
+      name: layer.name,
+      visible: layer.visible,
+      width: layer.width, // hori tile count
+      height: layer.height, // vert tile count
+      type: 'tilelayer',
+      opacity: 1,
+      data: flattenGrid(layer.grid), // FLATTEN...
+    }));
   }
 
   addOneTile(
@@ -296,7 +324,7 @@ export class LayerManager {
     // trying to merge old layer
     // this.mergeLayerTexturesFromSession(grid);
     // build one layer data as default one
-    const layer: GameTilesLayer = {
+    const layer: GameWeaverLayer = {
       id,
       name,
       width: this.mapWidth,

@@ -1,7 +1,7 @@
 /**
  * Created at 2022/10/10
  */
-
+import { useEffect } from 'react';
 import { extensions, InteractionManager, Renderer } from 'pixi.js';
 import { ShaderSystem } from '@pixi/core';
 import { install } from '@pixi/unsafe-eval'; // FIXME: THIS IS NECESSARY!
@@ -9,6 +9,7 @@ import { install } from '@pixi/unsafe-eval'; // FIXME: THIS IS NECESSARY!
 import { IconToolButton } from '../components/Buttons';
 import { useTiledEditor } from '../hooks/useTiledEditor';
 import { useDomEvents } from '../hooks/useDomEvents';
+import { TiledPainter } from './Painter';
 
 // Apply the patch to PIXI
 install({ ShaderSystem });
@@ -19,7 +20,8 @@ type EditorProps = {
   mapHeight: number; // vert-tile-size
   tileWidth: number; // width in pixel
   tileHeight: number; // height in pixel
-  selectedImage: string;
+  selectedImage: string; // local tilesheet image file path
+  editorInstanceSaver: (editor: TiledPainter | null) => void;
 };
 
 export const TiledEditor = ({
@@ -28,6 +30,7 @@ export const TiledEditor = ({
   tileWidth,
   tileHeight,
   selectedImage,
+  editorInstanceSaver,
 }: EditorProps) => {
   const {
     editorRef,
@@ -43,12 +46,14 @@ export const TiledEditor = ({
 
   // handling events for editor
   useDomEvents(editorRef);
+  // update editor instance
+  useEffect(() => editorInstanceSaver(editorRef.current));
 
   return (
     <div className="tiled-editor-root flex-1 h-full bg-gray-300 relative cursor-pointer">
       {/* empty content to hold pixi application canvas */}
       {/* vertical tool bar */}
-      <div className="absolute top-4 right-4 w-6 h-64 ">
+      <div className="absolute top-2 right-2 w-6 h-64 ">
         <IconToolButton
           mini
           icon="zoom-in"

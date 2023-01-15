@@ -4,10 +4,10 @@ import { Popover2, Classes as PopoverClasses } from '@blueprintjs/popover2';
 import clsx from 'clsx';
 import { kebabCase } from '../utils';
 
-type MapProperties = {
-  mapName: string;
-  savePath: string;
-};
+// type MapProperties = {
+//   mapName: string;
+//   savePath: string;
+// };
 
 type SaveGameProps = {
   savedMapName?: string;
@@ -22,7 +22,7 @@ export const SaveGamePop = ({
 }: SaveGameProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [mapName, setMapName] = useState(savedMapName || '');
-  const [completeMapPath, setCompleteMapPath] = useState(gameFileDirectory);
+  const [completeMapPath, setCompleteMapPath] = useState('');
 
   const mapNameChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const newName = event.target.value;
@@ -40,6 +40,11 @@ export const SaveGamePop = ({
       inputRef.current?.focus();
     });
   };
+
+  useEffect(() => {
+    if (!gameFileDirectory) return;
+    setCompleteMapPath(gameFileDirectory);
+  }, [gameFileDirectory]);
 
   return (
     <Popover2

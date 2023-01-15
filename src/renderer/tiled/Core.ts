@@ -9,22 +9,21 @@ import { GeneralObject } from '../config';
 import { getSessionBy, clearPaintedTiles } from '../state/session';
 import { SpriteX } from './SpriteX';
 import { TileLegend } from '.';
-import {
-  getTileSheetBy,
-  resetCachedTextures,
-  ImageDataTiles,
-} from '../state/cache';
+import { getTileSheetBy, resetCachedTextures } from '../state/cache';
 
 export class TiledCore extends BaseEditor {
   protected rootElement: HTMLElement;
 
   protected appWidth: number;
   protected appHeight: number;
-
-  protected gameHoriTiles = 0; // horizontal tiles count
-  protected gameVertTiles = 0; // vertical tiles count
-  protected tileWidth = 0; // one tile width in pixel
-  protected tileHeight = 0; // one tile height in pixel
+  /** Horizontal tiles count */
+  protected gameHoriTiles = 0;
+  /** Vertical tiles count */
+  protected gameVertTiles = 0;
+  /** one tile width in pixel */
+  protected tileWidth = 0;
+  /** one tile height in pixel */
+  protected tileHeight = 0;
 
   protected app: PIXI.Application | null; // hold the only instance of tile app here!
   protected screenRect: PIXI.Rectangle | null = null;
@@ -430,12 +429,12 @@ export class TiledCore extends BaseEditor {
     const mapAreaH = screenRect.height * this.mapHeightRatio;
     const cellSize = 16;
     const rowNumOfDots = Math.ceil(mapAreaH / cellSize) - 2;
-    const colNumOfDots = Math.ceil(mapAreaW / cellSize);
+    const colNumOfDots = Math.ceil(mapAreaW / cellSize) - 1;
     // draw pixel dots grid
     for (let i = 1; i < rowNumOfDots; i += 1) {
       for (let j = 1; j < colNumOfDots; j += 1) {
         robot.moveTo(j * cellSize, i * cellSize);
-        robot.lineStyle(1, 0x333333, 1);
+        robot.lineStyle(1, 0x111111, 1);
         robot.lineTo(j * cellSize + 1, i * cellSize + 1);
         robot.lineStyle(1, 0xffffff, 1);
         robot.lineTo(j * cellSize + 2, i * cellSize + 2);
