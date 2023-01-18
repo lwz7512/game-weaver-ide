@@ -6,9 +6,16 @@ import * as PIXI from 'pixi.js';
 import { getImageDataGrid, generateImageTextures } from '../tiled/ImageBit';
 
 type FileBlob = {
-  path: string; // file path in local directory
-  imgURL: string; // image url from blob, can be used in img tag
-  blob: Blob; // to get image data
+  /** file path in local directory */
+  path: string;
+  /** image url from blob, can be used in img tag */
+  imgURL: string;
+  /** to get image data */
+  blob: Blob;
+  /** png file width in pixels */
+  width: number;
+  /** png file height in pixels */
+  height: number;
 };
 
 export type ImageDataTiles = {
@@ -22,6 +29,7 @@ export type ImageDataTiles = {
 type ImageCache = { [imgURL: string]: ImageDataTiles };
 
 // NOTE: do not expose this cache!
+// use list rather than map to facilitate preview dots generation
 const imageBlobs: FileBlob[] = [];
 const imageDataCache: ImageCache = {};
 
@@ -105,12 +113,29 @@ export const checkImageLoaded = (pngFilePath: string) => {
   return imageBlobs.find((item) => item.path === pngFilePath);
 };
 
+/**
+ * Put loaded png into a list
+ * @param pngFilePath png path
+ * @param imgURL url for loading
+ * @param blob Blob
+ * @param width png width
+ * @param height png height
+ */
 export const cacheImageBlob = (
   pngFilePath: string,
   imgURL: string,
-  blob: Blob
+  blob: Blob,
+  width: number,
+  height: number
 ) => {
-  imageBlobs.push({ path: pngFilePath, imgURL, blob });
+  const png = {
+    path: pngFilePath,
+    imgURL,
+    blob,
+    width,
+    height,
+  };
+  imageBlobs.push(png);
 };
 
 export const cacheImageTextures = (

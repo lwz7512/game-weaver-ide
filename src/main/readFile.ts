@@ -3,7 +3,8 @@ import fs from 'fs-extra';
 import { promisify } from 'node:util';
 import stream from 'node:stream';
 import got from 'got';
-import { FileObj } from '../interfaces';
+import { FileObj, PNGFile } from '../interfaces';
+import { PNG } from './png';
 
 const pipeline = promisify(stream.pipeline);
 
@@ -32,6 +33,40 @@ export const readImageToBlob = (path: string): Buffer | null => {
   localImageFileCache[path] = buffer; // cache it!
 
   return buffer;
+};
+
+/**
+ * Get png file blogo and dimension
+ *
+ * @param path png file path
+ * @returns
+ */
+export const readPngImage = (path: string): PNGFile | null => {
+  // check cache first
+  const cachedBlob = localImageFileCache[path];
+  if (cachedBlob) {
+    const dimension = PNG.calculate(cachedBlob);
+    return {
+      buffer: cachedBlob,
+      width: dimension.width || 0,
+      height: dimension.height || 0,
+    };
+  }
+  // then validate existence
+  if (!fs.existsSync(path)) return null;
+
+  const buffer = fs.readFileSync(path); // got it!
+  localImageFileCache[path] = buffer; // cache it!
+  const dimension = PNG.calculate(buffer);
+  console.log(`======== PNG DEMENSION RESYLT ======`);
+  console.log(`png width is: ${dimension.width}`);
+  console.log(`png height is: ${dimension.height}`);
+
+  return {
+    buffer,
+    width: dimension.width || 0,
+    height: dimension.height || 0,
+  };
 };
 
 /**

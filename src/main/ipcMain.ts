@@ -13,6 +13,7 @@ import {
   readFile,
   readDirectoriesInSpace,
   readImageToBlob,
+  readPngImage,
   downloadFileList,
   checkDirectoryExistence,
   deleteDirectory,
@@ -71,6 +72,10 @@ export const setupIpcMainHandler = () => {
 
   ipcMain.handle(IpcEvents.READ_IMAGE_FILE, (_, imageFilePath: string) => {
     return readImageToBlob(imageFilePath);
+  });
+
+  ipcMain.handle(IpcEvents.READ_PNG_IMAGE, (_, imageFilePath: string) => {
+    return readPngImage(imageFilePath);
   });
 
   ipcMain.handle(

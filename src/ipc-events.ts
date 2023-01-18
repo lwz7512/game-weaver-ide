@@ -14,6 +14,7 @@ export enum IpcEvents {
   SAVE_GAME_FILE = 'SAVE_GAME_FILE',
   TOGGLE_DEV_TOOLS = 'TOGGLE_DEV_TOOLS',
   READ_IMAGE_FILE = 'READ_IMAGE_FILE',
+  READ_PNG_IMAGE = 'READ_PNG_IMAGE',
   // more ...
 }
 

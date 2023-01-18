@@ -1,3 +1,4 @@
+import { PNGFile } from '../../interfaces';
 import { IpcEvents } from '../../ipc-events';
 import { getImageContext } from '../tiled/ImageBit';
 
@@ -39,16 +40,15 @@ export const useSpriteSheetImage = (tileWidth: number, tileHeight: number) => {
       return; // no need to fetch again!
     }
     // *** reading file buffer ***
-    const imageBlob = await ipcRenderer.invoke(
-      IpcEvents.READ_IMAGE_FILE,
+    const pngImg = await ipcRenderer.invoke(
+      IpcEvents.READ_PNG_IMAGE,
       pngFilePath
     );
-    if (imageBlob && !imageBlobExist) {
-      const buffer = imageBlob as Buffer;
+    if (pngImg && !imageBlobExist) {
+      const { buffer, width, height } = pngImg as PNGFile;
       const blob = new Blob([buffer], { type: 'image/png' });
       const imgURL = URL.createObjectURL(blob);
-      cacheImageBlob(pngFilePath, imgURL, blob);
-
+      cacheImageBlob(pngFilePath, imgURL, blob, width, height);
       // cache the image data for later use
       const context = await getImageContext(blob);
       const safeW = tileWidth || 32;
