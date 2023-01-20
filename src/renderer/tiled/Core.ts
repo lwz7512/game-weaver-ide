@@ -45,7 +45,9 @@ export class TiledCore extends BaseEditor {
   protected lastSelectedTilePosition: PIXI.Point | null = null; // (x: columnIndex, y: rowIndex)
 
   protected mapScale = 0.6;
+  /** map start x */
   protected mapMarginX = 60;
+  /** map start y */
   protected mapMarginY = 60;
   protected mapHeightRatio = 0.7;
 
@@ -57,7 +59,9 @@ export class TiledCore extends BaseEditor {
   /** loaded tilesheet grid */
   /** initialized in `drawTilePicker` */
   protected tiles: PIXI.Texture[][] | null = null;
+  /** tile picker start x */
   protected tilesStartX = 0;
+  /** tile picker start y */
   protected tilesStartY = 0;
   protected tileScale = 1;
 

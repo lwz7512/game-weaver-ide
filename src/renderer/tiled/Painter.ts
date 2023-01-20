@@ -16,11 +16,9 @@ import { GWMap, PhaserMap } from '.';
 type EventHandler = (event: Event) => void;
 
 export class TiledPainter extends TiledCore {
-  // used to decide if need redraw
-  lastHoverRectInMap: PIXI.Rectangle = PIXI.Rectangle.EMPTY;
   // mode flag decide if its painting or erasing
-  eraseTileMode = false;
-  translateMode = false;
+  protected eraseTileMode = false;
+  protected translateMode = false;
   // *** action listeners ***
   onPointerDownStage: EventHandler = () => null;
   onPointerUpStage: EventHandler = () => null;
@@ -33,6 +31,11 @@ export class TiledPainter extends TiledCore {
 
   /** manager layers operation in one place */
   protected layerManager: LayerManager | undefined;
+
+  // used to decide if need redraw
+  protected lastHoverRectInMap: PIXI.Rectangle = PIXI.Rectangle.EMPTY;
+  protected lastHoverColumnIndex = 0;
+  protected lastHoverRowIndex = 0;
 
   /**
    * Add interaction of drawing events
@@ -235,10 +238,13 @@ export class TiledPainter extends TiledCore {
         } else {
           this.paintHiligherOnGameMap(hitRect, this.translateMode);
         }
-        // save visited cell after painting!!
+        // *** save visited cell after painting!! ***
         this.lastHoverRectInMap = hitRect;
-        // display cell info
         const [x, y] = this.findCoordinateFromTileGrid(hitRect, grid);
+        // *** save last position
+        this.lastHoverColumnIndex = x;
+        this.lastHoverRowIndex = y;
+        // display cell info
         const id = this.layerManager?.findTextureIdFromLayer(
           currentLayerId,
           x,
@@ -281,14 +287,24 @@ export class TiledPainter extends TiledCore {
       const currentMapScale = this.mapScale + scaleDiff;
       // Restrict scale
       if (currentMapScale < 0.3 || currentMapScale > 2) return; // stop scaleing
-      // safely set the scale
+
+      // *** reset the scale safely ***
       this.mapScale = currentMapScale;
+
+      // figure out the zoom position
+      const horiZoomRatio = this.lastHoverColumnIndex / this.gameHoriTiles;
+      const vertZoomRatio = this.lastHoverRowIndex / this.gameVertTiles;
       // move to center
-      const diffWidth = this.gameHoriTiles * this.tileWidth * scaleDiff * 0.5;
-      const diffHeight = this.gameVertTiles * this.tileHeight * scaleDiff * 0.5;
+      const diffWidth =
+        this.gameHoriTiles * this.tileWidth * scaleDiff * horiZoomRatio;
+      const diffHeight =
+        this.gameVertTiles * this.tileHeight * scaleDiff * vertZoomRatio;
+
+      // *** update map drawing starting point
       this.mapMarginX -= diffWidth;
       this.mapMarginY -= diffHeight;
 
+      // redraw everything
       this.drawMapGrid();
       this.scaleTileMap();
       this.saveMapDimension();
