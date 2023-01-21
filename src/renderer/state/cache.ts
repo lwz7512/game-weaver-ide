@@ -138,6 +138,16 @@ export const cacheImageBlob = (
   imageBlobs.push(png);
 };
 
+/**
+ * Get tilesheet image path by its URL
+ * @param imgURL selected/current image in tile editor
+ * @returns
+ */
+export const getTilesheetFilePath = (imgURL: string) => {
+  const result = imageBlobs.find((meta) => meta.imgURL === imgURL);
+  return result ? result.path : '';
+};
+
 export const cacheImageTextures = (
   context: CanvasRenderingContext2D,
   imgURL: string,

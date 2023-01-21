@@ -18,16 +18,23 @@ export type GWMap = {
 
 export type GameWeaverLayer = {
   id: number;
+  name: string;
+  /** vertical tiles amount */
+  height: number;
+  /** horizontal tiles amount */
+  width: number;
+  /** show or hide */
+  visible: boolean;
+  /** locked */
+  locked: boolean;
+  /** selected */
+  selected: boolean;
+  /** hold painted tile id */
+  grid: number[][];
+  /** current y position of layer */
+  zIndex: number;
   x?: number;
   y?: number;
-  name: string;
-  height: number; // vertical tiles amount
-  width: number; // horizontal tiles amount
-  visible: boolean;
-  locked: boolean; // locked
-  selected: boolean; // selected
-  grid: number[][]; // hold painted tile id
-  zIndex: number; // current y position of
 };
 
 export type TileSet = {

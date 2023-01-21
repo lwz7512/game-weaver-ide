@@ -85,6 +85,13 @@ export const setupIpcMainHandler = () => {
     }
   );
 
+  ipcMain.handle(
+    IpcEvents.SAVE_MAP_FILE,
+    (_, path: string, content: string) => {
+      return writeFile(path, content);
+    }
+  );
+
   ipcMain.handle(IpcEvents.TOGGLE_DEV_TOOLS, () => {
     return toggleDevTools();
   });

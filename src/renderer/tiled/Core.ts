@@ -826,6 +826,7 @@ export class TiledCore extends BaseEditor {
     hoverTileLayer.endFill();
   }
 
+  // TODO: update game map object ...
   protected saveMapDimension() {
     this.saveSessionChange({
       mapMarginX: this.mapMarginX,

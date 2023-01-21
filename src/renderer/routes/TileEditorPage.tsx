@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, ButtonGroup } from '@blueprintjs/core';
+import { Button, ButtonGroup, Toaster } from '@blueprintjs/core';
 import LeftSideBar from '../components/LeftSideBar';
 import { InputField, SelectInput } from '../components/InputField';
 import { MODULETYPES, GameMapXportParams } from '../config';
@@ -72,7 +72,7 @@ const TiledEditorPage = () => {
     toggleVisibilityHandler,
   } = useMapLayers();
 
-  // TODO: compose game parameters ....
+  // compose game parameters ....
   const mapParams: GameMapXportParams = {
     mapHeight,
     mapWidth,
@@ -89,6 +89,8 @@ const TiledEditorPage = () => {
     mapSaveHandler,
     mapExportHandler,
     tileMapEditorSetter,
+    toastState,
+    toasterCallback,
   } = useMapFile(spacePath, mapParams);
 
   return (
@@ -194,14 +196,14 @@ const TiledEditorPage = () => {
         <div className="pb-2 my-1 flex ">
           <button
             type="button"
-            className="blue-btn no-transform rounded-r-none px-4 rounded-none"
+            className="blue-btn no-transform rounded-r-none rounded-none px-0 flex-1"
             onClick={openFileDialog}
           >
-            Open Local
+            Open Tilesheet
           </button>
           <button
             type="button"
-            className="orange-btn no-transform rounded-l-none flex-1 rounded-none"
+            className="orange-btn no-transform rounded-l-none  rounded-none"
             onClick={() => console.log('TODO: ...')}
           >
             Download Remote
@@ -278,6 +280,8 @@ const TiledEditorPage = () => {
           </ul>
         )}
       </div>
+      {/* toaster */}
+      <Toaster {...toastState} ref={toasterCallback} />
     </div>
   );
 };

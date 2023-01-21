@@ -34,6 +34,10 @@ export class BaseEditor extends EventTarget {
     return rectEquals(hitRect, PIXI.Rectangle.EMPTY);
   }
 
+  protected isEmptyRect(hitRect: PIXI.Rectangle): boolean {
+    return rectEquals(hitRect, PIXI.Rectangle.EMPTY);
+  }
+
   protected isTouchedGrid(pt: PIXI.Point, grid: PIXI.Rectangle[][]) {
     const rect = this.containInGrid(pt, grid);
     return this.checkIsNotEmptyRect(rect);

@@ -131,10 +131,14 @@ export class TiledPainter extends TiledCore {
   }
 
   /**
-   * Get Game Weaver Map object to serialize as json file
-   * @returns GWMap object
+   * Get Game Weaver Map object to serialize as json file,
+   * the json file also could be used to build editable game map.
+   *
+   * @param name game name
+   * @param tilesheetFilePath currently used tilesheet file path
+   * @returns
    */
-  getGWMapInfo(name: string, selectedImage: string): GWMap {
+  getGWMapInfo(name: string, tilesheetFilePath: string): GWMap {
     const layers = this.layerManager ? this.layerManager.getRawLayers() : [];
     return {
       name,
@@ -142,7 +146,7 @@ export class TiledPainter extends TiledCore {
       mapHeight: this.gameVertTiles,
       tileWidth: this.tileWidth,
       tileHeight: this.tileHeight,
-      tilesetImage: selectedImage,
+      tilesetImage: tilesheetFilePath,
       layers,
     };
   }
@@ -233,13 +237,10 @@ export class TiledPainter extends TiledCore {
       // CASE 1: if stage untouched, trying to show tile highlighter ...
       if (!this.stagePressed) {
         if (rectEquals(hitRect, this.lastHoverRectInMap)) return;
-        if (this.eraseTileMode) {
-          this.paintEraserOnGameMap(hitRect);
-        } else {
-          this.paintHiligherOnGameMap(hitRect, this.translateMode);
-        }
         // *** save visited cell after painting!! ***
         this.lastHoverRectInMap = hitRect;
+        // paint highlighter
+        this.paintHighlighterWithMode();
         const [x, y] = this.findCoordinateFromTileGrid(hitRect, grid);
         // *** save last position
         this.lastHoverColumnIndex = x;
@@ -307,6 +308,8 @@ export class TiledPainter extends TiledCore {
       // redraw everything
       this.drawMapGrid();
       this.scaleTileMap();
+
+      this.paintHighlighterWithMode();
       this.saveMapDimension();
     };
 
@@ -338,6 +341,23 @@ export class TiledPainter extends TiledCore {
       );
       this.mapInterectLayer.addEventListener('wheel', this.onWheelMoveOnMap);
       this.mapInterectLayer.addEventListener('click', this.onClickPaintOnMap);
+    }
+  }
+
+  /**
+   * Draw highligher or picked tile while hover on map
+   */
+  protected paintHighlighterWithMode() {
+    if (this.isEmptyRect(this.lastHoverRectInMap)) return;
+
+    const { x, y } = this.lastHoverRectInMap;
+    const tw = this.mapScale * this.tileWidth;
+    const th = this.mapScale * this.tileHeight;
+    const realTimeRect = new PIXI.Rectangle(x, y, tw, th);
+    if (this.eraseTileMode) {
+      this.paintEraserOnGameMap(realTimeRect);
+    } else {
+      this.paintHiligherOnGameMap(realTimeRect, this.translateMode);
     }
   }
 
