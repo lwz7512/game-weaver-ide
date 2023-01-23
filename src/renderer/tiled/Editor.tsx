@@ -54,6 +54,7 @@ export const TiledEditor = ({
       {/* empty content to hold pixi application canvas */}
       {/* vertical tool bar */}
       <div className="absolute top-2 right-2 w-6 h-64 ">
+        {/* TODO: add flood filling tool */}
         <IconToolButton
           mini
           icon="zoom-in"

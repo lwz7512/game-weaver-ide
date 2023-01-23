@@ -38,6 +38,8 @@ export const useTiledEditor = (
         editor.resetApp(bw - 298, bh);
         return;
       }
+      console.log(`>>> create new editor...`);
+      // create new editor
       const selector = '.tiled-editor-root';
       const root = document.querySelector(selector) as HTMLElement;
       const { width, height } = root.getBoundingClientRect();
@@ -70,13 +72,16 @@ export const useTiledEditor = (
   }, [mapWidth, mapHeight, tileWidth, tileHeight]);
 
   /**
-   * reset tile picker and clear game map
+   * lazy reset tile picker and clear game map
    */
   useEffect(() => {
-    const editor = editorRef.current;
-    if (!editor || !selectedImage) return;
+    setTimeout(() => {
+      const editor = editorRef.current;
+      if (!editor || !selectedImage) return;
+      // get editor after the 1st round rendering
+      editor.resetTileSize(selectedImage);
+    });
     // reset tile grid
-    editor.resetTileSize(selectedImage);
   }, [selectedImage]);
 
   // ====== PUBLIC APIs for UI ======

@@ -93,6 +93,8 @@ const TiledEditorPage = () => {
     toasterCallback,
   } = useMapFile(spacePath, mapParams);
 
+  console.log({ selectedImage });
+
   return (
     <div className="tile-editor w-full h-screen flex">
       {/* === left side bar === */}

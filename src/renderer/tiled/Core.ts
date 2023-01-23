@@ -198,6 +198,7 @@ export class TiledCore extends BaseEditor {
    */
   resetTileSize(selectedImage: string) {
     if (!selectedImage) return; // no tilesheet in use
+    console.log(`to redraw tile picker...`);
     this.reDrawTilePicker(selectedImage);
     this.clearTileSelection();
     clearPaintedTiles(1);
