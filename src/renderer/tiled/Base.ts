@@ -75,12 +75,27 @@ export class BaseEditor extends EventTarget {
       for (let j = 0; j < row.length; j += 1) {
         const cell = row[j];
         if (rectEquals(rect, cell)) {
-          coordinate[0] = j; // x, columnIndex
-          coordinate[1] = i; // y, rowIndex
+          coordinate[0] = j + 1; // x, columnIndex
+          coordinate[1] = i + 1; // y, rowIndex
         }
       }
     }
     return coordinate;
+  }
+
+  /**
+   * find out the cell by column and row index
+   * @param x column
+   * @param y row
+   * @param grid
+   * @returns
+   */
+  protected findRectangleFromGrid(
+    x: number,
+    y: number,
+    grid: PIXI.Rectangle[][]
+  ) {
+    return grid[y][x];
   }
 
   protected makeEmptyMapLayerGrid(mapWidth: number, mapHeight: number) {

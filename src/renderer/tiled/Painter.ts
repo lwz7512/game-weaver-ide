@@ -34,7 +34,9 @@ export class TiledPainter extends TiledCore {
 
   // used to decide if need redraw
   protected lastHoverRectInMap: PIXI.Rectangle = PIXI.Rectangle.EMPTY;
+  /** start from 1 */
   protected lastHoverColumnIndex = 0;
+  /** start from 1 */
   protected lastHoverRowIndex = 0;
 
   /**
@@ -67,7 +69,6 @@ export class TiledPainter extends TiledCore {
 
   setTranslateMode(enabled: boolean) {
     this.translateMode = enabled;
-    this.cleanupHoveredTile();
   }
 
   addNewLayer(id: number, name: string) {
@@ -226,6 +227,10 @@ export class TiledPainter extends TiledCore {
    * pointer move, wheel scroll, click events
    */
   listenOnMapInteraction() {
+    const findTexture = this.layerManager?.findTextureIdFromLayer;
+    const findTextures = this.layerManager?.findTextureIdsFromLayers;
+    const getLayerId = this.layerManager?.getCurrentLayerId;
+
     this.onPointerMoveOnMap = (event: Event) => {
       const fdEvent = event as FederatedPointerEvent;
       const currentX = fdEvent.globalX;
@@ -233,28 +238,26 @@ export class TiledPainter extends TiledCore {
       const point = new PIXI.Point(currentX, currentY);
       const grid = this.buildTileGridInMap();
       const hitRect = this.containInGrid(point, grid);
-      const currentLayerId = this.layerManager?.getCurrentLayerId() || 1;
+      const currentLayerId = getLayerId ? getLayerId() : 1;
+      const [x, y] = this.findCoordinateFromTileGrid(hitRect, grid);
+      const id = findTexture ? findTexture(currentLayerId, x, y) : 0;
+      const textureIds = findTextures ? findTextures(x, y) : [];
+
       // CASE 1: if stage untouched, trying to show tile highlighter ...
       if (!this.stagePressed) {
+        if (this.isEmptyRect(hitRect)) return;
         if (rectEquals(hitRect, this.lastHoverRectInMap)) return;
-        // *** save visited cell after painting!! ***
+        // 0. *** save visited cell after painting!! ***
         this.lastHoverRectInMap = hitRect;
-        // paint highlighter
+        // *** save last valid position, and exclude (0,0) which is outside of grid!
+        if (x) this.lastHoverColumnIndex = x;
+        if (y) this.lastHoverRowIndex = y;
+
+        // 1. paint highlighter
         this.paintHighlighterWithMode();
-        const [x, y] = this.findCoordinateFromTileGrid(hitRect, grid);
-        // *** save last position
-        this.lastHoverColumnIndex = x;
-        this.lastHoverRowIndex = y;
-        // display cell info
-        const id = this.layerManager?.findTextureIdFromLayer(
-          currentLayerId,
-          x,
-          y
-        );
+        // 2. display cell info
         this.showCurrentCell(`(${y},${x}) [${id}] - L${currentLayerId}`);
-        // display tiles under mouse
-        const textureIds =
-          this.layerManager?.findTextureIdsFromLayers(x, y) || [];
+        // 3. display tiles under mouse
         this.revealTilesUnderMouse(textureIds.reverse());
         return;
       }
@@ -276,10 +279,12 @@ export class TiledPainter extends TiledCore {
         return;
       }
 
+      console.log(`moving map...`);
       // CASE 3: touched on the blank canvas, now allowed to translate grid ...
       const diffX = fdEvent.movementX * 0.6;
       const diffY = fdEvent.movementY * 0.6;
       this.translateGameMap(diffX, diffY);
+      this.translateHighlighter();
     };
 
     this.onWheelMoveOnMap = (event: Event) => {
@@ -293,8 +298,9 @@ export class TiledPainter extends TiledCore {
       this.mapScale = currentMapScale;
 
       // figure out the zoom position
-      const horiZoomRatio = this.lastHoverColumnIndex / this.gameHoriTiles;
-      const vertZoomRatio = this.lastHoverRowIndex / this.gameVertTiles;
+      const horiZoomRatio =
+        (this.lastHoverColumnIndex - 1) / this.gameHoriTiles;
+      const vertZoomRatio = (this.lastHoverRowIndex - 1) / this.gameVertTiles;
       // move to center
       const diffWidth =
         this.gameHoriTiles * this.tileWidth * scaleDiff * horiZoomRatio;
@@ -358,6 +364,23 @@ export class TiledPainter extends TiledCore {
       this.paintEraserOnGameMap(realTimeRect);
     } else {
       this.paintHiligherOnGameMap(realTimeRect, this.translateMode);
+    }
+  }
+
+  /**
+   * redraw highlighter after map translation
+   */
+  protected translateHighlighter() {
+    const grid = this.buildTileGridInMap();
+    const realTimeRect = this.findRectangleFromGrid(
+      this.lastHoverColumnIndex - 1, // convert to grid index scope
+      this.lastHoverRowIndex - 1, // conver to grid index scope
+      grid
+    );
+    if (this.eraseTileMode) {
+      this.paintEraserOnGameMap(realTimeRect);
+    } else {
+      this.paintHiligherOnGameMap(realTimeRect);
     }
   }
 
