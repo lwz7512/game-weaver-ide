@@ -912,7 +912,7 @@ export class TiledCore extends BaseEditor {
     this.lastSelectedRectInPicker = hitRect;
     const tilegrid = this.buildTileGridInPicker();
     const [x, y] = this.findCoordinateFromTileGrid(hitRect, tilegrid);
-    this.lastSelectedTilePosition = new PIXI.Point(x, y);
+    this.lastSelectedTilePosition = new PIXI.Point(x - 1, y - 1);
   }
 
   protected buildTileGridInPicker(): PIXI.Rectangle[][] {

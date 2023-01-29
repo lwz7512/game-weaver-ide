@@ -60,7 +60,9 @@ export class BaseEditor extends EventTarget {
   }
 
   /**
-   * figure out the hit rect position(col, row) in tile grid
+   * figure out the hit rect position(col, row) in tile grid.
+   *
+   * NOTE: col, row value both start from 1 instead of 0!
    * @param rect
    * @param grid
    * @returns [columnIndex, rowIndex]

@@ -38,6 +38,9 @@ export class TiledPainter extends TiledCore {
   protected lastHoverColumnIndex = 0;
   /** start from 1 */
   protected lastHoverRowIndex = 0;
+  /** for picker hover user */
+  protected lastPickerColumnIndex = 0;
+  protected lastPickerRowIndex = 0;
 
   /**
    * Add interaction of drawing events
@@ -463,6 +466,11 @@ export class TiledPainter extends TiledCore {
       const point = new PIXI.Point(currentX, currentY);
       const grid = this.buildTileGridInPicker();
       const hitRect = this.containInGrid(point, grid);
+      const [x, y] = this.findCoordinateFromTileGrid(hitRect, grid);
+      // *** save the last hit cell: (column, row) ***
+      this.lastPickerColumnIndex = x;
+      this.lastPickerRowIndex = y;
+      // console.log(`${x}, ${y}`);
       if (!rectEquals(hitRect, this.lastHoverRectInPicker)) {
         window.requestAnimationFrame(() =>
           this.drawTilePickerHoverRects(hitRect)
@@ -484,12 +492,34 @@ export class TiledPainter extends TiledCore {
       this.translateSelectedTileInPicker(diffX, diffY);
     };
 
+    // scale like the map from mouse position ...
     this.onWheelMoveOnPicker = (event: Event) => {
+      if (!this.tiles) return;
+
       const wheelEvt = event as WheelEvent;
       const scaleDiff = wheelEvt.deltaY * -0.01;
-      this.tileScale += scaleDiff;
+      const estimateScale = this.tileScale + scaleDiff;
       // Restrict scale
-      this.tileScale = Math.min(Math.max(0.5, this.tileScale), 1.5);
+      if (estimateScale > 1.5 || estimateScale < 0.5) return;
+
+      // reset scale
+      this.tileScale += scaleDiff;
+
+      // figure out the zoom position
+      const [tileColumns, tileRows] = this.getTileGridDimension();
+      if (!tileColumns || !tileRows) return;
+
+      const horiZoomRatio = (this.lastPickerColumnIndex - 1) / tileColumns;
+      const vertZoomRatio = (this.lastPickerRowIndex - 1) / tileRows;
+
+      // // move to center
+      const diffWidth =
+        tileColumns * this.tileWidth * scaleDiff * horiZoomRatio;
+      const diffHeight = tileRows * this.tileHeight * scaleDiff * vertZoomRatio;
+      // *** update map drawing starting point
+      this.tilesStartX -= diffWidth;
+      this.tilesStartY -= diffHeight;
+
       const tw = this.tileWidth * this.tileScale;
       const th = this.tileHeight * this.tileScale;
       this.scaleTilePicker(tw, th);
