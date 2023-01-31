@@ -1,3 +1,5 @@
+export type SaveHistory = { name: string; path: string };
+
 export type ConfigType = {
   [key: string]: string | unknown[];
 };

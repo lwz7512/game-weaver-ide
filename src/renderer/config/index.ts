@@ -7,6 +7,7 @@ export const sourceRepo =
   'https://raw.githubusercontent.com/lwz7512/game-weaver-ast/master/';
 
 export const GWSPACE_KEY = 'workspace'; // DO NOT CHANGE
+export const HISTORY_KEY = 'mapfiles'; // saved map source file list
 
 // global events
 export enum DOMEVENTS {

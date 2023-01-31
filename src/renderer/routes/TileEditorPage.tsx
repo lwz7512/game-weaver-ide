@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import clsx from 'clsx';
 import { Button, ButtonGroup, Toaster } from '@blueprintjs/core';
 import LeftSideBar from '../components/LeftSideBar';
 import { InputField, SelectInput } from '../components/InputField';
@@ -36,8 +36,6 @@ const MapFieldRow = ({ name, value }: MapFieldProp) => (
 );
 
 const TiledEditorPage = () => {
-  // tab switch
-  const [tabType, setTabType] = useState('layers');
   const { onModuleChanged } = useLeftSideBar();
   const { spacePath } = useLocalStorage();
   // define tilemap parameters
@@ -85,11 +83,16 @@ const TiledEditorPage = () => {
     mapName,
     mapFilePath,
     newMapSaved,
+    mapSaveHistory,
+    toastState,
+    tabType,
+    selectedMap,
+    setSelectedMap,
+    setTabType,
     createNewMapHandler,
     mapSaveHandler,
     mapExportHandler,
     tileMapEditorSetter,
-    toastState,
     toasterCallback,
   } = useMapFile(spacePath, mapParams);
 
@@ -272,11 +275,23 @@ const TiledEditorPage = () => {
         {/* history files */}
         {tabType === 'history' && (
           <ul className="map-layers">
-            <li className="layer-item bg-blue-600 text-white py-1 px-2">
-              Map 1
-            </li>
-            <li className="layer-item py-1 px-2">Map 2</li>
-            <li className="layer-item py-1 px-2">Map 3</li>
+            {mapSaveHistory.length > 0 &&
+              mapSaveHistory.map((m) => (
+                <li className="layer-item">
+                  <button
+                    type="button"
+                    className={clsx(
+                      'hover:bg-blue-400 py-1 px-2 w-full no-transform text-left focus:outline-none',
+                      m.name === selectedMap
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-white'
+                    )}
+                    onClick={() => setSelectedMap(m.name)}
+                  >
+                    {m.name}
+                  </button>
+                </li>
+              ))}
           </ul>
         )}
       </div>

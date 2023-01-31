@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 import {
   Intent,
@@ -9,9 +9,10 @@ import {
 } from '@blueprintjs/core';
 
 import { IpcEvents } from '../../ipc-events';
-import { GameMapXportParams } from '../config';
+import { GameMapXportParams, SaveHistory } from '../config';
 import { TiledPainter } from '../tiled/Painter';
 import { getTilesheetFilePath } from '../state/cache';
+import { saveMapHistory, getMapHistory } from '../state/storage';
 import { kebabCase } from '../utils';
 
 export const useMapFile = (
@@ -21,9 +22,15 @@ export const useMapFile = (
   const { ipcRenderer } = window.electron;
 
   const toasterRef = useRef<Toaster | null>(null);
+
+  // tab switch
+  const [tabType, setTabType] = useState('layers');
+
   const [mapName, setMapName] = useState('');
   const [newMapSaved, setNewMapSaved] = useState(false);
   const [mapFilePath, setMapFilePath] = useState('');
+  const [mapSaveHistory, setMapSaveHistory] = useState<SaveHistory[]>([]);
+  const [selectedMap, setSelectedMap] = useState<string | null>(null);
 
   const editorRef = useRef<TiledPainter | null>(null);
 
@@ -83,6 +90,11 @@ export const useMapFile = (
     await ipcRenderer.invoke(IpcEvents.SAVE_MAP_FILE, destination, mapSource);
     // console.log(`save map success!`);
 
+    saveMapHistory(name, path);
+    const files = getMapHistory();
+    setMapSaveHistory(files);
+    setTabType('history'); // switch to history tab
+
     addToast({
       icon: 'tick-circle',
       intent: Intent.SUCCESS,
@@ -90,6 +102,10 @@ export const useMapFile = (
     });
   };
 
+  /**
+   * editor instance injection function
+   * @param editor
+   */
   const tileMapEditorSetter = (editor: TiledPainter | null) => {
     // if (editor) {
     //   console.log(`tilemap editor instance received!`);
@@ -97,11 +113,21 @@ export const useMapFile = (
     editorRef.current = editor;
   };
 
+  useEffect(() => {
+    const files = getMapHistory();
+    setMapSaveHistory(files);
+  }, []);
+
   return {
     mapName,
     mapFilePath,
     newMapSaved,
     toastState,
+    mapSaveHistory,
+    tabType,
+    selectedMap,
+    setSelectedMap,
+    setTabType,
     toasterCallback,
     mapSaveHandler,
     mapExportHandler,

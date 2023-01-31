@@ -1,4 +1,4 @@
-import { DOMEVENTS, GWSPACE_KEY } from '../config';
+import { DOMEVENTS, GWSPACE_KEY, HISTORY_KEY, SaveHistory } from '../config';
 
 const checkWorkspacePath = (): string => {
   const path = localStorage.getItem(GWSPACE_KEY);
@@ -20,4 +20,16 @@ export const safeActionWithWorkspace = (callback: (gmPath: string) => void) => {
   } else {
     document.dispatchEvent(new Event(DOMEVENTS.GMSPACE_UNDEFINED));
   }
+};
+
+export const saveMapHistory = (name: string, path: string): void => {
+  const savedFiles = localStorage.getItem(HISTORY_KEY);
+  const fileList: SaveHistory[] = savedFiles ? JSON.parse(savedFiles) : [];
+  fileList.unshift({ name, path });
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(fileList));
+};
+
+export const getMapHistory = (): SaveHistory[] => {
+  const savedFiles = localStorage.getItem(HISTORY_KEY);
+  return savedFiles ? JSON.parse(savedFiles) : [];
 };
