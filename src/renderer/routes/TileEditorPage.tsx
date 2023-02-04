@@ -1,57 +1,32 @@
-import clsx from 'clsx';
-import { Button, ButtonGroup, Toaster } from '@blueprintjs/core';
-import LeftSideBar from '../components/LeftSideBar';
-import { InputField, SelectInput } from '../components/InputField';
+import { Toaster } from '@blueprintjs/core';
+
 import { MODULETYPES, GameMapXportParams } from '../config';
-import useLeftSideBar from '../hooks/useLeftSideBar';
 import { TiledEditor } from '../tiled/Editor';
+
+import useLeftSideBar from '../hooks/useLeftSideBar';
 import { useSpriteSheetImage } from '../hooks/useSpriteSheetImage';
 import { useSpritesPreview } from '../hooks/useSpritesPreview';
 import { useMapLayers } from '../hooks/useMapLayers';
 import { useMapDimension } from '../hooks/useMapSession';
+import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useMapFile } from '../hooks/useMapFile';
+
+import LeftSideBar from '../components/LeftSideBar';
 import { MiniIconButton } from '../components/Buttons';
 import { LayerHistoryTabs } from '../components/Tabs';
-import { LayerItem } from '../components/LayerItem';
-import { SaveGamePop } from '../components/SaveGamePop';
-import { useMapFile } from '../hooks/useMapFile';
-import { useLocalStorage } from '../hooks/useLocalStorage';
-
-type MapFieldProp = {
-  name: string;
-  value: string;
-};
-
-const MapFieldRow = ({ name, value }: MapFieldProp) => (
-  <li className="border-b border-gray-400 flex">
-    <span className="p-1 w-20 bg-amber-100 inline-block border-r border-gray-400">
-      {name}:
-    </span>
-    <span
-      className="px-1 w-36 h-6 leading-6 inline-block overflow-hidden"
-      title={value}
-    >
-      {value}
-    </span>
-  </li>
-);
+import { MapCreateWidget } from '../components/MapCreateWidget';
+import { MapListSwitch, LayersCRUD } from '../components/MapLayerHistoryList';
 
 const TiledEditorPage = () => {
   const { onModuleChanged } = useLeftSideBar();
   const { spacePath } = useLocalStorage();
   // define tilemap parameters
-  const {
-    mapHeight,
-    mapWidth,
-    tileHeight,
-    tileWidth,
-    mapHeightChangeHandler,
-    mapWidthChangeHandler,
-    tileHeightChangeHandler,
-    tileWidthChangeHandler,
-  } = useMapDimension();
+  const { mapHeight, mapWidth, tileHeight, tileWidth, ...mapSizeHandlers } =
+    useMapDimension();
   const {
     dots,
     selectedImage,
+    loadPngFile,
     openFileDialog,
     navigateToNext,
     navigateToPrev,
@@ -62,20 +37,20 @@ const TiledEditorPage = () => {
     layers,
     selectLayerHandler,
     layerNameChangeHandler,
-    addNewLayer,
-    deleteCurrentLayer,
-    moveLayerDown,
-    moveLayerUp,
     toggleAvailabilityHandler,
     toggleVisibilityHandler,
+    ...layerCRUDProps
   } = useMapLayers();
 
-  // compose game parameters ....
-  const mapParams: GameMapXportParams = {
+  const mapSizeProps = {
     mapHeight,
     mapWidth,
     tileHeight,
     tileWidth,
+  };
+  // compose game parameters ....
+  const mapParams: GameMapXportParams = {
+    ...mapSizeProps,
     sourceImage: selectedImage,
   };
 
@@ -87,14 +62,26 @@ const TiledEditorPage = () => {
     toastState,
     tabType,
     selectedMap,
-    setSelectedMap,
+    loadMapBy,
     setTabType,
     createNewMapHandler,
     mapSaveHandler,
     mapExportHandler,
     tileMapEditorSetter,
     toasterCallback,
-  } = useMapFile(spacePath, mapParams);
+  } = useMapFile(spacePath, mapParams, loadPngFile);
+
+  const mapWidgetProps = {
+    spacePath,
+    newMapSaved,
+    mapName,
+    mapFilePath,
+    createNewMapHandler,
+    mapSaveHandler,
+    mapExportHandler,
+    ...mapSizeProps,
+    ...mapSizeHandlers,
+  };
 
   return (
     <div className="tile-editor w-full h-screen flex">
@@ -116,85 +103,7 @@ const TiledEditorPage = () => {
       />
       {/* === right side panel === */}
       <div className="object-explorer bg-gray-200 w-60 border-l-2 border-slate-500">
-        <h1 className="select-none text-base text-center p-2 bg-slate-600 text-white block mb-0">
-          {newMapSaved ? mapName : 'New Game Map'}
-        </h1>
-        <ButtonGroup className="" fill>
-          <Button
-            icon="map-create"
-            title="New Map"
-            intent="success"
-            className="focus:outline-0 no-transform rounded-l-none"
-            onClick={createNewMapHandler}
-          />
-          <SaveGamePop
-            savedMapName={mapName}
-            gameFileDirectory={spacePath}
-            onMapNameConfirm={mapSaveHandler}
-          />
-          <Button
-            icon="export"
-            title="Export Map To Json File"
-            intent="warning"
-            className="focus:outline-0 no-transform rounded-r-none"
-            onClick={mapExportHandler}
-          />
-        </ButtonGroup>
-        {/* game properties grid */}
-        {newMapSaved && (
-          <ul className="bg-white h-40 mt-1 text-xs">
-            <MapFieldRow name="Map Name" value={mapName} />
-            <MapFieldRow name="Map Width" value={`${mapWidth}tiles`} />
-            <MapFieldRow name="Map Height" value={`${mapHeight}tiles`} />
-            <MapFieldRow name="Tile Width" value={`${tileWidth}px`} />
-            <MapFieldRow name="Tile Hight" value={`${tileHeight}px`} />
-            <MapFieldRow name="Save Path" value={mapFilePath} />
-          </ul>
-        )}
-        {!newMapSaved && (
-          <>
-            <div className="map-attributes-group px-0 lg:px-2 py-1 ">
-              <InputField
-                title="Map Height"
-                name="mapHeight"
-                suffix="tiles"
-                value={mapHeight}
-                onValueChange={(event) =>
-                  mapHeightChangeHandler(event.target.value)
-                }
-              />
-              <InputField
-                title="Map Width"
-                name="mapWidth"
-                suffix="tiles"
-                value={mapWidth}
-                onValueChange={(event) =>
-                  mapWidthChangeHandler(event.target.value)
-                }
-              />
-            </div>
-            <div className="map-attributes-group px-0 lg:px-2 py-1 ">
-              <SelectInput
-                title="Tile Height"
-                name="tileHeight"
-                suffix="px"
-                value={tileHeight}
-                onValueChange={(event) =>
-                  tileHeightChangeHandler(event.target.value)
-                }
-              />
-              <SelectInput
-                title="Tile Width"
-                name="tileWidth"
-                suffix="px"
-                value={tileWidth}
-                onValueChange={(event) =>
-                  tileWidthChangeHandler(event.target.value)
-                }
-              />
-            </div>
-          </>
-        )}
+        <MapCreateWidget {...mapWidgetProps} />
         {/* open file dialog */}
         <div className="pb-2 my-1 flex ">
           <button
@@ -224,76 +133,23 @@ const TiledEditorPage = () => {
           />
           <MiniIconButton icon="caret-right" onClick={navigateToNext} />
         </div>
-        {/* TODO: layer management buttons */}
-        <ButtonGroup className="py-3" fill>
-          <Button
-            icon="new-layer"
-            title="New Layer"
-            intent="success"
-            className="focus:outline-0 rounded-l-none"
-            onClick={addNewLayer}
-          />
-          <Button
-            icon="arrow-up"
-            title="Move Layer Up"
-            intent="warning"
-            className="focus:outline-0"
-            onClick={moveLayerUp}
-          />
-          <Button
-            icon="arrow-down"
-            title="Move Layer Down"
-            intent="warning"
-            className="focus:outline-0"
-            onClick={moveLayerDown}
-          />
-          <Button
-            icon="trash"
-            title="Delete Layer"
-            intent="danger"
-            className="focus:outline-0 rounded-r-none"
-            onClick={deleteCurrentLayer}
-          />
-        </ButtonGroup>
+        {/* layer management buttons */}
+        <LayersCRUD {...layerCRUDProps} />
         {/* layer | history switching */}
         <LayerHistoryTabs tabType={tabType} tabChangeHandler={setTabType} />
-        {/* layers management */}
-        {tabType === 'layers' && (
-          <ul className="map-layers">
-            {layers.map((l) => (
-              <LayerItem
-                key={l.id}
-                layer={l}
-                selectHandler={selectLayerHandler}
-                inputChangeHandler={layerNameChangeHandler}
-                availableToggleHandler={toggleAvailabilityHandler}
-                visibleToggleHandler={toggleVisibilityHandler}
-              />
-            ))}
-          </ul>
-        )}
-        {/* history files */}
-        {tabType === 'history' && (
-          <ul className="map-layers">
-            {mapSaveHistory.length > 0 &&
-              mapSaveHistory.map((m) => (
-                <li className="layer-item">
-                  <button
-                    type="button"
-                    className={clsx(
-                      'hover:bg-blue-400 py-1 px-2 w-full no-transform text-left focus:outline-none',
-                      m.name === selectedMap
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-white'
-                    )}
-                    onClick={() => setSelectedMap(m.name)}
-                  >
-                    {m.name}
-                  </button>
-                </li>
-              ))}
-          </ul>
-        )}
+        <MapListSwitch
+          type={tabType}
+          props={{
+            layers,
+            mapSaveHistory,
+            selectedMap,
+            loadMapBy,
+            selectLayerHandler,
+            layerNameChangeHandler,
+            toggleAvailabilityHandler,
+            toggleVisibilityHandler,
+          }}
+        />
       </div>
       {/* toaster */}
       <Toaster {...toastState} ref={toasterCallback} />

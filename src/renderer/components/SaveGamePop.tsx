@@ -1,8 +1,9 @@
+import clsx from 'clsx';
 import React, { ChangeEvent, useEffect, useState, useRef } from 'react';
 import { Button, Intent, H5, Classes as CoreClasses } from '@blueprintjs/core';
 import { Popover2, Classes as PopoverClasses } from '@blueprintjs/popover2';
-import clsx from 'clsx';
 import { kebabCase } from '../utils';
+import { GWMAPFILE } from '../config';
 
 // type MapProperties = {
 //   mapName: string;
@@ -27,7 +28,9 @@ export const SaveGamePop = ({
   const mapNameChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const newName = event.target.value;
     setMapName(newName);
-    setCompleteMapPath(`${gameFileDirectory}/${kebabCase(newName)}.json`);
+    setCompleteMapPath(
+      `${gameFileDirectory}/${kebabCase(newName)}${GWMAPFILE}`
+    );
   };
 
   const mapNameConfirmHandler = (event: React.MouseEvent) => {

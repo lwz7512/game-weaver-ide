@@ -61,17 +61,19 @@ const SettingsPage = () => {
         <h1 className="text-lg text-center p-8 border-b-2 mb-8 font-semibold text-slate-600">
           Welcome to setting page!
         </h1>
+        {/* Section 1: game workspace path */}
         <div className="panel">
-          <h2 className="my-2 text-base text-slate-500 pl-4 border-l-4 border-green-600">
-            Workspace Path: {spacePath}
-          </h2>
+          <h1 className="text-base text-black underline">
+            Game Workspace Path Setting
+          </h1>
           <Button
             icon="folder-new"
             intent="primary"
-            text={`${spacePath ? 'Reset' : 'Assign'} Workspace Directory`}
-            className="focus:outline-none my-4 py-2 px-4 text-base"
+            text={`${spacePath ? 'Reset' : 'Create'} Workspace Directory`}
+            className="focus:outline-none my-4 py-2 px-4 text-sm"
             onClick={openNativeDialog}
           />
+          <h2 className="quote-in-panel">Workspace Path: {spacePath}</h2>
         </div>
       </div>
       {/* toast container ... */}

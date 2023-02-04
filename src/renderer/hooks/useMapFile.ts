@@ -9,7 +9,8 @@ import {
 } from '@blueprintjs/core';
 
 import { IpcEvents } from '../../ipc-events';
-import { GameMapXportParams, SaveHistory } from '../config';
+import { GameMapXportParams, SaveHistory, GWMAPFILE } from '../config';
+import { GWMap } from '../tiled';
 import { TiledPainter } from '../tiled/Painter';
 import { getTilesheetFilePath } from '../state/cache';
 import { saveMapHistory, getMapHistory } from '../state/storage';
@@ -17,7 +18,8 @@ import { kebabCase } from '../utils';
 
 export const useMapFile = (
   wokspacePath: string,
-  mapParams: GameMapXportParams
+  mapParams: GameMapXportParams,
+  loadPngFile: (path: string) => void
 ) => {
   const { ipcRenderer } = window.electron;
 
@@ -82,11 +84,11 @@ export const useMapFile = (
     const editor = editorRef.current as TiledPainter;
     const { sourceImage } = mapParams;
     const tilesheetFilePath = getTilesheetFilePath(sourceImage);
-    const map = editor.getGWMapInfo(name, tilesheetFilePath);
+    const gwMap = editor.getGWMapInfo(name, tilesheetFilePath);
     // console.log(map);
-    const mapSource = JSON.stringify(map);
+    const mapSource = JSON.stringify(gwMap);
     const fileName = kebabCase(name);
-    const destination = `${wokspacePath}/${fileName}.gw`;
+    const destination = `${wokspacePath}/${fileName}${GWMAPFILE}`;
     await ipcRenderer.invoke(IpcEvents.SAVE_MAP_FILE, destination, mapSource);
     // console.log(`save map success!`);
 
@@ -113,8 +115,21 @@ export const useMapFile = (
     editorRef.current = editor;
   };
 
+  const loadMapBy = async (name: string, path: string) => {
+    setSelectedMap(name);
+    // console.log(`>> load map file: ${path}`);
+    const fileContent = await ipcRenderer.invoke(IpcEvents.READ_MAP_FILE, path);
+    if (!fileContent) return;
+    const gwMap = JSON.parse(fileContent as string) as GWMap;
+    // console.log(gwMap);
+    const tilesheetFilePath = gwMap.tilesetImage;
+    console.log(`>>> loading tilesheet file: ${tilesheetFilePath}`);
+    tilesheetFilePath && loadPngFile(tilesheetFilePath);
+  };
+
   useEffect(() => {
     const files = getMapHistory();
+    console.log(files);
     setMapSaveHistory(files);
   }, []);
 
@@ -126,6 +141,7 @@ export const useMapFile = (
     mapSaveHistory,
     tabType,
     selectedMap,
+    loadMapBy,
     setSelectedMap,
     setTabType,
     toasterCallback,

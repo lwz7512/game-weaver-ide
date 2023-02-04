@@ -1,3 +1,10 @@
+export type MapLayer = {
+  id: number;
+  name: string;
+  selected: boolean;
+  editMode: boolean;
+};
+
 export type SaveHistory = { name: string; path: string };
 
 export type ConfigType = {

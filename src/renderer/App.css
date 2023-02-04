@@ -7,7 +7,7 @@
     @apply flex flex-col items-center;
   }
   .panel {
-    @apply p-4 shadow-md border rounded-md m-2 bg-slate-50;
+    @apply p-4 shadow-md border rounded-md m-2 bg-slate-100;
   }
   .game-item {
     @apply text-white py-4 px-2 text-center hover:transform-none focus:outline-none;
@@ -41,6 +41,12 @@
   }
   .layer-tool-separator {
     @apply inline-block border-r border-gray-400 h-4 w-1 ml-0.5 mr-2 mb-1 align-middle;
+  }
+  .quote-in-panel {
+    @apply my-2 text-sm text-slate-500 pl-4 border-l-4 border-green-600 bg-white py-2 rounded-tr-md rounded-br-md;
+  }
+  .map-history-item {
+    @apply hover:bg-blue-400 py-1 px-2 w-full text-left focus:outline-none;
   }
 }
 

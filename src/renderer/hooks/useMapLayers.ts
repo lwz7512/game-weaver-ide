@@ -1,12 +1,6 @@
 import { useState } from 'react';
 import { GWEvent } from '../tiled/Events';
-
-export type MapLayer = {
-  id: number;
-  name: string;
-  selected: boolean;
-  editMode: boolean;
-};
+import { MapLayer } from '../config';
 
 export const useMapLayers = () => {
   const initLayers: MapLayer[] = [

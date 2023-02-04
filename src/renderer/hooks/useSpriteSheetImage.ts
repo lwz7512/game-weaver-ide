@@ -24,15 +24,7 @@ export const useSpriteSheetImage = (tileWidth: number, tileHeight: number) => {
   const { selectedImage, setSelectedImage } = useSelectedTileSheet();
   const dots: number[] = getTileImageDots(selectedImage);
 
-  const openFileDialog = async () => {
-    const files = (await ipcRenderer.invoke(
-      IpcEvents.OPEN_FILE_FROM_DIALOG,
-      'Open Sprite Sheet File' // new folder to be created in selected path
-    )) as string[];
-    if (files.length === 0) return;
-
-    // only pick first one!
-    const pngFilePath = files[0];
+  const loadPngFile = async (pngFilePath: string) => {
     // check if already loaded
     const imageBlobExist = checkImageLoaded(pngFilePath);
     if (imageBlobExist) {
@@ -65,6 +57,18 @@ export const useSpriteSheetImage = (tileWidth: number, tileHeight: number) => {
     }
   };
 
+  const openFileDialog = async () => {
+    const files = (await ipcRenderer.invoke(
+      IpcEvents.OPEN_FILE_FROM_DIALOG,
+      'Open Sprite Sheet File' // new folder to be created in selected path
+    )) as string[];
+    if (files.length === 0) return;
+
+    // only pick first one!
+    const pngFilePath = files[0];
+    await loadPngFile(pngFilePath);
+  };
+
   const navigateToNext = () => {
     const next = getNextImageURL(selectedImage);
     next && setSelectedImage(next);
@@ -78,6 +82,7 @@ export const useSpriteSheetImage = (tileWidth: number, tileHeight: number) => {
   return {
     dots,
     selectedImage,
+    loadPngFile,
     openFileDialog,
     navigateToNext,
     navigateToPrev,

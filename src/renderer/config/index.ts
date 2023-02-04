@@ -8,6 +8,7 @@ export const sourceRepo =
 
 export const GWSPACE_KEY = 'workspace'; // DO NOT CHANGE
 export const HISTORY_KEY = 'mapfiles'; // saved map source file list
+export const GWMAPFILE = '.gw';
 
 // global events
 export enum DOMEVENTS {

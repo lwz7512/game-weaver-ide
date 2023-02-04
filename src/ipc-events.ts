@@ -17,6 +17,7 @@ export enum IpcEvents {
   TOGGLE_DEV_TOOLS = 'TOGGLE_DEV_TOOLS',
   READ_IMAGE_FILE = 'READ_IMAGE_FILE',
   READ_PNG_IMAGE = 'READ_PNG_IMAGE',
+  READ_MAP_FILE = 'READ_MAP_FILE',
   // more ...
 }
 

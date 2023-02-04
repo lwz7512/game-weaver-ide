@@ -92,6 +92,10 @@ export const setupIpcMainHandler = () => {
     }
   );
 
+  ipcMain.handle(IpcEvents.READ_MAP_FILE, (_, path: string) => {
+    return readFile(path);
+  });
+
   ipcMain.handle(IpcEvents.TOGGLE_DEV_TOOLS, () => {
     return toggleDevTools();
   });
