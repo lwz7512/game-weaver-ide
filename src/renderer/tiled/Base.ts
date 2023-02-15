@@ -105,11 +105,5 @@ export class BaseEditor extends EventTarget {
     return grid.map(() => new Array(mapWidth).fill(0));
   }
 
-  flattenGrid(grid: number[][]): number[] {
-    return grid.reduce((prev: number[], row: number[]) => {
-      return prev.concat(...row);
-    }, []);
-  }
-
   // more method ....
 }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { GWEvent } from '../tiled/Events';
-import { MapLayer } from '../config';
+import { MapLayer } from '../tiled';
 
 export const useMapLayers = () => {
   const initLayers: MapLayer[] = [
@@ -9,6 +9,8 @@ export const useMapLayers = () => {
       name: 'Layer - 1',
       selected: true,
       editMode: false,
+      visible: true,
+      unlocked: true,
     },
   ];
   const [layers, setLayers] = useState<MapLayer[]>(initLayers);
@@ -50,6 +52,8 @@ export const useMapLayers = () => {
       name: newLayerName,
       selected: true,
       editMode: false,
+      visible: true,
+      unlocked: true,
     });
     setLayers(newLayers);
     const detail = { id: newLayerId, name: newLayerName };
@@ -115,6 +119,7 @@ export const useMapLayers = () => {
 
   return {
     layers,
+    setLayers,
     selectLayerHandler,
     layerNameChangeHandler,
     addNewLayer,

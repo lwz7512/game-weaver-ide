@@ -1,10 +1,3 @@
-export type MapLayer = {
-  id: number;
-  name: string;
-  selected: boolean;
-  editMode: boolean;
-};
-
 export type SaveHistory = { name: string; path: string };
 
 export type ConfigType = {
@@ -43,10 +36,14 @@ export type GeneralObject = {
  * @2023/01/14
  */
 export type GameMapXportParams = {
-  /** single source only */
+  /** tilesheet image URL, single source only */
   sourceImage: string;
   mapHeight: string;
   mapWidth: string;
   tileHeight: string;
   tileWidth: string;
+  mapHeightChangeHandler: (field: string) => void;
+  mapWidthChangeHandler: (field: string) => void;
+  tileHeightChangeHandler: (field: string) => void;
+  tileWidthChangeHandler: (field: string) => void;
 };

@@ -8,7 +8,8 @@ import { Button, ButtonGroup } from '@blueprintjs/core';
 import { LayerItem } from './LayerItem';
 import { HistoryItem } from './HistoryItem';
 
-import { SaveHistory, MapLayer } from '../config';
+import { SaveHistory } from '../config';
+import { MapLayer } from '../tiled';
 
 type LayerCRUDProps = {
   addNewLayer: () => void;
@@ -110,7 +111,7 @@ const MapHistoryList = ({
 
 type MapListComboProps = MapLayersProps & MapHistoryProps;
 
-const ListByType: { [key: string]: FC<any> } = {
+const ListByType: { [key: string]: FC<MapListComboProps> } = {
   layers: (props) => <MapLayerList {...props} />,
   history: (props) => <MapHistoryList {...props} />,
 };

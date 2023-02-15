@@ -10,6 +10,10 @@ import { GWMAPFILE } from '../config';
 //   savePath: string;
 // };
 
+const genGameMapFullpath = (gameDir: string, mapName: string) => {
+  return `${gameDir}/${kebabCase(mapName)}${GWMAPFILE}`;
+};
+
 type SaveGameProps = {
   savedMapName?: string;
   gameFileDirectory: string;
@@ -22,15 +26,14 @@ export const SaveGamePop = ({
   onMapNameConfirm,
 }: SaveGameProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [mapName, setMapName] = useState(savedMapName || '');
+  const [mapName, setMapName] = useState('');
   const [completeMapPath, setCompleteMapPath] = useState('');
 
   const mapNameChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const newName = event.target.value;
     setMapName(newName);
-    setCompleteMapPath(
-      `${gameFileDirectory}/${kebabCase(newName)}${GWMAPFILE}`
-    );
+    const fullPath = genGameMapFullpath(gameFileDirectory, newName);
+    setCompleteMapPath(fullPath);
   };
 
   const mapNameConfirmHandler = (event: React.MouseEvent) => {
@@ -48,6 +51,14 @@ export const SaveGamePop = ({
     if (!gameFileDirectory) return;
     setCompleteMapPath(gameFileDirectory);
   }, [gameFileDirectory]);
+
+  useEffect(() => {
+    if (!savedMapName || !gameFileDirectory) return;
+    // reset map name and full path
+    setMapName(savedMapName);
+    const fullPath = genGameMapFullpath(gameFileDirectory, savedMapName);
+    setCompleteMapPath(fullPath);
+  }, [savedMapName, gameFileDirectory]);
 
   return (
     <Popover2

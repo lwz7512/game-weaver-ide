@@ -5,13 +5,15 @@
  */
 import * as PIXI from 'pixi.js';
 import { FederatedPointerEvent } from '@pixi/events';
-import { rectEquals } from './Base';
 import { GeneralObject } from '../config';
+import { setDrawingSession } from '../state/session';
+import { rectEquals } from './Base';
 import { TiledCore } from './Core';
 import { LayerManager } from './Layers';
+import { PointX } from './PointX';
 import { SpriteX } from './SpriteX';
-import { setDrawingSession } from '../state/session';
-import { GWMap, PhaserMap } from '.';
+import { flattenGrid, gridToPoints } from './Utils';
+import { GameWeaverLayer, GWMap, PhaserMap } from '.';
 
 type EventHandler = (event: Event) => void;
 
@@ -60,6 +62,8 @@ export class TiledPainter extends TiledCore {
     tileWidth: number,
     tileHeight: number
   ) {
+    console.log(`>>> layout width new size: `);
+    console.log(`${mapWidth}/${mapHeight}/${tileWidth}/${tileHeight}`);
     super.layout(mapWidth, mapHeight, tileWidth, tileHeight);
     this.layerManager = new LayerManager(mapWidth, mapHeight);
     this.layerManager.addNewLayer(1, 'Layer - 1');
@@ -111,6 +115,35 @@ export class TiledPainter extends TiledCore {
 
   toggleLayerAvailable(layerId: number, locked: boolean) {
     this.layerManager?.toggleLayerAvailable(layerId, locked);
+  }
+
+  buildLayersBy(width: number, height: number, layers: GameWeaverLayer[]) {
+    this.layerManager?.resetLayers(width, height, layers);
+  }
+
+  /**
+   * rebuilt sprites in map for layers
+   * @param layers
+   */
+  paintSpritesFrom(layers: GameWeaverLayer[]) {
+    // console.log({ layers });
+    layers.forEach((l) => {
+      // console.log(`====== build points for layer: ${l.id}`);
+      const points = this.tileLayerGridToPointXs(l.grid);
+      points.forEach((p) => this.putTileOnGameMap(l.id, p.x, p.y, p.tile));
+    });
+  }
+
+  tileLayerGridToPointXs(grid: number[][]): PointX[] {
+    const points: PointX[] = [];
+    for (let y = 0; y < grid.length; y += 1) {
+      for (let x = 0; x < grid[y].length; x += 1) {
+        const ptx = new PointX(x, y);
+        ptx.tile = grid[y][x]; // got tile id
+        points.push(ptx);
+      }
+    }
+    return points;
   }
 
   /**
@@ -169,8 +202,8 @@ export class TiledPainter extends TiledCore {
   /**
    * update layer info
    * @param layerId
-   * @param columnIndex
-   * @param rowIndex
+   * @param columnIndex start with 1
+   * @param rowIndex start width 1
    * @param tileIndex
    */
   protected savePaintedTileFor(
@@ -193,7 +226,7 @@ export class TiledPainter extends TiledCore {
       layerPainted: true,
       rowSize: layer.grid.length,
       columnSize: layer.grid[0].length,
-      [`layer_${layerId}`]: this.flattenGrid(layer.grid),
+      [`layer_${layerId}`]: flattenGrid(layer.grid),
     });
   }
 
@@ -282,7 +315,7 @@ export class TiledPainter extends TiledCore {
         return;
       }
 
-      console.log(`moving map...`);
+      // console.log(`moving map...`);
       // CASE 3: touched on the blank canvas, now allowed to translate grid ...
       const diffX = fdEvent.movementX * 0.6;
       const diffY = fdEvent.movementY * 0.6;

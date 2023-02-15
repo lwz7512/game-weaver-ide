@@ -21,15 +21,16 @@ import { useSelectedTileSheet } from './useSelectedTileSheet';
  */
 export const useSpriteSheetImage = (tileWidth: number, tileHeight: number) => {
   const { ipcRenderer } = window.electron;
+  // image URL locally
   const { selectedImage, setSelectedImage } = useSelectedTileSheet();
   const dots: number[] = getTileImageDots(selectedImage);
 
-  const loadPngFile = async (pngFilePath: string) => {
+  const loadPngFile = async (pngFilePath: string): Promise<boolean> => {
     // check if already loaded
     const imageBlobExist = checkImageLoaded(pngFilePath);
     if (imageBlobExist) {
       setSelectedImage(imageBlobExist.imgURL);
-      return; // no need to fetch again!
+      return true; // no need to fetch again!
     }
     // *** reading file buffer ***
     const pngImg = await ipcRenderer.invoke(
@@ -52,9 +53,10 @@ export const useSpriteSheetImage = (tileWidth: number, tileHeight: number) => {
       cacheImageTextures(context, imgURL, safeW, safeH);
       // save the selected file page
       setSelectedImage(imgURL);
-    } else {
-      console.warn(`### file no longer esists: ${pngFilePath}`);
+      return true;
     }
+    console.warn(`### file no longer exists: ${pngFilePath}`);
+    return false;
   };
 
   const openFileDialog = async () => {

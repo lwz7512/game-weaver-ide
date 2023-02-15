@@ -51,6 +51,16 @@ export class LayerManager {
     }));
   }
 
+  /**
+   * Save one tile id to grid, be careful to the relation between colum/row params and `layer.grid`,
+   * layer.grid is 2D array, so grid array index should be less 1 than col/row value.
+   * @param layerId
+   * @param col column index, start from 1
+   * @param row row index, start from 1
+   * @param tileId
+   * @param tile
+   * @returns
+   */
   addOneTile(
     layerId: number,
     col: number,
@@ -63,8 +73,11 @@ export class LayerManager {
       console.warn('No layer found!');
       return null;
     }
+    // console.log(`>>> add tile to: ${row}|${col}`);
     // save texuture id to grid
-    layer.grid[row][col] = tileId;
+    // FIXME: Beware that grid index should less 1!
+    // @2023/02/12
+    layer.grid[row - 1][col - 1] = tileId;
     const key = `${layerId}_${col}_${row}`;
     tile && this.paintedTilesCache.set(key, tile);
     return layer;
@@ -124,6 +137,21 @@ export class LayerManager {
   addNewLayer(id: number, name: string) {
     this.createNewLayer(id, name);
     this.selectGameLayer(id);
+  }
+
+  /**
+   * recreate all the layers
+   * @param width
+   * @param height
+   * @param layers
+   */
+  resetLayers(width: number, height: number, layers: GameWeaverLayer[]) {
+    this.mapWidth = width;
+    this.mapHeight = height;
+
+    this.gameMapLayersInfo.length = 0;
+    this.gameMapLayersInfo.push(...layers);
+    // console.log(this.gameMapLayersInfo);
   }
 
   deleteLayer(id: number) {
@@ -321,6 +349,7 @@ export class LayerManager {
   protected createNewLayer(id: number, name: string) {
     // empty grid to hold texture ids
     const grid = this.makeEmptyMapLayerGrid(this.mapWidth, this.mapHeight);
+    // console.log(grid);
     // trying to merge old layer
     // this.mergeLayerTexturesFromSession(grid);
     // build one layer data as default one

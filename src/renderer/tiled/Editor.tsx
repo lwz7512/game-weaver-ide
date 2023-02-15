@@ -20,7 +20,8 @@ type EditorProps = {
   mapHeight: number; // vert-tile-size
   tileWidth: number; // width in pixel
   tileHeight: number; // height in pixel
-  selectedImage: string; // local tilesheet image file path
+  /** local tilesheet image URL locally */
+  selectedImage: string;
   editorInstanceSaver: (editor: TiledPainter | null) => void;
 };
 

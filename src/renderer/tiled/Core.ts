@@ -198,7 +198,7 @@ export class TiledCore extends BaseEditor {
    */
   resetTileSize(selectedImage: string) {
     if (!selectedImage) return; // no tilesheet in use
-    console.log(`to redraw tile picker...`);
+    // console.log(`to redraw tile picker...`);
     this.reDrawTilePicker(selectedImage);
     this.clearTileSelection();
     clearPaintedTiles(1);
@@ -234,6 +234,10 @@ export class TiledCore extends BaseEditor {
     this.mapScale = 1;
     this.drawMapGrid();
     this.saveMapDimension();
+  }
+
+  setMapTiles(tiles: PIXI.Texture[][]) {
+    this.tiles = tiles;
   }
 
   // *************************** end of public api *************************************
@@ -533,8 +537,8 @@ export class TiledCore extends BaseEditor {
         selectedImage
       );
     } else {
-      console.log(`got textures from cache!`);
       this.tiles = cache.textures;
+      console.log(`got tiles from cache!`);
     }
     // redrawing...
     const stw = this.tileWidth * this.tileScale;
@@ -607,6 +611,26 @@ export class TiledCore extends BaseEditor {
   }
 
   /**
+   * Create SriteX by map grid parameter
+   * @param layerId which layer to use
+   * @param xIndex column position, start from 0
+   * @param yIndex row position, start from 0
+   * @param tileId texture id of current tilesheet
+   */
+  protected putTileOnGameMap(
+    layerId: number,
+    xIndex: number,
+    yIndex: number,
+    tileId: number
+  ) {
+    if (!tileId) return; // 0 is invalid tile id!
+    const texture = this.getTextureBy(tileId);
+    if (!texture) return console.warn(`!!! no texture found!`);
+    // console.log(`put tile ${tileId} on ${xIndex}/${yIndex}`);
+    this.paintTextureTo(texture, xIndex, yIndex, layerId);
+  }
+
+  /**
    * paint texture to a safe layer
    *
    * @param hitRect
@@ -646,6 +670,15 @@ export class TiledCore extends BaseEditor {
     };
   }
 
+  /**
+   * Create SpriteX into the canvas
+   * @param layerId
+   * @param row start with 1
+   * @param column start with 1
+   * @param cell position to put the sprite
+   * @param texture texture used for sprite
+   * @returns
+   */
   protected paintOneTextureBy(
     layerId: number,
     row: number,
@@ -670,22 +703,25 @@ export class TiledCore extends BaseEditor {
   /**
    * repaint texture to map grid
    * @param texture
-   * @param rowIndex
-   * @param columnIndex
+   * @param yIndex vertical coordinate, start from 0
+   * @param xIndex horizontal coordinate, start from 0
    */
   protected paintTextureTo(
     texture: PIXI.Texture,
-    rowIndex: number,
-    columnIndex: number
+    yIndex: number,
+    xIndex: number,
+    layerId: number
   ) {
     const x0 = this.mapMarginX;
     const y0 = this.mapMarginY;
     const tw = this.tileWidth * this.mapScale;
     const th = this.tileHeight * this.mapScale;
-    const x1 = x0 + columnIndex * tw;
-    const y1 = y0 + rowIndex * th;
+    const x1 = x0 + xIndex * tw;
+    const y1 = y0 + yIndex * th;
     const cell = new PIXI.Rectangle(x1, y1, tw, th);
-    this.paintOneTextureBy(1, rowIndex, columnIndex, cell, texture);
+    const column = xIndex + 1;
+    const row = yIndex + 1;
+    this.paintOneTextureBy(layerId, row, column, cell, texture);
   }
 
   /**
@@ -972,8 +1008,10 @@ export class TiledCore extends BaseEditor {
    */
   protected getTextureBy(textureId: number) {
     if (!textureId) return null; // possible 0
-    if (!this.tiles) return null;
-
+    if (!this.tiles) {
+      console.warn(`### no tiles grid initialized!!`);
+      return null;
+    }
     const columns = this.tiles[0].length;
     const rowIndex = Math.floor((textureId - 1) / columns);
     const columnIndex = (textureId - 1) % columns;

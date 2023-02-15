@@ -21,8 +21,8 @@ const TiledEditorPage = () => {
   const { onModuleChanged } = useLeftSideBar();
   const { spacePath } = useLocalStorage();
   // define tilemap parameters
-  const { mapHeight, mapWidth, tileHeight, tileWidth, ...mapSizeHandlers } =
-    useMapDimension();
+  const mapDimensions = useMapDimension();
+  const { mapHeight, mapWidth, tileHeight, tileWidth } = mapDimensions;
   const {
     dots,
     selectedImage,
@@ -35,6 +35,7 @@ const TiledEditorPage = () => {
 
   const {
     layers,
+    setLayers,
     selectLayerHandler,
     layerNameChangeHandler,
     toggleAvailabilityHandler,
@@ -42,15 +43,11 @@ const TiledEditorPage = () => {
     ...layerCRUDProps
   } = useMapLayers();
 
-  const mapSizeProps = {
-    mapHeight,
-    mapWidth,
-    tileHeight,
-    tileWidth,
-  };
+  // console.log({ layers });
+
   // compose game parameters ....
   const mapParams: GameMapXportParams = {
-    ...mapSizeProps,
+    ...mapDimensions,
     sourceImage: selectedImage,
   };
 
@@ -69,9 +66,10 @@ const TiledEditorPage = () => {
     mapExportHandler,
     tileMapEditorSetter,
     toasterCallback,
-  } = useMapFile(spacePath, mapParams, loadPngFile);
+  } = useMapFile(spacePath, mapParams, loadPngFile, setLayers);
 
   const mapWidgetProps = {
+    ...mapDimensions,
     spacePath,
     newMapSaved,
     mapName,
@@ -79,8 +77,6 @@ const TiledEditorPage = () => {
     createNewMapHandler,
     mapSaveHandler,
     mapExportHandler,
-    ...mapSizeProps,
-    ...mapSizeHandlers,
   };
 
   return (

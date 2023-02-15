@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { useState, useRef, KeyboardEvent } from 'react';
 import { ToggleIconButton } from './Buttons';
-import { MapLayer } from '../hooks/useMapLayers';
+import { MapLayer } from '../tiled';
 
 type LayerProps = {
   layer: MapLayer;

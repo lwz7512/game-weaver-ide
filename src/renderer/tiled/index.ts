@@ -2,6 +2,7 @@
  * Game weaver map structure
  */
 export type GWMap = {
+  /** Game Full Name */
   name: string;
   /** hori-tile-size */
   mapWidth: number;
@@ -35,6 +36,15 @@ export type GameWeaverLayer = {
   zIndex: number;
   x?: number;
   y?: number;
+};
+
+export type MapLayer = {
+  id: number;
+  name: string;
+  selected: boolean;
+  editMode: boolean;
+  unlocked: boolean;
+  visible: boolean;
 };
 
 export type TileSet = {
