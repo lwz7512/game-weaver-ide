@@ -31,19 +31,9 @@ const TiledEditorPage = () => {
     navigateToNext,
     navigateToPrev,
   } = useSpriteSheetImage(+tileWidth || 0, +tileHeight || 0);
+
+  // draw bird view of tilesheet
   useSpritesPreview(selectedImage, dots);
-
-  const {
-    layers,
-    setLayers,
-    selectLayerHandler,
-    layerNameChangeHandler,
-    toggleAvailabilityHandler,
-    toggleVisibilityHandler,
-    ...layerCRUDProps
-  } = useMapLayers();
-
-  // console.log({ layers });
 
   // compose game parameters ....
   const mapParams: GameMapXportParams = {
@@ -59,6 +49,7 @@ const TiledEditorPage = () => {
     toastState,
     tabType,
     selectedMap,
+    savedGWMap,
     loadMapBy,
     setTabType,
     createNewMapHandler,
@@ -66,7 +57,17 @@ const TiledEditorPage = () => {
     mapExportHandler,
     tileMapEditorSetter,
     toasterCallback,
-  } = useMapFile(spacePath, mapParams, loadPngFile, setLayers);
+  } = useMapFile(spacePath, mapParams, loadPngFile);
+
+  const {
+    layers,
+    setLayers,
+    selectLayerHandler,
+    layerNameChangeHandler,
+    toggleAvailabilityHandler,
+    toggleVisibilityHandler,
+    ...layerCRUDProps
+  } = useMapLayers(savedGWMap, selectedImage);
 
   const mapWidgetProps = {
     ...mapDimensions,

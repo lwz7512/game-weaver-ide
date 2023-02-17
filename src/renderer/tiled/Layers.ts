@@ -320,6 +320,15 @@ export class LayerManager {
   }
 
   /**
+   * delete all the layers and sprites cache
+   */
+  cleanup() {
+    this.gameMapLayersInfo.length = 0;
+    this.paintedTilesCache.clear();
+    this.addNewLayer(1, 'Layer - 1');
+  }
+
+  /**
    * rest zIndex of each sprite rendering level
    * after adjustment of layer order
    */

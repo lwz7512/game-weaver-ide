@@ -1,18 +1,34 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { GWEvent } from '../tiled/Events';
-import { MapLayer } from '../tiled';
+import { GWMap, MapLayer, GameWeaverLayer } from '../tiled';
+import { getTilesheetFilePath, getTileSheetBy } from '../state/cache';
 
-export const useMapLayers = () => {
-  const initLayers: MapLayer[] = [
-    {
-      id: 1,
-      name: 'Layer - 1',
-      selected: true,
-      editMode: false,
-      visible: true,
-      unlocked: true,
-    },
-  ];
+export const initLayers: MapLayer[] = [
+  {
+    id: 1,
+    name: 'Layer - 1',
+    selected: true,
+    editMode: false,
+    visible: true,
+    unlocked: true,
+  },
+];
+
+const gwLayersToMapLayers = (gwLayers: GameWeaverLayer[]): MapLayer[] => {
+  return gwLayers.map(({ id, name, selected, visible, locked }) => ({
+    id,
+    name,
+    selected,
+    editMode: false,
+    visible,
+    unlocked: !locked,
+  }));
+};
+
+export const useMapLayers = (
+  savedGWMap: GWMap | null,
+  selectedImage: string
+) => {
   const [layers, setLayers] = useState<MapLayer[]>(initLayers);
 
   const selectLayerHandler = (id: number) => {
@@ -116,6 +132,23 @@ export const useMapLayers = () => {
     });
     targetLayer && document.dispatchEvent(evt);
   };
+
+  useEffect(() => {
+    if (!savedGWMap) return;
+
+    const tilesheetFilePath = getTilesheetFilePath(selectedImage);
+    const { tilesetImage } = savedGWMap;
+
+    // 1. check file path the same, if does not match, reset layers to initial
+    if (tilesetImage !== tilesheetFilePath) {
+      setLayers(initLayers);
+      return;
+    }
+
+    // 2. reset game layers
+    const simpleLayers = gwLayersToMapLayers(savedGWMap.layers);
+    setLayers(simpleLayers);
+  }, [savedGWMap, selectedImage]);
 
   return {
     layers,

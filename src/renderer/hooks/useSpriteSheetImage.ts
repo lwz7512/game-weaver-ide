@@ -25,6 +25,11 @@ export const useSpriteSheetImage = (tileWidth: number, tileHeight: number) => {
   const { selectedImage, setSelectedImage } = useSelectedTileSheet();
   const dots: number[] = getTileImageDots(selectedImage);
 
+  /**
+   * After tilesheet file loaded, the `selectedImage` will be initialized!
+   * @param pngFilePath
+   * @returns
+   */
   const loadPngFile = async (pngFilePath: string): Promise<boolean> => {
     // check if already loaded
     const imageBlobExist = checkImageLoaded(pngFilePath);
@@ -83,7 +88,9 @@ export const useSpriteSheetImage = (tileWidth: number, tileHeight: number) => {
 
   return {
     dots,
+    /** tilesheet image url */
     selectedImage,
+    /** load png, init `selectedImage` */
     loadPngFile,
     openFileDialog,
     navigateToNext,

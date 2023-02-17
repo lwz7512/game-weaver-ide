@@ -36,7 +36,7 @@ export type GeneralObject = {
  * @2023/01/14
  */
 export type GameMapXportParams = {
-  /** tilesheet image URL, single source only */
+  /** tilesheet image URL, the same as `selectedImage` */
   sourceImage: string;
   mapHeight: string;
   mapWidth: string;

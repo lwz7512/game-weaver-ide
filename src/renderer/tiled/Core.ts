@@ -732,10 +732,9 @@ export class TiledCore extends BaseEditor {
   }
 
   /**
-   * @deprecated
+   * remove all tiles from displaying
    */
-  protected eraseAllTileFromGameMap() {
-    // this.paintedTilesCache.clear();
+  protected cleanupTiles() {
     this.paintedTileMap?.removeChildren();
   }
 

@@ -121,6 +121,11 @@ export class TiledPainter extends TiledCore {
     this.layerManager?.resetLayers(width, height, layers);
   }
 
+  cleanupAll() {
+    this.layerManager?.cleanup();
+    this.cleanupTiles();
+  }
+
   /**
    * rebuilt sprites in map for layers
    * @param layers
