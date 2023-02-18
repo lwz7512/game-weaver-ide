@@ -62,8 +62,8 @@ export class TiledPainter extends TiledCore {
     tileWidth: number,
     tileHeight: number
   ) {
-    console.log(`>>> layout width new size: `);
-    console.log(`${mapWidth}/${mapHeight}/${tileWidth}/${tileHeight}`);
+    // console.log(`>>> layout width new size: `);
+    // console.log(`${mapWidth}/${mapHeight}/${tileWidth}/${tileHeight}`);
     super.layout(mapWidth, mapHeight, tileWidth, tileHeight);
     this.layerManager = new LayerManager(mapWidth, mapHeight);
     this.layerManager.addNewLayer(1, 'Layer - 1');
@@ -127,15 +127,20 @@ export class TiledPainter extends TiledCore {
   }
 
   /**
-   * rebuilt sprites in map for layers
+   * Rebuilt sprites in map for layers of loaded map source
    * @param layers
    */
   paintSpritesFrom(layers: GameWeaverLayer[]) {
-    // console.log({ layers });
-    layers.forEach((l) => {
-      // console.log(`====== build points for layer: ${l.id}`);
-      const points = this.tileLayerGridToPointXs(l.grid);
-      points.forEach((p) => this.putTileOnGameMap(l.id, p.x, p.y, p.tile));
+    layers.forEach(({ id, grid }) => {
+      const points = this.tileLayerGridToPointXs(grid);
+      points.forEach(({ x, y, tile }) => {
+        if (!tile) return;
+        const sprite = this.putTileOnGameMap(id, x, y, tile);
+        const col = x + 1;
+        const row = y + 1;
+        if (!sprite) return console.warn('no sprite created!');
+        this.layerManager?.addOneTile(id, col, row, tile, sprite);
+      });
     });
   }
 
@@ -205,7 +210,7 @@ export class TiledPainter extends TiledCore {
   }
 
   /**
-   * update layer info
+   * Update layer info with newly added spritex
    * @param layerId
    * @param columnIndex start with 1
    * @param rowIndex start width 1

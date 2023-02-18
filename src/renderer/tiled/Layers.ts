@@ -52,7 +52,8 @@ export class LayerManager {
   }
 
   /**
-   * Save one tile id to grid, be careful to the relation between colum/row params and `layer.grid`,
+   * Cache spritex, and save one tile id to grid:
+   * be careful to the relation between colum/row params and `layer.grid`,
    * layer.grid is 2D array, so grid array index should be less 1 than col/row value.
    * @param layerId
    * @param col column index, start from 1
@@ -79,7 +80,10 @@ export class LayerManager {
     // @2023/02/12
     layer.grid[row - 1][col - 1] = tileId;
     const key = `${layerId}_${col}_${row}`;
-    tile && this.paintedTilesCache.set(key, tile);
+    if (tile) {
+      // console.log(`>>> to cache spritex!`);
+      this.paintedTilesCache.set(key, tile);
+    }
     return layer;
   }
 
@@ -231,8 +235,11 @@ export class LayerManager {
     if (targetLayer) {
       targetLayer.visible = visible;
     }
+    console.log(`hiding layer: ${layerId}`);
+
     this.paintedTilesCache.forEach((s) => {
-      if (s.getLayerId() === layerId) {
+      console.log(`> sprite in layer: ${s.layer}`);
+      if (s.layer === layerId) {
         s.visible = visible;
       }
     });

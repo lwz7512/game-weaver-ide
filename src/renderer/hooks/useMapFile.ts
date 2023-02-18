@@ -127,12 +127,14 @@ export const useMapFile = (
 
   const loadMapBy = async (fileName: string, fullPath: string) => {
     setSelectedMap(fileName);
+    setMapFilePath(fullPath);
     // console.log(`>> load map file: ${path}`);
     const fileContent = await ipcRenderer.invoke(
       IpcEvents.READ_MAP_FILE,
       fullPath
     );
     if (!fileContent) return;
+
     const gwMap = JSON.parse(fileContent as string) as GWMap;
     // save it for later render
     savedMapRef.current = gwMap;
@@ -148,7 +150,7 @@ export const useMapFile = (
     }
 
     // go on to paint map layers and build layer ...
-    const { mapHeight, mapWidth, tileHeight, tileWidth, layers } = gwMap;
+    const { mapHeight, mapWidth, tileHeight, tileWidth } = gwMap;
     // 1. reset game name & dimensions
     setNewMapSaved(true);
     setMapName(gwMap.name);

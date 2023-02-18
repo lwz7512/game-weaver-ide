@@ -538,7 +538,7 @@ export class TiledCore extends BaseEditor {
       );
     } else {
       this.tiles = cache.textures;
-      console.log(`got tiles from cache!`);
+      // console.log(`got tiles from cache!`);
     }
     // redrawing...
     const stw = this.tileWidth * this.tileScale;
@@ -625,9 +625,12 @@ export class TiledCore extends BaseEditor {
   ) {
     if (!tileId) return; // 0 is invalid tile id!
     const texture = this.getTextureBy(tileId);
-    if (!texture) return console.warn(`!!! no texture found!`);
+    if (!texture) {
+      console.warn(`!!! no texture found!`);
+      return;
+    }
     // console.log(`put tile ${tileId} on ${xIndex}/${yIndex}`);
-    this.paintTextureTo(texture, xIndex, yIndex, layerId);
+    return this.paintTextureTo(texture, xIndex, yIndex, layerId);
   }
 
   /**
@@ -686,8 +689,10 @@ export class TiledCore extends BaseEditor {
     cell: PIXI.Rectangle,
     texture: PIXI.Texture
   ) {
-    if (!this.paintedTileMap) return;
-
+    if (!this.paintedTileMap) {
+      console.warn(`>> painting container does not exist!`);
+      return;
+    }
     const key = `${column}_${row}`;
     const tile = new SpriteX(texture, layerId);
     tile.setUniqueKey(key);
@@ -721,7 +726,7 @@ export class TiledCore extends BaseEditor {
     const cell = new PIXI.Rectangle(x1, y1, tw, th);
     const column = xIndex + 1;
     const row = yIndex + 1;
-    this.paintOneTextureBy(layerId, row, column, cell, texture);
+    return this.paintOneTextureBy(layerId, row, column, cell, texture);
   }
 
   /**
