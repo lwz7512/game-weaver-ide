@@ -134,7 +134,14 @@ export const useMapLayers = (
   };
 
   useEffect(() => {
-    if (!savedGWMap) return;
+    // no tilesheet loaded, no layers resettinig!
+    if (!selectedImage) return;
+
+    // 0. clicked the `New Map` tool in a loaded map to restart!
+    if (!savedGWMap) {
+      setLayers(initLayers);
+      return;
+    }
 
     const tilesheetFilePath = getTilesheetFilePath(selectedImage);
     const { tilesetImage } = savedGWMap;

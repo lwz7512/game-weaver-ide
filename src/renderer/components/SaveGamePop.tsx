@@ -53,7 +53,11 @@ export const SaveGamePop = ({
   }, [gameFileDirectory]);
 
   useEffect(() => {
-    if (!savedMapName || !gameFileDirectory) return;
+    if (!savedMapName || !gameFileDirectory) {
+      setMapName('');
+      setCompleteMapPath('');
+      return;
+    }
     // reset map name and full path
     setMapName(savedMapName);
     const fullPath = genGameMapFullpath(gameFileDirectory, savedMapName);

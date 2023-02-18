@@ -45,7 +45,15 @@ export const useMapFile = (
   } = mapParams;
 
   const createNewMapHandler = () => {
+    // reset side bar
     setNewMapSaved(false);
+    setTabType('layers');
+    setMapName('');
+    // reset editor
+    const editor = editorRef.current as TiledPainter;
+    editor.cleanupAll();
+    // cleanup loaded map
+    savedMapRef.current = null;
   };
 
   // toast properties
@@ -164,25 +172,28 @@ export const useMapFile = (
    * check `selectedImage` to build map layers
    */
   useEffect(() => {
+    // 0. tilesheet image not loaded, do nothing!
     if (!sourceImage) return; // initially empty
+    // 1. map source not initialized, do nothing!
     const savedMap = savedMapRef.current; // only available after click history item
     if (!savedMap) return;
-    // sure thing
+
+    // 2. sure thing to do some checking work:
     const editor = editorRef.current as TiledPainter;
     const tilesheetFilePath = getTilesheetFilePath(sourceImage);
     const { mapHeight, mapWidth, layers, tilesetImage } = savedMap;
     // check file path the same
     if (tilesetImage !== tilesheetFilePath) {
-      console.warn(`### sourceImage does not match loaded map!`);
+      // console.warn(`### sourceImage does not match loaded map!`);
       // restore to new game map state ...
       editor.cleanupAll();
-      console.log(`### editor restored to initial!`);
+      // console.log(`### editor restored to initial!`);
       // reset history deselect!
       setSelectedMap(null);
       createNewMapHandler();
       return;
     }
-
+    // rebuild map
     const { textures } = getTileSheetBy(sourceImage);
     // 3. reset layers manager:
     editor.buildLayersBy(mapWidth, mapHeight, layers);
