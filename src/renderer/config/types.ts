@@ -1,4 +1,9 @@
-export type SaveHistory = { name: string; path: string };
+export type SaveHistory = {
+  /** map name */
+  name: string;
+  /** map file path */
+  path: string;
+};
 
 export type ConfigType = {
   [key: string]: string | unknown[];
@@ -46,4 +51,5 @@ export type GameMapXportParams = {
   mapWidthChangeHandler: (field: string) => void;
   tileHeightChangeHandler: (field: string) => void;
   tileWidthChangeHandler: (field: string) => void;
+  setAllDimension: (mh: number, mw: number, th: number, tw: number) => void;
 };

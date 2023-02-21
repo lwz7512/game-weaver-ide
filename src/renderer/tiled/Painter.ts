@@ -44,6 +44,9 @@ export class TiledPainter extends TiledCore {
   protected lastPickerColumnIndex = 0;
   protected lastPickerRowIndex = 0;
 
+  protected mapName: string | null = null;
+  protected tilesetImage: string | null = null;
+
   /**
    * Add interaction of drawing events
    *
@@ -178,22 +181,26 @@ export class TiledPainter extends TiledCore {
   }
 
   /**
-   * Get Game Weaver Map object to serialize as json file,
-   * the json file also could be used to build editable game map.
+   * Save Game Weaver Map object requrired fields.
    *
    * @param name game name
    * @param tilesheetFilePath currently used tilesheet file path
    * @returns
    */
-  getGWMapInfo(name: string, tilesheetFilePath: string): GWMap {
+  setGWMapInfo(name: string, tilesheetFilePath: string) {
+    this.mapName = name;
+    this.tilesetImage = tilesheetFilePath;
+  }
+
+  getGWMapInfo(): GWMap {
     const layers = this.layerManager ? this.layerManager.getRawLayers() : [];
     return {
-      name,
+      name: this.mapName || '',
       mapWidth: this.gameHoriTiles,
       mapHeight: this.gameVertTiles,
       tileWidth: this.tileWidth,
       tileHeight: this.tileHeight,
-      tilesetImage: tilesheetFilePath,
+      tilesetImage: this.tilesetImage || '',
       layers,
     };
   }
@@ -230,14 +237,8 @@ export class TiledPainter extends TiledCore {
       tileId,
       tile
     );
-    if (!layer) return;
+    // if (!layer) return;
     // FIXME: refactor to cache game structure ...
-    setDrawingSession({
-      layerPainted: true,
-      rowSize: layer.grid.length,
-      columnSize: layer.grid[0].length,
-      [`layer_${layerId}`]: flattenGrid(layer.grid),
-    });
   }
 
   /* ***********************************************************
@@ -317,7 +318,7 @@ export class TiledPainter extends TiledCore {
             this.paintEraserOnGameMap(hitRect);
             return this.safelyEraseTile(currentLayerId, hitRect, grid);
           }
-          // *** NOTE: DOING TEXTURE PAINTING HERE ***
+          // *** DOING TEXTURE PAINTING HERE ***
           this.paintHiligherOnGameMap(hitRect);
           this.safelyPaintTile(currentLayerId, hitRect, grid);
         });
@@ -381,7 +382,7 @@ export class TiledPainter extends TiledCore {
         if (this.eraseTileMode) {
           return this.safelyEraseTile(currentLayerId, hitRect, grid);
         }
-        // *** NOTE: DOING TEXTURE PAINTING HERE ***
+        // *** DOING TEXTURE PAINTING HERE ***
         this.safelyPaintTile(currentLayerId, hitRect, grid);
       }
     };
@@ -445,6 +446,7 @@ export class TiledPainter extends TiledCore {
 
     const { layerId, columnIndex, rowIndex, textureId, tile } =
       this.paintTileOnGameMap(hitRect, grid, currentLayerId);
+    // add new tile to layer manager
     this.savePaintedTileFor(layerId, columnIndex, rowIndex, textureId, tile);
   }
 
@@ -601,6 +603,9 @@ export class TiledPainter extends TiledCore {
     }
   }
 
+  /**
+   * remove all the events listening
+   */
   destroy() {
     if (this.app) {
       this.app.stage.removeEventListener(

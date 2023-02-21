@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { TiledPainter } from '../tiled/Painter';
-import { getDrawingSession } from '../state/session';
+import { getDrawingSession, addGWMapRecord } from '../state/session';
 
 /**
  * Core tiled editor interaction with page UI
@@ -38,7 +38,7 @@ export const useTiledEditor = (
         editor.resetApp(bw - 298, bh);
         return;
       }
-      console.log(`>>> create new editor...`);
+      // console.log(`>>> create new editor...`);
       // create new editor
       const selector = '.tiled-editor-root';
       const root = document.querySelector(selector) as HTMLElement;
@@ -64,9 +64,15 @@ export const useTiledEditor = (
     setTranslateSelected(false);
 
     return () => {
-      console.log(`#### destroy editor while main params chagned ###`);
+      // console.log(`#### destroy editor while main params chagned ###`);
       observer.unobserve(body);
-      editorRef.current && editorRef.current.destroy();
+      // destroy editor, and cache map info object
+      if (editorRef.current) {
+        editorRef.current.destroy();
+        const mapInstance = editorRef.current.getGWMapInfo();
+        // console.log(`### cache gwmap instance!`);
+        addGWMapRecord(mapInstance);
+      }
       editorRef.current = null; // clear the instance
     };
   }, [mapWidth, mapHeight, tileWidth, tileHeight]);

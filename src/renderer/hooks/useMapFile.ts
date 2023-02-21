@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef } from 'react';
-
 import {
   Intent,
   IToasterProps,
@@ -8,13 +7,22 @@ import {
   ToastProps,
 } from '@blueprintjs/core';
 
+import { kebabCase } from '../utils';
 import { IpcEvents } from '../../ipc-events';
 import { GameMapXportParams, SaveHistory, GWMAPFILE } from '../config';
-import { GWMap, MapLayer } from '../tiled';
+import { GWMap } from '../tiled';
 import { TiledPainter } from '../tiled/Painter';
-import { getTilesheetFilePath, getTileSheetBy } from '../state/cache';
+import {
+  getTilesheetFilePath,
+  getTileSheetBy,
+  getTilesheetURLBy,
+} from '../state/cache';
 import { saveMapHistory, getMapHistory } from '../state/storage';
-import { kebabCase } from '../utils';
+import {
+  getLastGWMap,
+  setDrawingSession,
+  getSessionBy,
+} from '../state/session';
 
 export const useMapFile = (
   wokspacePath: string,
@@ -36,13 +44,7 @@ export const useMapFile = (
   const [mapSaveHistory, setMapSaveHistory] = useState<SaveHistory[]>([]);
   const [selectedMap, setSelectedMap] = useState<string | null>(null);
 
-  const {
-    sourceImage,
-    mapHeightChangeHandler,
-    mapWidthChangeHandler,
-    tileHeightChangeHandler,
-    tileWidthChangeHandler,
-  } = mapParams;
+  const { sourceImage, setAllDimension } = mapParams;
 
   const createNewMapHandler = () => {
     // reset side bar
@@ -96,13 +98,14 @@ export const useMapFile = (
     setNewMapSaved(true);
     setMapName(name);
     setMapFilePath(path);
-
+    // save map source path to outside of editor!
+    setDrawingSession({ mapFilePath: path });
+    // keep map info
     const editor = editorRef.current as TiledPainter;
     const tilesheetFilePath = getTilesheetFilePath(sourceImage);
-    const gwMap = editor.getGWMapInfo(name, tilesheetFilePath);
-    // save it for later render
-    // savedMapRef.current = gwMap;
-
+    editor.setGWMapInfo(name, tilesheetFilePath);
+    // serialize map info
+    const gwMap = editor.getGWMapInfo();
     // console.log(gwMap);
     const mapSource = JSON.stringify(gwMap);
     const fileName = kebabCase(name);
@@ -127,15 +130,47 @@ export const useMapFile = (
    * @param editor
    */
   const tileMapEditorSetter = (editor: TiledPainter | null) => {
-    // if (editor) {
-    //   console.log(`tilemap editor instance received!`);
-    // }
+    if (!editor) return;
+    console.log(`tilemap editor instance received!`);
     editorRef.current = editor;
+
+    const savedMap = savedMapRef.current; // only available after click history item
+    if (!savedMap) return console.warn('saved map null!');
+    // get saved or loaded map file source
+    const fullPath = getSessionBy('mapFilePath') as string;
+    if (!fullPath) return; // if no loaded or saved map do not restore it!
+
+    // rebuild map
+    const {
+      mapHeight,
+      mapWidth,
+      layers,
+      name,
+      tileHeight,
+      tileWidth,
+      tilesetImage,
+    } = savedMap;
+    const tilesheetURL = getTilesheetURLBy(tilesetImage);
+    const { textures } = getTileSheetBy(tilesheetURL);
+
+    // 3. reset layers manager:
+    editor.buildLayersBy(mapWidth, mapHeight, layers);
+    // 4. build tiles grid
+    editor.setMapTiles(textures);
+    // 5. redraw layers tiles inside of editor
+    editor.paintSpritesFrom(layers);
+
+    setNewMapSaved(true);
+    setMapName(name);
+    setSelectedMap(name);
+    setMapFilePath(fullPath);
+    setAllDimension(mapHeight, mapWidth, tileHeight, tileWidth);
   };
 
   const loadMapBy = async (fileName: string, fullPath: string) => {
     setSelectedMap(fileName);
     setMapFilePath(fullPath);
+    setDrawingSession({ mapFilePath: fullPath });
     // console.log(`>> load map file: ${path}`);
     const fileContent = await ipcRenderer.invoke(
       IpcEvents.READ_MAP_FILE,
@@ -162,10 +197,7 @@ export const useMapFile = (
     // 1. reset game name & dimensions
     setNewMapSaved(true);
     setMapName(gwMap.name);
-    mapHeightChangeHandler(`${mapHeight}`);
-    mapWidthChangeHandler(`${mapWidth}`);
-    tileHeightChangeHandler(`${tileHeight}`);
-    tileWidthChangeHandler(`${tileWidth}`);
+    setAllDimension(mapHeight, mapWidth, tileHeight, tileWidth);
   };
 
   /**
@@ -173,15 +205,27 @@ export const useMapFile = (
    */
   useEffect(() => {
     // 0. tilesheet image not loaded, do nothing!
-    if (!sourceImage) return; // initially empty
-    // 1. map source not initialized, do nothing!
-    const savedMap = savedMapRef.current; // only available after click history item
-    if (!savedMap) return;
+    if (!sourceImage) return console.warn('source image empty!'); // initially empty
 
-    // 2. sure thing to do some checking work:
+    // 1. check cached map
+    const lastMap = getLastGWMap();
+    if (lastMap) {
+      savedMapRef.current = lastMap;
+    }
+    console.log(lastMap);
+    // 2. map source not initialized, do nothing!
+    const savedMap = savedMapRef.current; // only available after click history item
+    if (!savedMap) return console.warn('saved map null!');
+
+    // 3. sure thing to do some checking work:
     const editor = editorRef.current as TiledPainter;
+    if (!editor) {
+      console.warn('>> editor not inited!');
+      return;
+    }
+
     const tilesheetFilePath = getTilesheetFilePath(sourceImage);
-    const { mapHeight, mapWidth, layers, tilesetImage } = savedMap;
+    const { mapHeight, mapWidth, layers, tilesetImage, name } = savedMap;
     // check file path the same
     if (tilesetImage !== tilesheetFilePath) {
       // console.warn(`### sourceImage does not match loaded map!`);
@@ -193,15 +237,17 @@ export const useMapFile = (
       createNewMapHandler();
       return;
     }
+    console.log(`>>> rebuild editor from saved map!`);
     // rebuild map
     const { textures } = getTileSheetBy(sourceImage);
-    // 3. reset layers manager:
+    // 4. reset layers manager:
     editor.buildLayersBy(mapWidth, mapHeight, layers);
-    // 4. build tiles grid
+    // 5. build tiles grid
     editor.setMapTiles(textures);
-    // 5. redraw layers tiles inside of editor
+    // 6. redraw layers tiles inside of editor
     editor.paintSpritesFrom(layers);
-    // console.log(`to build tiles from tilesheet file: ${sourceImage}`);
+    // 7. save loaded map info
+    editor.setGWMapInfo(name, tilesetImage);
   }, [sourceImage]);
 
   useEffect(() => {

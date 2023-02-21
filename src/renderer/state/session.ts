@@ -4,7 +4,25 @@
  * Created @2022/10/18
  */
 
+import { GWMap } from 'renderer/tiled';
 import { GeneralObject } from '../config';
+
+const drawingHistory: GWMap[] = [];
+
+/**
+ * Cache one map object for page switching restore
+ * @param gm GWMap instance
+ */
+export const addGWMapRecord = (gm: GWMap) => {
+  drawingHistory.push(gm);
+};
+
+export const getLastGWMap = (): GWMap | null => {
+  if (drawingHistory.length) {
+    return drawingHistory.slice(-1)[0];
+  }
+  return null;
+};
 
 const drawingTileSession: GeneralObject = {};
 

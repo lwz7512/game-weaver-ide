@@ -33,16 +33,6 @@ type ImageCache = { [imgURL: string]: ImageDataTiles };
 const imageBlobs: FileBlob[] = [];
 const imageDataCache: ImageCache = {};
 
-/** *******************************************
- * most useful api for this cache
- * @param imgURL local image url
- * @returns cached textures
- * *********************************************
- */
-export const getTileSheetBy = (imgURL: string): ImageDataTiles => {
-  return imageDataCache[imgURL] || {};
-};
-
 export const getNextImageURL = (imgURL: string): string | null => {
   if (!imgURL) return null;
 
@@ -148,6 +138,16 @@ export const getTilesheetFilePath = (imgURL: string) => {
   return result ? result.path : '';
 };
 
+/**
+ * Get tilesheet image URL by its full path
+ * @param filePath png tilesheet location saved in `GWMap` file
+ * @returns
+ */
+export const getTilesheetURLBy = (filePath: string) => {
+  const result = imageBlobs.find((meta) => meta.path === filePath);
+  return result ? result.imgURL : '';
+};
+
 export const cacheImageTextures = (
   context: CanvasRenderingContext2D,
   imgURL: string,
@@ -197,4 +197,14 @@ export const resetCachedTextures = (
     tileHeight
   );
   return tiles;
+};
+
+/** *******************************************
+ * most useful api for this cache
+ * @param imgURL local image url
+ * @returns cached textures
+ * *********************************************
+ */
+export const getTileSheetBy = (imgURL: string): ImageDataTiles => {
+  return imageDataCache[imgURL] || {};
 };

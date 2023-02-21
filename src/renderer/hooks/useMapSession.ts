@@ -36,11 +36,19 @@ export const useMapDimension = () => {
     setTileWidth(width);
   };
 
+  const setAllDimension = (mh: number, mw: number, th: number, tw: number) => {
+    mapHeightChangeHandler(`${mh}`);
+    mapWidthChangeHandler(`${mw}`);
+    tileHeightChangeHandler(`${th}`);
+    tileWidthChangeHandler(`${tw}`);
+  };
+
   return {
     mapHeight,
     mapWidth,
     tileHeight,
     tileWidth,
+    setAllDimension,
     mapHeightChangeHandler,
     mapWidthChangeHandler,
     tileHeightChangeHandler,

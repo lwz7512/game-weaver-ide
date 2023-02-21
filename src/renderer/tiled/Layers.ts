@@ -366,8 +366,6 @@ export class LayerManager {
     // empty grid to hold texture ids
     const grid = this.makeEmptyMapLayerGrid(this.mapWidth, this.mapHeight);
     // console.log(grid);
-    // trying to merge old layer
-    // this.mergeLayerTexturesFromSession(grid);
     // build one layer data as default one
     const layer: GameWeaverLayer = {
       id,
@@ -405,6 +403,7 @@ export class LayerManager {
   }
 
   /**
+   * @deprecated
    * FIXME: rebuild game data structure ...
    * @param grid
    * @returns
