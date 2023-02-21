@@ -626,7 +626,7 @@ export class TiledCore extends BaseEditor {
     if (!tileId) return; // 0 is invalid tile id!
     const texture = this.getTextureBy(tileId);
     if (!texture) {
-      console.warn(`!!! no texture found!`);
+      // console.warn(`!!! no texture found!`);
       return;
     }
     // console.log(`put tile ${tileId} on ${xIndex}/${yIndex}`);

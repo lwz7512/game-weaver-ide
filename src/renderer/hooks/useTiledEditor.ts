@@ -64,7 +64,6 @@ export const useTiledEditor = (
     setTranslateSelected(false);
 
     return () => {
-      // console.log(`#### destroy editor while main params chagned ###`);
       observer.unobserve(body);
       // destroy editor, and cache map info object
       if (editorRef.current) {
@@ -73,6 +72,7 @@ export const useTiledEditor = (
         // console.log(`### cache gwmap instance!`);
         addGWMapRecord(mapInstance);
       }
+      // console.log(`#### destroy editor while main params chagned ###`);
       editorRef.current = null; // clear the instance
     };
   }, [mapWidth, mapHeight, tileWidth, tileHeight]);
