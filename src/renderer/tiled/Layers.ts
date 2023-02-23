@@ -74,6 +74,9 @@ export class LayerManager {
       console.warn('No layer found!');
       return null;
     }
+
+    if (row === 0 || col === 0) return;
+
     // console.log(`>>> add tile to: ${row}|${col}`);
     // save texuture id to grid
     // FIXME: Beware that grid index should less 1!
@@ -109,15 +112,24 @@ export class LayerManager {
     return !this.checkLayerLocked(layerId) && this.checkLayerVisible(layerId);
   }
 
+  /**
+   * clear tile with col & row number
+   * @param layerId
+   * @param col horizontal position, start from 1
+   * @param row vertical postion, start from 1
+   * @returns
+   */
   clearOneTile(layerId: number, col: number, row: number) {
     const layer = this.gameMapLayersInfo.find((l) => l.id === layerId);
     if (!layer) {
       console.warn('No layer found!');
       return;
     }
-    layer.grid[row][col] = 0;
+    // FIXME: beware these are index in grid
+    layer.grid[row - 1][col - 1] = 0;
     // clear from cache
     this.paintedTilesCache.delete(`${layerId}_${col}_${row}`);
+    this.paintedTilesCache.forEach((s, key) => console.log(key));
   }
 
   lockLayer(layerId: number, lockOrNot: boolean) {
@@ -333,6 +345,10 @@ export class LayerManager {
     this.gameMapLayersInfo.length = 0;
     this.paintedTilesCache.clear();
     this.addNewLayer(1, 'Layer - 1');
+  }
+
+  clear() {
+    this.paintedTilesCache.clear();
   }
 
   /**

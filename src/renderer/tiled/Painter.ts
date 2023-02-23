@@ -121,10 +121,12 @@ export class TiledPainter extends TiledCore {
   }
 
   buildLayersBy(width: number, height: number, layers: GameWeaverLayer[]) {
+    // console.log(`>> build layers...`);
     this.layerManager?.resetLayers(width, height, layers);
   }
 
   cleanupAll() {
+    // console.log(`>>> clean up all!`);
     this.layerManager?.cleanup();
     this.cleanupTiles();
   }
@@ -134,6 +136,9 @@ export class TiledPainter extends TiledCore {
    * @param layers
    */
   paintSpritesFrom(layers: GameWeaverLayer[]) {
+    this.cleanupTiles();
+    this.layerManager?.clear();
+
     layers.forEach(({ id, grid }) => {
       const points = this.tileLayerGridToPointXs(grid);
       points.forEach(({ x, y, tile }) => {
@@ -464,7 +469,10 @@ export class TiledPainter extends TiledCore {
       x,
       y
     );
-    if (!isExisting) return; // no tile painted
+    if (!isExisting) {
+      console.warn(`tile not exsiting!`);
+      return; // no tile painted
+    }
     const tile = this.layerManager?.getTileBy(currentLayerId, x, y);
     tile && this.eraseTileFromGameMap(tile);
     this.layerManager?.clearOneTile(currentLayerId, x, y);

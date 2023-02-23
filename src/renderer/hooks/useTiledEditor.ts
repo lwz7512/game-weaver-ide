@@ -70,9 +70,10 @@ export const useTiledEditor = (
         editorRef.current.destroy();
         const mapInstance = editorRef.current.getGWMapInfo();
         // console.log(`### cache gwmap instance!`);
+        // console.log(mapInstance);
         addGWMapRecord(mapInstance);
       }
-      // console.log(`#### destroy editor while main params chagned ###`);
+      console.log(`#### destroy editor while main params chagned ###`);
       editorRef.current = null; // clear the instance
     };
   }, [mapWidth, mapHeight, tileWidth, tileHeight]);

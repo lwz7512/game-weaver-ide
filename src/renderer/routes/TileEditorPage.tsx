@@ -22,7 +22,8 @@ const TiledEditorPage = () => {
   const { spacePath } = useLocalStorage();
   // define tilemap parameters
   const mapDimensions = useMapDimension();
-  const { mapHeight, mapWidth, tileHeight, tileWidth } = mapDimensions;
+  const { mapHeight, mapWidth, tileHeight, tileWidth, setAllDimension } =
+    mapDimensions;
   const {
     dots,
     selectedImage,
@@ -34,12 +35,6 @@ const TiledEditorPage = () => {
 
   // draw bird view of tilesheet
   useSpritesPreview(selectedImage, dots);
-
-  // compose game parameters ....
-  const mapParams: GameMapXportParams = {
-    ...mapDimensions,
-    sourceImage: selectedImage,
-  };
 
   const {
     mapName,
@@ -57,7 +52,7 @@ const TiledEditorPage = () => {
     mapExportHandler,
     tileMapEditorSetter,
     toasterCallback,
-  } = useMapFile(spacePath, mapParams, loadPngFile);
+  } = useMapFile(spacePath, selectedImage, setAllDimension, loadPngFile);
 
   const {
     layers,

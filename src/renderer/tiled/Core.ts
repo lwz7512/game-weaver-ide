@@ -629,8 +629,9 @@ export class TiledCore extends BaseEditor {
       // console.warn(`!!! no texture found!`);
       return;
     }
-    // console.log(`put tile ${tileId} on ${xIndex}/${yIndex}`);
-    return this.paintTextureTo(texture, xIndex, yIndex, layerId);
+    // FIXME: wrongly put yIndex to the xIndex position!
+    // @2023/02/22
+    return this.paintTextureTo(texture, yIndex, xIndex, layerId);
   }
 
   /**

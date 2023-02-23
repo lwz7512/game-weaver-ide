@@ -15,6 +15,11 @@ export class SpriteX extends Sprite {
 
   public setUniqueKey(colRow: string) {
     this.key = colRow;
+    this.name = colRow;
+  }
+
+  public getUniqueKey() {
+    return this.key;
   }
 
   public getLayerId() {
