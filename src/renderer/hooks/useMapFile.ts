@@ -46,6 +46,16 @@ export const useMapFile = (
   const [mapFilePath, setMapFilePath] = useState('');
   const [mapSaveHistory, setMapSaveHistory] = useState<SaveHistory[]>([]);
   const [selectedMap, setSelectedMap] = useState<string | null>(null);
+  const [editorInjected, setEditorInjected] = useState(false);
+
+  console.log(editorInjected);
+
+  const addToast = (toast: ToastProps) => {
+    if (!toasterRef.current) return;
+    // toast.className = '';
+    toast.timeout = 3000;
+    toasterRef.current.show(toast);
+  };
 
   const createNewMapHandler = () => {
     // reset side bar
@@ -54,9 +64,30 @@ export const useMapFile = (
     setMapName('');
     // reset editor
     const editor = editorRef.current as TiledPainter;
-    editor.cleanupAll();
-    // cleanup loaded map
-    // savedMapRef.current = null;
+    editor && editor.cleanupAll();
+  };
+
+  /**
+   * TODO: export map data to phaserjs format...
+   */
+  const mapExportHandler = () => {
+    const editor = editorRef.current as TiledPainter;
+    // console.log(`>>> save game map data:`);
+    const map = editor.getPhaserMapInfo();
+    // console.log(map);
+  };
+
+  /**
+   * editor instance injection function
+   * @param editor
+   */
+  const tileMapEditorSetter = (editor: TiledPainter | null) => {
+    if (!editor) return console.warn(`>> got editor null!`);
+    // console.log(`## tilemap editor instance received!`);
+    editorRef.current = editor;
+    setEditorInjected(true);
+    const savedMap = getLastGWMap();
+    savedMap && setTabType('history');
   };
 
   // toast properties
@@ -72,23 +103,6 @@ export const useMapFile = (
     toasterRef.current = ref;
   };
 
-  const addToast = (toast: ToastProps) => {
-    if (!toasterRef.current) return;
-    // toast.className = '';
-    toast.timeout = 3000;
-    toasterRef.current.show(toast);
-  };
-
-  /**
-   * TODO: export map data to phaserjs format...
-   */
-  const mapExportHandler = () => {
-    const editor = editorRef.current as TiledPainter;
-    // console.log(`>>> save game map data:`);
-    const map = editor.getPhaserMapInfo();
-    // console.log(map);
-  };
-
   /**
    * save map to file system...
    *
@@ -102,7 +116,7 @@ export const useMapFile = (
     editor.setGWMapInfo(name, tilesheetFilePath);
     // serialize map info
     const gwMap = editor.getGWMapInfo();
-    console.log(gwMap);
+    // console.log(gwMap);
     addGWMapRecord(gwMap);
 
     // cache latest map!
@@ -128,16 +142,6 @@ export const useMapFile = (
       intent: Intent.SUCCESS,
       message: `Map saved at: ${destination}`,
     });
-  };
-
-  /**
-   * editor instance injection function
-   * @param editor
-   */
-  const tileMapEditorSetter = (editor: TiledPainter | null) => {
-    if (!editor) return;
-    console.log(`tilemap editor instance received!`);
-    editorRef.current = editor;
   };
 
   /**
@@ -172,21 +176,17 @@ export const useMapFile = (
 
     // go on to paint map layers and build layer ...
     const { mapHeight, mapWidth, tileHeight, tileWidth, name } = gwMap;
+    onDimensionChange(mapHeight, mapWidth, tileHeight, tileWidth);
     // 1. reset game name & dimensions
     setNewMapSaved(true);
     setMapName(name);
-    onDimensionChange(mapHeight, mapWidth, tileHeight, tileWidth);
+    setEditorInjected(false);
   };
 
   useEffect(() => {
-    console.log(`>> 1. running [] hook...`);
-
+    // console.log(`>> 1. running [] hook...`);
     const files = getMapHistory();
     setMapSaveHistory(files);
-
-    return () => {
-      editorRef.current = null;
-    };
   }, []);
 
   /**
@@ -194,7 +194,7 @@ export const useMapFile = (
    * then to build map layers in editor
    */
   useEffect(() => {
-    console.log(`>>> 2. running sourceImage hook...`);
+    // console.log(`>>> 2. running sourceImage hook...`);
     // 1. tilesheet image not loaded, do nothing!
     if (!selectedImage) {
       // console.warn('source image empty!'); // initially empty
@@ -231,37 +231,40 @@ export const useMapFile = (
     setMapFilePath(fullPath);
   }, [selectedImage]);
 
+  /**
+   * handle dimension change
+   */
   useEffect(() => {
-    console.log(`>>> 3. running mapParams hook...`);
-
-    const editor = editorRef.current as TiledPainter;
-    if (!editor) {
-      console.warn('>> editor not inited!');
-      return;
-    }
+    // console.log(`>>> 3. running mapParams hook...`);
     // check latest map to render!
     const savedMap = getLastGWMap();
     if (!savedMap) return console.warn('saved map null!');
 
     // rebuild map
-    const {
-      mapHeight,
-      mapWidth,
-      tileHeight,
-      tileWidth,
-      layers,
-      name,
-      tilesetImage,
-    } = savedMap;
-
-    console.log(`>>> map rebuilt with cached layers:`);
-    console.log(layers);
+    const { mapHeight, mapWidth, tileHeight, tileWidth } = savedMap;
 
     onDimensionChange(mapHeight, mapWidth, tileHeight, tileWidth);
+  }, [onDimensionChange]);
+
+  /**
+   * draw layers in editor
+   */
+  useEffect(() => {
+    if (!editorInjected) return;
+    // console.log(`>>> 4. start to build map layers...`);
+    // check latest map to render!
+    const savedMap = getLastGWMap();
+    if (!savedMap) return console.warn('saved map null!');
+
+    const { mapHeight, mapWidth, layers, name, tilesetImage } = savedMap;
 
     const tilesheetURL = getTilesheetURLBy(tilesetImage);
     const { textures } = getTileSheetBy(tilesheetURL);
-
+    const editor = editorRef.current as TiledPainter;
+    if (!editor) {
+      console.warn('>> editor not inited!');
+      return;
+    }
     // 3. reset layers manager:
     editor.buildLayersBy(mapWidth, mapHeight, layers);
     // 4. build tiles grid
@@ -270,7 +273,7 @@ export const useMapFile = (
     editor.paintSpritesFrom(layers);
     // 6. save loaded map info
     editor.setGWMapInfo(name, tilesetImage);
-  }, [onDimensionChange]);
+  }, [editorInjected]);
 
   return {
     mapName,

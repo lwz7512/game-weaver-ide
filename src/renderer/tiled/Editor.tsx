@@ -47,8 +47,10 @@ export const TiledEditor = ({
 
   // handling events for editor
   useDomEvents(editorRef);
-  // update editor instance
-  useEffect(() => editorInstanceSaver(editorRef.current));
+
+  useEffect(() => {
+    editorInstanceSaver(editorRef.current);
+  }, [editorInstanceSaver, editorRef]);
 
   return (
     <div className="tiled-editor-root flex-1 h-full bg-gray-300 relative cursor-pointer">
