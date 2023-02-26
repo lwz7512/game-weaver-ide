@@ -329,8 +329,9 @@ export class LayerManager {
 
   scaleAllTiles(grid: Rectangle[][]) {
     this.paintedTilesCache.forEach((tile, key) => {
+      // x: column, y: row
       const [, x, y] = key.split('_');
-      const rect = grid[+y][+x];
+      const rect = grid[+y - 1][+x - 1];
       tile.x = rect.x;
       tile.y = rect.y;
       tile.width = rect.width;

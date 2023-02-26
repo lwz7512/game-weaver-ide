@@ -24,6 +24,10 @@ export const getLastGWMap = (): GWMap | null => {
   return null;
 };
 
+export const clearLastMap = () => {
+  drawingHistory.length = 0;
+};
+
 const drawingTileSession: GeneralObject = {};
 
 /**

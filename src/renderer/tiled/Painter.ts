@@ -274,15 +274,23 @@ export class TiledPainter extends TiledCore {
     app.stage.addEventListener('pointerupoutside', this.onPointerUpStage);
   }
 
+  findTexture(layer: number, x: number, y: number) {
+    return this.layerManager?.findTextureIdFromLayer(layer, x, y) || 0;
+  }
+
+  findTextures(x: number, y: number) {
+    return this.layerManager?.findTextureIdsFromLayers(x, y) || [];
+  }
+
+  getLayerId() {
+    return this.layerManager?.getCurrentLayerId();
+  }
+
   /* ***********************************************************
    * 2. Handle map interaction:
    * pointer move, wheel scroll, click events
    */
   listenOnMapInteraction() {
-    const findTexture = this.layerManager?.findTextureIdFromLayer;
-    const findTextures = this.layerManager?.findTextureIdsFromLayers;
-    const getLayerId = this.layerManager?.getCurrentLayerId;
-
     this.onPointerMoveOnMap = (event: Event) => {
       const fdEvent = event as FederatedPointerEvent;
       const currentX = fdEvent.globalX;
@@ -290,10 +298,14 @@ export class TiledPainter extends TiledCore {
       const point = new PIXI.Point(currentX, currentY);
       const grid = this.buildTileGridInMap();
       const hitRect = this.containInGrid(point, grid);
-      const currentLayerId = getLayerId ? getLayerId() : 1;
-      const [x, y] = this.findCoordinateFromTileGrid(hitRect, grid);
-      const id = findTexture ? findTexture(currentLayerId, x, y) : 0;
-      const textureIds = findTextures ? findTextures(x, y) : [];
+      const currentLayerId = this.getLayerId() || 1;
+      // Note here: x actually represent columnIndex, y represent rowIndex
+      // both start from 1 while moving inside of map
+      const [col, row] = this.findCoordinateFromTileGrid(hitRect, grid);
+      if (!col || !row) return; // move outside of grid
+
+      const id = this.findTexture(currentLayerId, col - 1, row - 1);
+      const textureIds = this.findTextures(col - 1, row - 1);
 
       // CASE 1: if stage untouched, trying to show tile highlighter ...
       if (!this.stagePressed) {
@@ -302,13 +314,13 @@ export class TiledPainter extends TiledCore {
         // 0. *** save visited cell after painting!! ***
         this.lastHoverRectInMap = hitRect;
         // *** save last valid position, and exclude (0,0) which is outside of grid!
-        if (x) this.lastHoverColumnIndex = x;
-        if (y) this.lastHoverRowIndex = y;
+        if (col) this.lastHoverColumnIndex = col;
+        if (row) this.lastHoverRowIndex = row;
 
         // 1. paint highlighter
         this.paintHighlighterWithMode();
         // 2. display cell info
-        this.showCurrentCell(`(${y},${x}) [${id}] - L${currentLayerId}`);
+        this.showCurrentCell(`(${col},${row}) [${id}] - L${currentLayerId}`);
         // 3. display tiles under mouse
         this.revealTilesUnderMouse(textureIds.reverse());
         return;

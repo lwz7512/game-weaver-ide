@@ -20,6 +20,7 @@ import {
 import { saveMapHistory, getMapHistory } from '../state/storage';
 import {
   addGWMapRecord,
+  clearLastMap,
   getLastGWMap,
   setDrawingSession,
   getSessionBy,
@@ -36,19 +37,15 @@ export const useMapFile = (
 
   const toasterRef = useRef<Toaster | null>(null);
   const editorRef = useRef<TiledPainter | null>(null);
-  // const savedMapRef = useRef<GWMap | null>(null);
 
   // tab switch
   const [tabType, setTabType] = useState('layers');
-
   const [mapName, setMapName] = useState('');
   const [newMapSaved, setNewMapSaved] = useState(false);
   const [mapFilePath, setMapFilePath] = useState('');
   const [mapSaveHistory, setMapSaveHistory] = useState<SaveHistory[]>([]);
   const [selectedMap, setSelectedMap] = useState<string | null>(null);
   const [editorInjected, setEditorInjected] = useState(false);
-
-  console.log(editorInjected);
 
   const addToast = (toast: ToastProps) => {
     if (!toasterRef.current) return;
@@ -59,12 +56,14 @@ export const useMapFile = (
 
   const createNewMapHandler = () => {
     // reset side bar
-    setNewMapSaved(false);
-    setTabType('layers');
     setMapName('');
+    setTabType('layers');
+    setNewMapSaved(false);
+    setSelectedMap(null);
     // reset editor
-    const editor = editorRef.current as TiledPainter;
+    const editor = editorRef.current;
     editor && editor.cleanupAll();
+    clearLastMap();
   };
 
   /**
@@ -86,8 +85,6 @@ export const useMapFile = (
     // console.log(`## tilemap editor instance received!`);
     editorRef.current = editor;
     setEditorInjected(true);
-    const savedMap = getLastGWMap();
-    savedMap && setTabType('history');
   };
 
   // toast properties
@@ -238,11 +235,12 @@ export const useMapFile = (
     // console.log(`>>> 3. running mapParams hook...`);
     // check latest map to render!
     const savedMap = getLastGWMap();
-    if (!savedMap) return console.warn('saved map null!');
-
-    // rebuild map
+    if (!savedMap) {
+      console.warn('saved map null!');
+      return;
+    }
+    // update dimension map
     const { mapHeight, mapWidth, tileHeight, tileWidth } = savedMap;
-
     onDimensionChange(mapHeight, mapWidth, tileHeight, tileWidth);
   }, [onDimensionChange]);
 

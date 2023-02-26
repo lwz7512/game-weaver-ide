@@ -30,11 +30,11 @@ export const useTiledEditor = (
   useEffect(() => {
     const relayoutEditor = (entries: ResizeObserverEntry[]) => {
       if (editorRef.current) {
+        // console.log(`>>> reset editor instance on resize...`);
         // === reset app while window resizing ===
         const { width: bw, height: bh } = entries[0].contentRect;
         const editor = editorRef.current;
         // 298 = left module bar width 56px + right panel width 240px + 2px
-        editor.layout(mapWidth, mapHeight, tileWidth, tileHeight);
         editor.resetApp(bw - 298, bh);
         return;
       }

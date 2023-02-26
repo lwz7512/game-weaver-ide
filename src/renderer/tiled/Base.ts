@@ -71,6 +71,7 @@ export class BaseEditor extends EventTarget {
     rect: PIXI.Rectangle,
     grid: PIXI.Rectangle[][]
   ): number[] {
+    // outside of grid by default!
     const coordinate = [0, 0];
     for (let i = 0; i < grid.length; i += 1) {
       const row = grid[i];

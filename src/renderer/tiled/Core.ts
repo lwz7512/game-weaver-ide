@@ -155,19 +155,6 @@ export class TiledCore extends BaseEditor {
     const cachedSelectedImage = session.selectedImage as string;
     const { textures } = getTileSheetBy(cachedSelectedImage);
     this.tiles = textures;
-    // 3. draw map layer
-    // TODO: process multiple layers...
-    const layerTiles = getSessionBy('layer_1') as number[];
-    const rowSize = getSessionBy('rowSize') as number;
-    // FIXME: paint texture by textureId !!
-    // const columnSize = getSessionBy('columnSize') as number;
-    // for (let i = 0; i < rowSize; i += 1) {
-    //   for (let j = 0; j < columnSize; j += 1) {
-    //     const tileIndex = layerTiles[j + i * columnSize];
-    //     const texture = this.getTextureBy(tileIndex);
-    //     texture && this.paintTextureTo(texture, i, j);
-    //   }
-    // }
   }
 
   /**
