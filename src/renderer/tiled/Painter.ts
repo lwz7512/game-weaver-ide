@@ -299,24 +299,24 @@ export class TiledPainter extends TiledCore {
       const grid = this.buildTileGridInMap();
       const hitRect = this.containInGrid(point, grid);
       const currentLayerId = this.getLayerId() || 1;
-      // Note here: x actually represent columnIndex, y represent rowIndex
-      // both start from 1 while moving inside of map
-      const [col, row] = this.findCoordinateFromTileGrid(hitRect, grid);
-      if (!col || !row) return; // move outside of grid
-
-      const id = this.findTexture(currentLayerId, col - 1, row - 1);
-      const textureIds = this.findTextures(col - 1, row - 1);
 
       // CASE 1: if stage untouched, trying to show tile highlighter ...
       if (!this.stagePressed) {
         if (this.isEmptyRect(hitRect)) return;
         if (rectEquals(hitRect, this.lastHoverRectInMap)) return;
+        // Note here: x actually represent columnIndex, y represent rowIndex
+        // both start from 1 while moving inside of map
+        const [col, row] = this.findCoordinateFromTileGrid(hitRect, grid);
+        if (!col || !row) return; // move outside of grid
+
         // 0. *** save visited cell after painting!! ***
         this.lastHoverRectInMap = hitRect;
         // *** save last valid position, and exclude (0,0) which is outside of grid!
         if (col) this.lastHoverColumnIndex = col;
         if (row) this.lastHoverRowIndex = row;
 
+        const id = this.findTexture(currentLayerId, col - 1, row - 1);
+        const textureIds = this.findTextures(col - 1, row - 1);
         // 1. paint highlighter
         this.paintHighlighterWithMode();
         // 2. display cell info

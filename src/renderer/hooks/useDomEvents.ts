@@ -70,7 +70,7 @@ export const useDomEvents = (editorRef: EditorRef) => {
         GWEvent.TOGGLELOCKLAYER,
         toggleLayerAvailableHandler
       );
-      console.log(`cleanup dom events!`);
+      // console.log(`cleanup dom events!`);
     };
   }, [editorRef]);
 };

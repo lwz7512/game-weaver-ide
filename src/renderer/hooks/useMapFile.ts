@@ -81,7 +81,10 @@ export const useMapFile = (
    * @param editor
    */
   const tileMapEditorSetter = (editor: TiledPainter | null) => {
-    if (!editor) return console.warn(`>> got editor null!`);
+    if (!editor) {
+      // console.warn(`>> got editor null!`);
+      return;
+    }
     // console.log(`## tilemap editor instance received!`);
     editorRef.current = editor;
     setEditorInjected(true);
@@ -236,7 +239,7 @@ export const useMapFile = (
     // check latest map to render!
     const savedMap = getLastGWMap();
     if (!savedMap) {
-      console.warn('saved map null!');
+      // console.warn('saved map null!');
       return;
     }
     // update dimension map
@@ -252,7 +255,10 @@ export const useMapFile = (
     // console.log(`>>> 4. start to build map layers...`);
     // check latest map to render!
     const savedMap = getLastGWMap();
-    if (!savedMap) return console.warn('saved map null!');
+    if (!savedMap) {
+      // console.warn('saved map null!');
+      return;
+    }
 
     const { mapHeight, mapWidth, layers, name, tilesetImage } = savedMap;
 

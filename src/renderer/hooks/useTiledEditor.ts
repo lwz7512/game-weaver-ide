@@ -38,14 +38,14 @@ export const useTiledEditor = (
         editor.resetApp(bw - 298, bh);
         return;
       }
-      console.log(`>>> create new editor...`);
+      // console.log(`>>> create new editor...`);
       // create new editor
       const selector = '.tiled-editor-root';
       const root = document.querySelector(selector) as HTMLElement;
       const { width, height } = root.getBoundingClientRect();
       const editor = new TiledPainter(root, width, height);
       editorRef.current = editor; // save the app instance
-      console.log(`## editor instance created!`);
+      // console.log(`## editor instance created!`);
       const session = getDrawingSession();
       editor.create(session);
       // now start draw
@@ -71,7 +71,7 @@ export const useTiledEditor = (
         const mapInstance = editorRef.current.getGWMapInfo();
         addGWMapRecord(mapInstance);
       }
-      console.log(`#### destroy editor while main params chagned ###`);
+      // console.log(`#### destroy editor while main params chagned ###`);
       editorRef.current = null; // clear the instance
     };
   }, [mapWidth, mapHeight, tileWidth, tileHeight]);
