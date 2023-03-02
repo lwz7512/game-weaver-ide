@@ -32,15 +32,17 @@ export const useMapDimension = () => {
   };
 
   const tileWidthChangeHandler = (width: string) => {
+    console.log(`>> tile width: ${width}`);
     setDrawingSession({ tileWidth: width });
     setTileWidth(width);
   };
 
   const setAllDimension = (mh: number, mw: number, th: number, tw: number) => {
-    mapHeightChangeHandler(`${mh}`);
-    mapWidthChangeHandler(`${mw}`);
-    tileHeightChangeHandler(`${th}`);
-    tileWidthChangeHandler(`${tw}`);
+    console.log(`>>> set all dimension!`);
+    // mapHeightChangeHandler(`${mh}`);
+    // mapWidthChangeHandler(`${mw}`);
+    // tileHeightChangeHandler(`${th}`);
+    // tileWidthChangeHandler(`${tw}`);
   };
 
   return {

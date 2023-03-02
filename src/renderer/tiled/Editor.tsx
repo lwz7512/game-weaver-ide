@@ -43,6 +43,7 @@ export const TiledEditor = ({
     eraseTilesHandler,
     translateMapHandler,
     eraseTilesFromLayer,
+    floodFillGrid,
   } = useTiledEditor(mapWidth, mapHeight, tileWidth, tileHeight, selectedImage);
 
   // handling events for editor
@@ -81,6 +82,20 @@ export const TiledEditor = ({
         />
         <IconToolButton
           mini
+          icon="color-fill"
+          iconSize={16}
+          title="Flood Fill"
+          onClick={floodFillGrid}
+        />
+        <IconToolButton
+          mini
+          icon="style"
+          iconSize={16}
+          title="Pattern Fill"
+          onClick={floodFillGrid}
+        />
+        <IconToolButton
+          mini
           icon="move"
           iconSize={16}
           title="Translate Map"
@@ -97,7 +112,7 @@ export const TiledEditor = ({
         />
         <IconToolButton
           mini
-          icon="graph-remove"
+          icon="clean"
           iconSize={16}
           title="Erase all tiles in current layer"
           onClick={eraseTilesFromLayer}

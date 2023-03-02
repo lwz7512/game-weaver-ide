@@ -96,6 +96,15 @@ export class TiledPainter extends TiledCore {
     tiles && this.clearTilesFromMap(tiles);
   }
 
+  fillFloodCurrentLayer() {
+    const currentLayer = this.layerManager?.getCurrentLayerId();
+    if (!currentLayer) return;
+    const textureId = this.getSelectedTextureId();
+    if (!textureId) return;
+    const sprites = this.fillTileOnGameMap(currentLayer);
+    this.layerManager?.floodFillTile(currentLayer, textureId, sprites);
+  }
+
   renameLayer(id: number, name: string) {
     this.layerManager?.renameLayer(id, name);
   }

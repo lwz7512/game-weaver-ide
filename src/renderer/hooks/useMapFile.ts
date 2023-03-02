@@ -194,7 +194,8 @@ export const useMapFile = (
    * then to build map layers in editor
    */
   useEffect(() => {
-    // console.log(`>>> 2. running sourceImage hook...`);
+    console.log(`>>> 2. running sourceImage hook...`);
+    console.log(selectedImage);
     // 1. tilesheet image not loaded, do nothing!
     if (!selectedImage) {
       // console.warn('source image empty!'); // initially empty
@@ -230,22 +231,6 @@ export const useMapFile = (
     setSelectedMap(name);
     setMapFilePath(fullPath);
   }, [selectedImage]);
-
-  /**
-   * handle dimension change
-   */
-  useEffect(() => {
-    // console.log(`>>> 3. running mapParams hook...`);
-    // check latest map to render!
-    const savedMap = getLastGWMap();
-    if (!savedMap) {
-      // console.warn('saved map null!');
-      return;
-    }
-    // update dimension map
-    const { mapHeight, mapWidth, tileHeight, tileWidth } = savedMap;
-    onDimensionChange(mapHeight, mapWidth, tileHeight, tileWidth);
-  }, [onDimensionChange]);
 
   /**
    * draw layers in editor

@@ -38,7 +38,7 @@ export const useTiledEditor = (
         editor.resetApp(bw - 298, bh);
         return;
       }
-      // console.log(`>>> create new editor...`);
+      console.log(`>>> create new editor...`);
       // create new editor
       const selector = '.tiled-editor-root';
       const root = document.querySelector(selector) as HTMLElement;
@@ -80,9 +80,18 @@ export const useTiledEditor = (
    * lazy reset tile picker and clear game map
    */
   useEffect(() => {
+    if (!selectedImage) {
+      // console.warn(`>> selectedImage is empty!`);
+      return;
+    }
     setTimeout(() => {
       const editor = editorRef.current;
-      if (!editor || !selectedImage) return;
+      if (!editor) {
+        // console.warn(`editor is null!`);
+        return;
+      }
+      // console.log(`>> to resize tiles with: `);
+      // console.log(selectedImage);
       // get editor after the 1st round rendering
       editor.resetTileSize(selectedImage);
     });
@@ -118,6 +127,10 @@ export const useTiledEditor = (
     editorRef.current?.eraseTileInCurrentLayer();
   };
 
+  const floodFillGrid = () => {
+    editorRef.current?.fillFloodCurrentLayer();
+  };
+
   return {
     editorRef,
     eraseToolSelected,
@@ -128,6 +141,7 @@ export const useTiledEditor = (
     eraseTilesHandler,
     translateMapHandler,
     eraseTilesFromLayer,
+    floodFillGrid,
   };
   // end of hook ...
 };

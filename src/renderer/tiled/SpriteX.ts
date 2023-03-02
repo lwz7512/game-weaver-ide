@@ -26,6 +26,10 @@ export class SpriteX extends Sprite {
     return this.layerId;
   }
 
+  get globalKey() {
+    return `${this.layerId}_${this.key}`;
+  }
+
   set layer(id: number) {
     this.layerId = id;
   }

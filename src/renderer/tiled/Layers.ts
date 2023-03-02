@@ -90,6 +90,18 @@ export class LayerManager {
     return layer;
   }
 
+  floodFillTile(layerId: number, tileId: number, tiles: SpriteX[]) {
+    tiles.forEach((t) => {
+      this.paintedTilesCache.set(t.globalKey, t);
+    });
+    const layer = this.gameMapLayersInfo.find((l) => l.id === layerId);
+    if (!layer) {
+      console.warn('No layer found!');
+      return;
+    }
+    layer.grid.forEach((row) => row.fill(tileId));
+  }
+
   checkTileExistence(layerId: number, col: number, row: number) {
     return this.paintedTilesCache.has(`${layerId}_${col}_${row}`);
   }

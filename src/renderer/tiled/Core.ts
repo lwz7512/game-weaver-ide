@@ -124,10 +124,10 @@ export class TiledCore extends BaseEditor {
   /**
    * Set editor stage and draw map grid
    *
-   * @param mapWidth
-   * @param mapHeight
-   * @param tileWidth
-   * @param tileHeight
+   * @param mapWidth horizontal tiles number
+   * @param mapHeight vertical tiles number
+   * @param tileWidth tile width in pixel
+   * @param tileHeight tile height in pixel
    */
   layout(
     mapWidth: number,
@@ -143,18 +143,39 @@ export class TiledCore extends BaseEditor {
   }
 
   /**
-   * FIXME: repaint game layer while return to editor from other page
+   * starting point of a game map
+   *
+   * @param mapWidth hori tiles for game map
+   * @param mapHeight verti tiles for game map
+   * @param tileWidth  each tile width in pixel
+   * @param tileHeight each tile height in pixel
+   */
+  protected setGameDimension(
+    mapWidth: number,
+    mapHeight: number,
+    tileWidth: number,
+    tileHeight: number
+  ) {
+    this.gameHoriTiles = mapWidth;
+    this.gameVertTiles = mapHeight;
+    this.tileWidth = tileWidth;
+    this.tileHeight = tileHeight;
+  }
+
+  /**
+   * Paint layers and tile picker from cached tiles
    * @param session
    * @returns
    */
   paintMapLayer(session: GeneralObject) {
-    // 1. check cache if have `layerPainted`
-    const isLayerPainted = session.layerPainted as boolean;
-    if (!isLayerPainted) return;
-    // 2. restore tiles
+    // 1. check selectedImage from session
     const cachedSelectedImage = session.selectedImage as string;
-    const { textures } = getTileSheetBy(cachedSelectedImage);
-    this.tiles = textures;
+    if (!cachedSelectedImage) return;
+    // 2. trying to draw tile picker
+    this.resetTileSize(cachedSelectedImage);
+    // 3. check cache if have `layerPainted`
+    // const isLayerPainted = session.layerPainted as boolean;
+    // if (!isLayerPainted) return;
   }
 
   /**
@@ -185,7 +206,7 @@ export class TiledCore extends BaseEditor {
    */
   resetTileSize(selectedImage: string) {
     if (!selectedImage) return; // no tilesheet in use
-    // console.log(`to redraw tile picker...`);
+    console.log(`to redraw tile picker...`);
     this.reDrawTilePicker(selectedImage);
     this.clearTileSelection();
     clearPaintedTiles(1);
@@ -369,26 +390,6 @@ export class TiledCore extends BaseEditor {
     if (!this.cellInfoText) return;
     this.cellInfoText.x = mapAreaW - 90;
     this.cellInfoText.y = mapAreaH - 20;
-  }
-
-  /**
-   * starting point of a game map
-   *
-   * @param mapWidth hori tiles for game map
-   * @param mapHeight verti tiles for game map
-   * @param tileWidth  each tile width in pixel
-   * @param tileHeight each tile height in pixel
-   */
-  protected setGameDimension(
-    mapWidth: number,
-    mapHeight: number,
-    tileWidth: number,
-    tileHeight: number
-  ) {
-    this.gameHoriTiles = mapWidth;
-    this.gameVertTiles = mapHeight;
-    this.tileWidth = tileWidth;
-    this.tileHeight = tileHeight;
   }
 
   protected getGridFullSize() {
@@ -595,6 +596,19 @@ export class TiledCore extends BaseEditor {
       );
       hoverTileLayer.endFill();
     }
+  }
+
+  protected fillTileOnGameMap(layerId: number) {
+    const texture = this.getSelectedTexture();
+    if (!texture) return [];
+    const sprites = [];
+    for (let x = 0; x < this.gameHoriTiles; x += 1) {
+      for (let j = 0; j < this.gameVertTiles; j += 1) {
+        const tile = this.paintTextureTo(texture, j, x, layerId);
+        tile && sprites.push(tile);
+      }
+    }
+    return sprites;
   }
 
   /**

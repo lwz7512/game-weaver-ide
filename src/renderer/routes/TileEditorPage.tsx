@@ -1,6 +1,6 @@
 import { Toaster } from '@blueprintjs/core';
 
-import { MODULETYPES, GameMapXportParams } from '../config';
+import { MODULETYPES } from '../config';
 import { TiledEditor } from '../tiled/Editor';
 
 import useLeftSideBar from '../hooks/useLeftSideBar';
