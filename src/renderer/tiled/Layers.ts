@@ -324,11 +324,19 @@ export class LayerManager {
     return this.removeSpritesByLayerId(currentLayerId);
   }
 
-  removeSpritesByLayerId(layrId: number) {
+  removeSpritesByLayerId(layerId: number) {
+    // clear tile id in layer
+    const layer = this.gameMapLayersInfo.find((l) => l.id === layerId);
+    if (!layer) {
+      console.warn('No layer found!');
+      return;
+    }
+    layer.grid.forEach((row) => row.fill(0));
+    // clear cache
     const target: string[] = [];
     const tiles: SpriteX[] = [];
     this.paintedTilesCache.forEach((tile, key) => {
-      if (tile.getLayerId() === layrId) {
+      if (tile.getLayerId() === layerId) {
         target.push(key);
         tiles.push(tile);
       }

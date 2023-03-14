@@ -194,8 +194,8 @@ export const useMapFile = (
    * then to build map layers in editor
    */
   useEffect(() => {
-    console.log(`>>> 2. running sourceImage hook...`);
-    console.log(selectedImage);
+    // console.log(`>>> 2. running sourceImage hook...`);
+    // console.log(selectedImage);
     // 1. tilesheet image not loaded, do nothing!
     if (!selectedImage) {
       // console.warn('source image empty!'); // initially empty
@@ -205,7 +205,10 @@ export const useMapFile = (
     const tilesheetFilePath = getTilesheetFilePath(selectedImage);
     // 2. map source not initialized, do nothing!
     const savedMap = getLastGWMap(); // only available after click history item
-    if (!savedMap) return console.warn('saved map null!');
+    if (!savedMap) {
+      // console.warn('saved map null!');
+      return;
+    }
 
     // 3. sure thing to do some checking work:
     const { tilesetImage, name } = savedMap;

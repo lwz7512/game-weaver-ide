@@ -1,4 +1,13 @@
-import { IFrameContext } from './config';
+// import { IFrameContext } from './config';
+
+export const checkMacPlatform = () => {
+  const ua =
+    typeof navigator !== 'undefined' &&
+    typeof navigator.userAgent !== 'undefined'
+      ? navigator.userAgent.toLowerCase()
+      : '';
+  return ua.indexOf('macintosh') !== -1;
+};
 
 export function debounce<A = unknown, R = void>(
   fn: (args: A) => R,

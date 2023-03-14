@@ -60,6 +60,30 @@ export class BaseEditor extends EventTarget {
   }
 
   /**
+   * Find out the cell position from map, value start from 0
+   * @param rect hit rectangle
+   * @param grid map grid
+   * @returns cell coordinate
+   */
+  protected findPositionFromMapGrid(
+    rect: PIXI.Rectangle,
+    grid: PIXI.Rectangle[][]
+  ): number[] {
+    const coordinate = [0, 0]; // start from top-left cell
+    for (let y = 0; y < grid.length; y += 1) {
+      const row = grid[y];
+      for (let x = 0; x < row.length; x += 1) {
+        const cell = row[x];
+        if (rectEquals(rect, cell)) {
+          coordinate[0] = x; // x, column index
+          coordinate[1] = y; // y, row index
+        }
+      }
+    }
+    return coordinate;
+  }
+
+  /**
    * figure out the hit rect position(col, row) in tile grid.
    *
    * NOTE: col, row value both start from 1 instead of 0!

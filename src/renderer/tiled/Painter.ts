@@ -6,13 +6,14 @@
 import * as PIXI from 'pixi.js';
 import { FederatedPointerEvent } from '@pixi/events';
 import { GeneralObject } from '../config';
-import { setDrawingSession } from '../state/session';
+import { checkMacPlatform } from '../utils';
+// import { setDrawingSession } from '../state/session';
 import { rectEquals } from './Base';
-import { TiledCore } from './Core';
+import { TiledCore, PatternFillCell } from './Core';
 import { LayerManager } from './Layers';
 import { PointX } from './PointX';
 import { SpriteX } from './SpriteX';
-import { flattenGrid, gridToPoints } from './Utils';
+// import { flattenGrid, gridToPoints } from './Utils';
 import { GameWeaverLayer, GWMap, PhaserMap } from '.';
 
 type EventHandler = (event: Event) => void;
@@ -43,9 +44,19 @@ export class TiledPainter extends TiledCore {
   /** for picker hover user */
   protected lastPickerColumnIndex = 0;
   protected lastPickerRowIndex = 0;
+  /** for picker dragging selection */
+  protected startPickerColumnIndex = 0;
+  protected startPickerRowIndex = 0;
 
   protected mapName: string | null = null;
   protected tilesetImage: string | null = null;
+
+  protected stagePressed = false;
+  protected clickStartXpos = 0;
+  protected clickStartYpos = 0;
+  protected touchedTileMap = false;
+  /** save predicted filling pattern  */
+  protected patternFillCells: PatternFillCell[] = [];
 
   /**
    * Add interaction of drawing events
@@ -74,7 +85,7 @@ export class TiledPainter extends TiledCore {
 
   setEraseMode(enabled: boolean) {
     this.eraseTileMode = enabled;
-    this.hoveredMapLayer?.clear();
+    this.cleanupHoveredTile();
   }
 
   setTranslateMode(enabled: boolean) {
@@ -244,15 +255,7 @@ export class TiledPainter extends TiledCore {
     tileId: number,
     tile: SpriteX | undefined
   ) {
-    const layer = this.layerManager?.addOneTile(
-      layerId,
-      columnIndex,
-      rowIndex,
-      tileId,
-      tile
-    );
-    // if (!layer) return;
-    // FIXME: refactor to cache game structure ...
+    this.layerManager?.addOneTile(layerId, columnIndex, rowIndex, tileId, tile);
   }
 
   /* ***********************************************************
@@ -262,18 +265,57 @@ export class TiledPainter extends TiledCore {
    */
   listenOnStageInteraction(app: PIXI.Application) {
     this.onPointerDownStage = (event: Event) => {
+      // mark pressed state
       this.stagePressed = true;
+
+      // FIXME: reset hover rect to enable smearing painting!
+      this.lastHoverRectInMap = PIXI.Rectangle.EMPTY;
+
       const fdEvent = event as FederatedPointerEvent;
+      // save the mouse down position
       this.clickStartXpos = fdEvent.globalX;
       this.clickStartYpos = fdEvent.globalY;
+      // check touch what...
       const pt = new PIXI.Point(fdEvent.globalX, fdEvent.globalY);
       const tilegrid = this.buildTileGridInMap();
       // save the touch state
       this.touchedTileMap = this.isTouchedGrid(pt, tilegrid);
+
+      // touch on map, predict pattern cells ...
+      // to figure out rectangles by the selected tiles pattern
+      const isPatternFill = this.isPatternFilling();
+      if (this.touchedTileMap && isPatternFill) {
+        const { globalX, globalY } = fdEvent;
+        const point = new PIXI.Point(globalX, globalY);
+        const grid = this.buildTileGridInMap();
+        const hitRect = this.containInGrid(point, grid);
+        // to figure out prediction cells, save to `patternFillCells`
+        const predictions = this.predictPatternFillCells(hitRect, grid);
+        this.patternFillCells = predictions;
+      }
+
+      // touch on picker, save the pressing start cell
+      if (!this.touchedTileMap) {
+        const { col, row, hitRect } =
+          this.checkRectInPickerUnderPointer(fdEvent);
+        this.startPickerColumnIndex = col;
+        this.startPickerRowIndex = row;
+        console.log(`start from: ${col}, ${row}`);
+        this.saveStartHitRectangle(hitRect);
+      }
+      // check ctrl key state
+      const isMapOS = checkMacPlatform();
+      const isCtrlHolded = isMapOS ? fdEvent.metaKey : fdEvent.ctrlKey;
+      if (isCtrlHolded) {
+        this.ctrlKeyPressed = true;
+      }
     };
 
     this.onPointerUpStage = (event: Event) => {
+      // restore to no pressed
       this.stagePressed = false;
+      // restore to no ctrl
+      this.ctrlKeyPressed = false;
     };
 
     app.stage.interactive = true;
@@ -337,18 +379,36 @@ export class TiledPainter extends TiledCore {
       // CASE 2: or touched on map, do painting!
       if (this.touchedTileMap && !this.translateMode) {
         // do continuous painting with with the same texuture, smearing operation
-        if (rectEquals(hitRect, this.lastHoverRectInMap)) return;
+        if (rectEquals(hitRect, this.lastHoverRectInMap)) {
+          // console.warn(`> hitRect is the same as lastHoverRect`);
+          return;
+        }
         // save to go
         window.requestAnimationFrame(() => {
           if (this.eraseTileMode) {
             this.paintEraserOnGameMap(hitRect);
             return this.safelyEraseTile(currentLayerId, hitRect, grid);
           }
-          // *** DOING TEXTURE PAINTING HERE ***
+          // do pattern fillig by smearing on map
+          if (this.isPatternFilling()) {
+            console.log(`>> smearing tile pattern...`);
+            this.smearingPatternBy(currentLayerId, hitRect, grid);
+            return;
+          }
+          // *** DOING SINGLE TEXTURE PAINTING HERE ***
           this.paintHiligherOnGameMap(hitRect);
           this.safelyPaintTile(currentLayerId, hitRect, grid);
         });
         this.lastHoverRectInMap = hitRect;
+        // if hitRect outside of predictions,
+        const isMovingOnPredictions = this.isInsidePredictions(
+          hitRect,
+          this.patternFillCells
+        );
+        if (isMovingOnPredictions) return; // continue painting with pattern
+        console.log(`>> reset pattern cells!`);
+        // reset predictions
+        this.patternFillCells = this.predictPatternFillCells(hitRect, grid);
         return;
       }
 
@@ -398,6 +458,7 @@ export class TiledPainter extends TiledCore {
       const pointerY = fdEvent.globalY;
       const sameX = this.clickStartXpos === pointerX;
       const sameY = this.clickStartYpos === pointerY;
+      // ensure this is real click, not dragging and release!
       if (!sameX && !sameY) return;
 
       const point = new PIXI.Point(pointerX, pointerY);
@@ -405,10 +466,16 @@ export class TiledPainter extends TiledCore {
       const hitRect = this.containInGrid(point, grid);
       const currentLayerId = this.layerManager?.getCurrentLayerId() || 1;
       if (this.checkIsNotEmptyRect(hitRect)) {
+        // First: check if erasing
         if (this.eraseTileMode) {
           return this.safelyEraseTile(currentLayerId, hitRect, grid);
         }
-        // *** DOING TEXTURE PAINTING HERE ***
+        // Second: drawing with pattern ...
+        if (this.isPatternFilling()) {
+          console.log(`>> drawing with pattern...`);
+          return this.safePaintPattern(currentLayerId, grid);
+        }
+        // Third: *** DOING SINGLE TEXTURE PAINTING HERE ***
         this.safelyPaintTile(currentLayerId, hitRect, grid);
       }
     };
@@ -457,6 +524,13 @@ export class TiledPainter extends TiledCore {
     }
   }
 
+  /**
+   * Paint one selected tile
+   * @param currentLayerId
+   * @param hitRect
+   * @param grid
+   * @returns
+   */
   protected safelyPaintTile(
     currentLayerId: number,
     hitRect: PIXI.Rectangle,
@@ -476,6 +550,44 @@ export class TiledPainter extends TiledCore {
     this.savePaintedTileFor(layerId, columnIndex, rowIndex, textureId, tile);
   }
 
+  /**
+   * Paint a pattern for selected tiles from saved `patternFillCells`
+   * @param currentLayerId
+   * @param hitRect
+   * @param grid
+   * @returns
+   */
+  protected safePaintPattern(currentLayerId: number, grid: PIXI.Rectangle[][]) {
+    // STEP 1: check layer availability
+    const layerAvailable =
+      this.layerManager?.checkLayerAvailable(currentLayerId);
+    if (!layerAvailable) return;
+    // STEP 2: clear existing tiles in predicted cells
+    const cells = this.patternFillCells;
+    cells.forEach((cell) =>
+      this.safelyEraseTile(currentLayerId, cell.hitRect, grid)
+    );
+    // STEP 3: draw pattern cells one by one
+    cells.forEach((cell) => {
+      if (!cell.texture) return;
+      const tile = this.paintOneTextureBy(
+        currentLayerId,
+        cell.row,
+        cell.column,
+        cell.hitRect,
+        cell.texture
+      );
+      // STEP 4: save tile to layer manager
+      this.savePaintedTileFor(
+        currentLayerId,
+        cell.column,
+        cell.row,
+        cell.textureId,
+        tile
+      );
+    });
+  }
+
   protected safelyEraseTile(
     currentLayerId: number,
     hitRect: PIXI.Rectangle,
@@ -491,12 +603,52 @@ export class TiledPainter extends TiledCore {
       y
     );
     if (!isExisting) {
-      console.warn(`tile not exsiting!`);
+      // console.log(`tile not exsiting, no need to erase...`);
       return; // no tile painted
     }
     const tile = this.layerManager?.getTileBy(currentLayerId, x, y);
     tile && this.eraseTileFromGameMap(tile);
     this.layerManager?.clearOneTile(currentLayerId, x, y);
+  }
+
+  /**
+   * Check `hitRect` if inside of predictions and paint the corresponding tile one by one
+   * @param currentLayerId
+   * @param hitRect
+   * @param grid
+   */
+  protected smearingPatternBy(
+    currentLayerId: number,
+    hitRect: PIXI.Rectangle,
+    grid: PIXI.Rectangle[][]
+  ) {
+    const layerAvailable =
+      this.layerManager?.checkLayerAvailable(currentLayerId);
+    if (!layerAvailable) return;
+    this.safelyEraseTile(currentLayerId, hitRect, grid);
+
+    const prediction = this.patternFillCells.find((p) =>
+      rectEquals(p.hitRect, hitRect)
+    );
+    if (!prediction) return console.warn(`no prediction`);
+    if (!prediction.texture) return console.warn(`no texuture!`);
+    console.log(`start smearing...`);
+    // STEP 3: draw one tile
+    const tile = this.paintOneTextureBy(
+      currentLayerId,
+      prediction.row,
+      prediction.column,
+      prediction.hitRect,
+      prediction.texture
+    );
+    // STEP 4: save tile to layer manager
+    this.savePaintedTileFor(
+      currentLayerId,
+      prediction.column,
+      prediction.row,
+      prediction.textureId,
+      tile
+    );
   }
 
   zoomInMapAndTitles() {
@@ -524,27 +676,41 @@ export class TiledPainter extends TiledCore {
     this.layerManager?.scaleAllTiles(grid);
   }
 
+  checkRectInPickerUnderPointer(fdEvent: FederatedPointerEvent) {
+    // drawing the tile highlight rectangle in the `selectedTileLayer`
+    const screenRect = this.screenRect as PIXI.Rectangle;
+    const pickerYOffset = screenRect.height * this.mapHeightRatio;
+    const currentX = fdEvent.globalX;
+    const currentY = fdEvent.globalY - pickerYOffset;
+    // figure out the tile coordinate ...
+    const point = new PIXI.Point(currentX, currentY);
+    const grid = this.buildTileGridInPicker();
+    const hitRect = this.containInGrid(point, grid);
+    const [x, y] = this.findCoordinateFromTileGrid(hitRect, grid);
+    return {
+      col: x,
+      row: y,
+      hitRect,
+    };
+  }
+
   /* ***********************************************************
    * 3. Handle tile picker interaction:
    * pointer move, wheel scroll, click events
    */
   listenOnPickerInteraction() {
+    // Check CTRL key to select multple tiles by dragging selection!
+    // while CTRL holded, the tile picker will be not movable!
     this.onPointerMoveOnPicker = (event: Event) => {
       const fdEvent = event as FederatedPointerEvent;
       // drawing the tile highlight rectangle in the `selectedTileLayer`
-      const screenRect = this.screenRect as PIXI.Rectangle;
-      const pickerYOffset = screenRect.height * this.mapHeightRatio;
-      const currentX = fdEvent.globalX;
-      const currentY = fdEvent.globalY - pickerYOffset;
-      // figure out the tile coordinate ...
-      const point = new PIXI.Point(currentX, currentY);
-      const grid = this.buildTileGridInPicker();
-      const hitRect = this.containInGrid(point, grid);
-      const [x, y] = this.findCoordinateFromTileGrid(hitRect, grid);
+      const { col, row, hitRect } = this.checkRectInPickerUnderPointer(fdEvent);
       // *** save the last hit cell: (column, row) ***
-      this.lastPickerColumnIndex = x;
-      this.lastPickerRowIndex = y;
-      // console.log(`${x}, ${y}`);
+      this.lastPickerColumnIndex = col;
+      this.lastPickerRowIndex = row;
+      // console.log(`move to: ${col}, ${row}`);
+
+      // draw highlighter...
       if (!rectEquals(hitRect, this.lastHoverRectInPicker)) {
         window.requestAnimationFrame(() =>
           this.drawTilePickerHoverRects(hitRect)
@@ -554,7 +720,21 @@ export class TiledPainter extends TiledCore {
 
       if (!this.stagePressed) return;
 
-      // move the total tiles
+      // START MULTIPLE TILE SELECTION...
+      // 1. save last hit rectangle
+      // 2. draw multiple cells
+      if (this.ctrlKeyPressed) {
+        this.saveLastHitRectangle(hitRect);
+        this.drawSelectionsInPickerBy(
+          this.startPickerColumnIndex,
+          this.startPickerRowIndex,
+          this.lastPickerColumnIndex,
+          this.lastPickerRowIndex
+        );
+        return;
+      }
+
+      // pointer pressed, then move the total tiles...
       const diffX = fdEvent.movementX * 0.6;
       const diffY = fdEvent.movementY * 0.6;
       const tw = this.tileWidth * this.tileScale;
@@ -564,6 +744,34 @@ export class TiledPainter extends TiledCore {
       this.tilesStartY += diffY;
       this.translateTilePicker(diffX, diffY, tw, th);
       this.translateSelectedTileInPicker(diffX, diffY);
+    };
+
+    /**
+     * draw selected cell(border & fill) on background graphics...
+     * lastly occured after mouse up!
+     */
+    this.onClickTilePicker = (event: Event) => {
+      const fdEvent = event as FederatedPointerEvent;
+      const screenRect = this.screenRect as PIXI.Rectangle;
+      const pickerYOffset = screenRect.height * this.mapHeightRatio;
+      const { globalX, globalY } = fdEvent;
+      const pointerX = globalX;
+      const pointerY = globalY - pickerYOffset;
+
+      // draw selected tile
+      const point = new PIXI.Point(pointerX, pointerY);
+      const grid = this.buildTileGridInPicker();
+      const hitRect = this.containInGrid(point, grid);
+      this.saveLastHitRectangle(hitRect);
+      this.drawTilePickerHoverRects(hitRect);
+
+      // check real click
+      const sameX = this.clickStartXpos === globalX;
+      const sameY = this.clickStartYpos === globalY;
+      // ensure this is real click, not dragging and release!
+      if (sameX && sameY) {
+        // TODO: cleanup multiple selection...
+      }
     };
 
     // scale like the map from mouse position ...
@@ -598,22 +806,6 @@ export class TiledPainter extends TiledCore {
       const th = this.tileHeight * this.tileScale;
       this.scaleTilePicker(tw, th);
       this.scaleSelectedTileInPicker(tw, th);
-    };
-
-    // draw selected cell(border & fill) on background graphics...
-    this.onClickTilePicker = (event: Event) => {
-      const fdEvent = event as FederatedPointerEvent;
-      const screenRect = this.screenRect as PIXI.Rectangle;
-      const pickerYOffset = screenRect.height * this.mapHeightRatio;
-      const pointerX = fdEvent.globalX;
-      const pointerY = fdEvent.globalY - pickerYOffset;
-
-      // draw selected tile
-      const point = new PIXI.Point(pointerX, pointerY);
-      const grid = this.buildTileGridInPicker();
-      const hitRect = this.containInGrid(point, grid);
-      this.drawTilePickerHoverRects(hitRect);
-      this.saveLastHitRectangle(hitRect);
     };
 
     if (this.pickerInteractLayer) {

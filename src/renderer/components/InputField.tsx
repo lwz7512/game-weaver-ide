@@ -69,6 +69,7 @@ export const SelectInput = ({
         <option value="52">52px</option>
         <option value="60">60px</option>
         <option value="64">64px</option>
+        <option value="70">70px</option>
         <option value="72">72px</option>
         <option value="80">80px</option>
         <option value="96">96px</option>

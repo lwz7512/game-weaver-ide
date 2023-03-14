@@ -11,6 +11,17 @@ import { SpriteX } from './SpriteX';
 import { TileLegend } from '.';
 import { getTileSheetBy, resetCachedTextures } from '../state/cache';
 
+export type PatternFillCell = {
+  /** hori index of map grid start from 1 */
+  column: number;
+  /** verti index oof map grid start from 1 */
+  row: number;
+  hitRect: PIXI.Rectangle;
+  texture: PIXI.Texture | null;
+  textureId: number;
+  painted: boolean;
+};
+
 export class TiledCore extends BaseEditor {
   protected rootElement: HTMLElement;
 
@@ -43,6 +54,8 @@ export class TiledCore extends BaseEditor {
   protected lastHoverRectInPicker: PIXI.Rectangle = PIXI.Rectangle.EMPTY;
   protected lastSelectedRectInPicker: PIXI.Rectangle = PIXI.Rectangle.EMPTY;
   protected lastSelectedTilePosition: PIXI.Point | null = null; // (x: columnIndex, y: rowIndex)
+  protected startSelectedRectInPicker: PIXI.Rectangle = PIXI.Rectangle.EMPTY;
+  protected startSelectedTilePosition: PIXI.Point | null = null; // (x: columnIndex, y: rowIndex)
 
   protected mapScale = 0.6;
   /** map start x */
@@ -50,11 +63,6 @@ export class TiledCore extends BaseEditor {
   /** map start y */
   protected mapMarginY = 60;
   protected mapHeightRatio = 0.7;
-
-  protected stagePressed = false;
-  protected clickStartXpos = 0;
-  protected clickStartYpos = 0;
-  protected touchedTileMap = false;
 
   /** loaded tilesheet grid */
   /** initialized in `drawTilePicker` */
@@ -64,6 +72,9 @@ export class TiledCore extends BaseEditor {
   /** tile picker start y */
   protected tilesStartY = 0;
   protected tileScale = 1;
+
+  /** ctrl key pressed flag */
+  protected ctrlKeyPressed = false;
 
   // pinch: Pinch | null = null;
   // and more members...
@@ -206,7 +217,10 @@ export class TiledCore extends BaseEditor {
    */
   resetTileSize(selectedImage: string) {
     if (!selectedImage) return; // no tilesheet in use
-    console.log(`to redraw tile picker...`);
+    // reset to initial position of tile grid after tileset loaded
+    this.tilesStartX = 0;
+    this.tilesStartY = 0;
+    // console.log(`to redraw tile picker...`);
     this.reDrawTilePicker(selectedImage);
     this.clearTileSelection();
     clearPaintedTiles(1);
@@ -568,23 +582,124 @@ export class TiledCore extends BaseEditor {
   }
 
   /**
+   * In `Batch` selection mode by hold `CMD/CTRL` key:
+   * Keep the first touched cell, and point!
+   * @param hitRect
+   * @returns
+   */
+  protected saveStartHitRectangle(hitRect: PIXI.Rectangle) {
+    const isEmptyRect = this.checkIsEmptyRect(hitRect);
+    if (isEmptyRect) return;
+    this.startSelectedRectInPicker = hitRect;
+    const tilegrid = this.buildTileGridInPicker();
+    const [x, y] = this.findCoordinateFromTileGrid(hitRect, tilegrid);
+    this.startSelectedTilePosition = new PIXI.Point(x - 1, y - 1);
+  }
+
+  /**
+   * Kepp the current selected rect, and point!
+   * @param hitRect
+   * @returns
+   */
+  protected saveLastHitRectangle(hitRect: PIXI.Rectangle) {
+    const isEmptyRect = this.checkIsEmptyRect(hitRect);
+    if (isEmptyRect) return;
+    this.lastSelectedRectInPicker = hitRect;
+    const tilegrid = this.buildTileGridInPicker();
+    const [x, y] = this.findCoordinateFromTileGrid(hitRect, tilegrid);
+    this.lastSelectedTilePosition = new PIXI.Point(x - 1, y - 1);
+  }
+
+  protected isPatternFilling() {
+    const [w, h] = this.getTilesPatternSize();
+    if (w > 1 || h > 1) return true;
+    return false;
+  }
+
+  protected isInsidePredictions(
+    hitRect: PIXI.Rectangle,
+    predictions: PatternFillCell[]
+  ) {
+    return !!predictions.find((p) => rectEquals(hitRect, p.hitRect));
+  }
+
+  /**
+   * Figiure out list of cells for a pattern filling
+   * @param startRect hit rectangle
+   * @param grid hit map grid
+   * @returns list of cell to fill
+   */
+  protected predictPatternFillCells(
+    startRect: PIXI.Rectangle,
+    grid: PIXI.Rectangle[][]
+  ): PatternFillCell[] {
+    const textures = this.getSelectedTextures();
+    const [w, h] = this.getTilesPatternSize();
+    const cells: PatternFillCell[] = [];
+    const [col, row] = this.findPositionFromMapGrid(startRect, grid);
+    const [column] = this.getTileGridDimension();
+    for (let y = row; y < row + h; y += 1) {
+      for (let x = col; x < col + w; x += 1) {
+        const cell = this.findRectangleFromGrid(x, y, grid);
+        cells.push({
+          hitRect: cell,
+          column: x + 1,
+          row: y + 1,
+          texture: null,
+          textureId: x + y * column + 1,
+          painted: false,
+        });
+      }
+    }
+    return cells.map((c, i) => ({ ...c, texture: textures[i] }));
+  }
+
+  /**
+   * Get pattern size to predict the cells to use in map
+   * @returns pattern fill rectangle size
+   */
+  protected getTilesPatternSize() {
+    const startPt = this.startSelectedTilePosition;
+    const endPt = this.lastSelectedTilePosition;
+    if (!startPt || !endPt) return [0, 0];
+
+    const width = Math.abs(startPt.x - endPt.x);
+    const height = Math.abs(startPt.y - endPt.y);
+    return [width + 1, height + 1];
+  }
+
+  /**
    * draw hover rect and selected rect
    * @param hitRect
    */
   protected drawTilePickerHoverRects(hitRect: PIXI.Rectangle) {
+    if (this.ctrlKeyPressed) return; // ignore below while in dragging selection
+    // draw moving mouse indicator
     const hoverTileLayer = this.selectedTileLayer as PIXI.Graphics;
-    if (!rectEquals(hitRect, this.lastSelectedRectInPicker)) {
-      hoverTileLayer.clear();
-      hoverTileLayer.beginFill(0x0000ff, 0.2);
-      hoverTileLayer.drawRect(
-        hitRect.x,
-        hitRect.y,
-        hitRect.width,
-        hitRect.height
+    hoverTileLayer.clear();
+    hoverTileLayer.beginFill(0x0000ff, 0.2);
+    hoverTileLayer.drawRect(
+      hitRect.x,
+      hitRect.y,
+      hitRect.width,
+      hitRect.height
+    );
+    hoverTileLayer.endFill();
+
+    const startPt = this.startSelectedTilePosition;
+    const endPt = this.lastSelectedTilePosition;
+    // draw multiple selection
+    if (endPt && startPt && !endPt.equals(startPt)) {
+      this.drawSelectionsInPickerBy(
+        startPt.x + 1,
+        startPt.y + 1,
+        endPt.x + 1,
+        endPt.y + 1,
+        false
       );
-      hoverTileLayer.endFill();
+      return;
     }
-    // draw the previously selected tile
+    // draw selected tile highlighter
     const selectedTile = this.lastSelectedRectInPicker;
     if (!rectEquals(selectedTile, PIXI.Rectangle.EMPTY)) {
       hoverTileLayer.beginFill(0x0000ff, 0.5);
@@ -595,6 +710,46 @@ export class TiledCore extends BaseEditor {
         selectedTile.height
       );
       hoverTileLayer.endFill();
+    }
+  }
+
+  /**
+   * Drawing multple cell to indicat selected tiles, and save the selections.
+   *
+   * @param startCol column index after pointer pressed, start with 1
+   * @param startRow row index after pointer pressed, start with 1
+   * @param endCol column index of last pointer, start with 1
+   * @param endRow row index of last pointer, start with 1
+   * @param clearFirst if need clear first, `true` by default
+   */
+  protected drawSelectionsInPickerBy(
+    startCol: number,
+    startRow: number,
+    endCol: number,
+    endRow: number,
+    clearFirst = true
+  ) {
+    if (startCol === endCol && startRow === endRow) return;
+    // console.log(`${startCol}/${startRow}, ${endCol}/${endRow}`);
+    // prepare to draw
+    const hoverTileLayer = this.selectedTileLayer as PIXI.Graphics;
+    clearFirst && hoverTileLayer.clear();
+    // figure out the start & end
+    const minCol = startCol < endCol ? startCol : endCol;
+    const maxCol = endCol > startCol ? endCol : startCol;
+    const minRow = startRow < endRow ? startRow : endRow;
+    const maxRow = endRow > startRow ? endRow : startRow;
+    const grid = this.buildTileGridInPicker();
+    for (let y = minRow - 1; y < maxRow; y += 1) {
+      for (let x = minCol - 1; x < maxCol; x += 1) {
+        // console.log(`to find cell: ${x}/${y}`);
+        if (x < 0 || y < 0) return;
+        const cell = this.findRectangleFromGrid(x, y, grid);
+        // console.log(cell);
+        hoverTileLayer.beginFill(0x0000ff, 0.5);
+        hoverTileLayer.drawRect(cell.x, cell.y, cell.width, cell.height);
+        hoverTileLayer.endFill();
+      }
     }
   }
 
@@ -826,7 +981,7 @@ export class TiledCore extends BaseEditor {
 
     // ==> Step1: scale all the tiles
     const robot = this.pickerTileMap as PIXI.Graphics;
-    robot.children.forEach((node, index) => {
+    robot.children.forEach((node, _) => {
       // if (index === 0) return;
       node.scale.set(this.tileScale, this.tileScale);
     });
@@ -948,15 +1103,10 @@ export class TiledCore extends BaseEditor {
     this.saveMapDimension();
   }
 
-  protected saveLastHitRectangle(hitRect: PIXI.Rectangle) {
-    const isEmptyRect = this.checkIsEmptyRect(hitRect);
-    if (isEmptyRect) return;
-    this.lastSelectedRectInPicker = hitRect;
-    const tilegrid = this.buildTileGridInPicker();
-    const [x, y] = this.findCoordinateFromTileGrid(hitRect, tilegrid);
-    this.lastSelectedTilePosition = new PIXI.Point(x - 1, y - 1);
-  }
-
+  /**
+   * Picker grid without considering y axis offset
+   * @returns
+   */
   protected buildTileGridInPicker(): PIXI.Rectangle[][] {
     if (!this.tiles) return [];
 
@@ -1007,6 +1157,29 @@ export class TiledCore extends BaseEditor {
   }
 
   /**
+   * GET textures list from selected position.
+   */
+  protected getSelectedTextures(): (PIXI.Texture | null)[] {
+    const startPt = this.startSelectedTilePosition;
+    const endPt = this.lastSelectedTilePosition;
+    if (!startPt || !endPt) return [];
+
+    const minX = startPt.x < endPt.x ? startPt.x : endPt.x;
+    const maxX = endPt.x > startPt.x ? endPt.x : startPt.x;
+    const minY = startPt.y < endPt.y ? startPt.y : endPt.y;
+    const maxY = endPt.y > startPt.y ? endPt.y : startPt.y;
+
+    const tileMatrix = [];
+    for (let y = minY; y <= maxY; y += 1) {
+      for (let x = minX; x <= maxX; x += 1) {
+        const texture = this.findTextureByCoordinate(x, y);
+        tileMatrix.push(texture);
+      }
+    }
+    return tileMatrix;
+  }
+
+  /**
    * figure out texture from current tiles
    *
    * @param textureId start from 1
@@ -1021,7 +1194,16 @@ export class TiledCore extends BaseEditor {
     const columns = this.tiles[0].length;
     const rowIndex = Math.floor((textureId - 1) / columns);
     const columnIndex = (textureId - 1) % columns;
-    return this.tiles[rowIndex][columnIndex];
+    const rowTiles = this.tiles[rowIndex];
+    if (!rowTiles) {
+      console.warn(`# tile in row ${rowIndex} undefined!`);
+      return;
+    }
+    if (!rowTiles[columnIndex]) {
+      console.warn(`# tile in column ${columnIndex} undefined!`);
+      return;
+    }
+    return rowTiles[columnIndex];
   }
 
   protected getTileGridDimension() {
