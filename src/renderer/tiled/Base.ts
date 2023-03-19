@@ -18,6 +18,8 @@ export const rectEquals = (
   );
 };
 
+export const EmptyRecT = PIXI.Rectangle.EMPTY;
+
 /**
  * ================= Base Editor Class =========================
  * to do trivial stuff
@@ -122,6 +124,9 @@ export class BaseEditor extends EventTarget {
     y: number,
     grid: PIXI.Rectangle[][]
   ) {
+    if (!grid.length) return EmptyRecT;
+    if (y >= grid.length) return EmptyRecT;
+    if (x >= grid[0].length) return EmptyRecT;
     return grid[y][x];
   }
 

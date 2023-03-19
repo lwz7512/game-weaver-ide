@@ -55,8 +55,6 @@ export class TiledPainter extends TiledCore {
   protected clickStartXpos = 0;
   protected clickStartYpos = 0;
   protected touchedTileMap = false;
-  /** save predicted filling pattern  */
-  protected patternFillCells: PatternFillCell[] = [];
 
   /**
    * Add interaction of drawing events
@@ -255,6 +253,9 @@ export class TiledPainter extends TiledCore {
     tileId: number,
     tile: SpriteX | undefined
   ) {
+    // console.log(
+    //   `add one tile: ${layerId}, ${columnIndex}, ${rowIndex}, ${tileId}`
+    // );
     this.layerManager?.addOneTile(layerId, columnIndex, rowIndex, tileId, tile);
   }
 
@@ -389,14 +390,13 @@ export class TiledPainter extends TiledCore {
             this.paintEraserOnGameMap(hitRect);
             return this.safelyEraseTile(currentLayerId, hitRect, grid);
           }
+          this.paintHiligherOnGameMap(hitRect);
           // do pattern fillig by smearing on map
           if (this.isPatternFilling()) {
-            console.log(`>> smearing tile pattern...`);
             this.smearingPatternBy(currentLayerId, hitRect, grid);
             return;
           }
           // *** DOING SINGLE TEXTURE PAINTING HERE ***
-          this.paintHiligherOnGameMap(hitRect);
           this.safelyPaintTile(currentLayerId, hitRect, grid);
         });
         this.lastHoverRectInMap = hitRect;
@@ -632,7 +632,7 @@ export class TiledPainter extends TiledCore {
     );
     if (!prediction) return console.warn(`no prediction`);
     if (!prediction.texture) return console.warn(`no texuture!`);
-    console.log(`start smearing...`);
+    // console.log(`start smearing...`);
     // STEP 3: draw one tile
     const tile = this.paintOneTextureBy(
       currentLayerId,

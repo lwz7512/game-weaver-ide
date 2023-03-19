@@ -4,7 +4,7 @@
 import * as PIXI from 'pixi.js';
 import { EventSystem } from '@pixi/events';
 import { Graphics, Sprite } from 'pixi.js';
-import { BaseEditor, rectEquals } from './Base';
+import { BaseEditor, rectEquals, EmptyRecT } from './Base';
 import { GeneralObject } from '../config';
 import { getSessionBy, clearPaintedTiles } from '../state/session';
 import { SpriteX } from './SpriteX';
@@ -20,6 +20,11 @@ export type PatternFillCell = {
   texture: PIXI.Texture | null;
   textureId: number;
   painted: boolean;
+};
+
+export type TexturePair = {
+  id: number;
+  texture: PIXI.Texture | null;
 };
 
 export class TiledCore extends BaseEditor {
@@ -56,6 +61,9 @@ export class TiledCore extends BaseEditor {
   protected lastSelectedTilePosition: PIXI.Point | null = null; // (x: columnIndex, y: rowIndex)
   protected startSelectedRectInPicker: PIXI.Rectangle = PIXI.Rectangle.EMPTY;
   protected startSelectedTilePosition: PIXI.Point | null = null; // (x: columnIndex, y: rowIndex)
+
+  /** save predicted filling pattern  */
+  protected patternFillCells: PatternFillCell[] = [];
 
   protected mapScale = 0.6;
   /** map start x */
@@ -624,7 +632,7 @@ export class TiledCore extends BaseEditor {
   }
 
   /**
-   * Figiure out list of cells for a pattern filling
+   * Figiure out list of cells for a pattern filling on map
    * @param startRect hit rectangle
    * @param grid hit map grid
    * @returns list of cell to fill
@@ -637,21 +645,26 @@ export class TiledCore extends BaseEditor {
     const [w, h] = this.getTilesPatternSize();
     const cells: PatternFillCell[] = [];
     const [col, row] = this.findPositionFromMapGrid(startRect, grid);
-    const [column] = this.getTileGridDimension();
     for (let y = row; y < row + h; y += 1) {
       for (let x = col; x < col + w; x += 1) {
         const cell = this.findRectangleFromGrid(x, y, grid);
-        cells.push({
-          hitRect: cell,
-          column: x + 1,
-          row: y + 1,
-          texture: null,
-          textureId: x + y * column + 1,
-          painted: false,
-        });
+        if (!rectEquals(cell, EmptyRecT)) {
+          cells.push({
+            hitRect: cell,
+            column: x + 1,
+            row: y + 1,
+            texture: null, // leave this to next `map` loop
+            textureId: 0, // leave this to next `map` loop
+            painted: false,
+          });
+        }
       }
     }
-    return cells.map((c, i) => ({ ...c, texture: textures[i] }));
+    return cells.map((c, i) => ({
+      ...c,
+      textureId: textures[i].id,
+      texture: textures[i].texture,
+    }));
   }
 
   /**
@@ -1150,16 +1163,23 @@ export class TiledCore extends BaseEditor {
     return grid;
   }
 
-  protected getSelectedTexture() {
+  protected getSelectedTexture(hitRect?: PIXI.Rectangle) {
     if (this.checkIsEmptyRect(this.lastSelectedRectInPicker)) return null;
     const { x, y } = this.lastSelectedTilePosition as PIXI.Point;
+    // consider pattern filling mode
+    if (this.isPatternFilling() && hitRect) {
+      const predictionOnHit = this.patternFillCells.find((cell) =>
+        rectEquals(cell.hitRect, hitRect)
+      );
+      return predictionOnHit ? predictionOnHit.texture : null;
+    }
     return this.findTextureByCoordinate(x, y);
   }
 
   /**
    * GET textures list from selected position.
    */
-  protected getSelectedTextures(): (PIXI.Texture | null)[] {
+  protected getSelectedTextures(): TexturePair[] {
     const startPt = this.startSelectedTilePosition;
     const endPt = this.lastSelectedTilePosition;
     if (!startPt || !endPt) return [];
@@ -1169,11 +1189,15 @@ export class TiledCore extends BaseEditor {
     const minY = startPt.y < endPt.y ? startPt.y : endPt.y;
     const maxY = endPt.y > startPt.y ? endPt.y : startPt.y;
 
-    const tileMatrix = [];
+    const tileMatrix: TexturePair[] = [];
     for (let y = minY; y <= maxY; y += 1) {
       for (let x = minX; x <= maxX; x += 1) {
+        const id = this.getTextureIdByCoordinate(x, y);
         const texture = this.findTextureByCoordinate(x, y);
-        tileMatrix.push(texture);
+        tileMatrix.push({
+          id,
+          texture,
+        });
       }
     }
     return tileMatrix;
@@ -1191,9 +1215,14 @@ export class TiledCore extends BaseEditor {
       console.warn(`### no tiles grid initialized!!`);
       return null;
     }
+    console.log(`find texture: ${textureId}`);
     const columns = this.tiles[0].length;
+    console.log(`tiles: ${this.tiles.length}/${columns}`);
+
     const rowIndex = Math.floor((textureId - 1) / columns);
     const columnIndex = (textureId - 1) % columns;
+    console.log(`from ${rowIndex}/${columnIndex}`);
+
     const rowTiles = this.tiles[rowIndex];
     if (!rowTiles) {
       console.warn(`# tile in row ${rowIndex} undefined!`);
@@ -1224,6 +1253,12 @@ export class TiledCore extends BaseEditor {
   protected findTextureByCoordinate(x: number, y: number) {
     if (!this.tiles) return null;
     return this.tiles[y][x];
+  }
+
+  protected getTextureIdByCoordinate(x: number, y: number) {
+    if (!this.tiles) return 0;
+    const columnSize = this.tiles[0].length;
+    return x + y * columnSize + 1;
   }
 
   protected clearTilesFromMap(tiles: Sprite[]) {
