@@ -89,13 +89,6 @@ export const TiledEditor = ({
         />
         <IconToolButton
           mini
-          icon="style"
-          iconSize={16}
-          title="Pattern Fill"
-          onClick={floodFillGrid}
-        />
-        <IconToolButton
-          mini
           icon="move"
           iconSize={16}
           title="Translate Map"

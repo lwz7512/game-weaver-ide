@@ -4,7 +4,7 @@
 import * as PIXI from 'pixi.js';
 import { EventSystem } from '@pixi/events';
 import { Graphics, Sprite } from 'pixi.js';
-import { BaseEditor, rectEquals, EmptyRecT } from './Base';
+import { BaseEditor, rectEquals } from './Base';
 import { GeneralObject } from '../config';
 import { getSessionBy, clearPaintedTiles } from '../state/session';
 import { SpriteX } from './SpriteX';
@@ -56,14 +56,14 @@ export class TiledCore extends BaseEditor {
   protected pickerTileMap: PIXI.Graphics | null = null;
   protected pickerInteractLayer: PIXI.Graphics | null = null;
   protected selectedTileLayer: PIXI.Graphics | null = null;
+
   protected lastHoverRectInPicker: PIXI.Rectangle = PIXI.Rectangle.EMPTY;
+
   protected lastSelectedRectInPicker: PIXI.Rectangle = PIXI.Rectangle.EMPTY;
   protected lastSelectedTilePosition: PIXI.Point | null = null; // (x: columnIndex, y: rowIndex)
+
   protected startSelectedRectInPicker: PIXI.Rectangle = PIXI.Rectangle.EMPTY;
   protected startSelectedTilePosition: PIXI.Point | null = null; // (x: columnIndex, y: rowIndex)
-
-  /** save predicted filling pattern  */
-  protected patternFillCells: PatternFillCell[] = [];
 
   protected mapScale = 0.6;
   /** map start x */
@@ -632,42 +632,6 @@ export class TiledCore extends BaseEditor {
   }
 
   /**
-   * Figiure out list of cells for a pattern filling on map
-   * @param startRect hit rectangle
-   * @param grid hit map grid
-   * @returns list of cell to fill
-   */
-  protected predictPatternFillCells(
-    startRect: PIXI.Rectangle,
-    grid: PIXI.Rectangle[][]
-  ): PatternFillCell[] {
-    const textures = this.getSelectedTextures();
-    const [w, h] = this.getTilesPatternSize();
-    const cells: PatternFillCell[] = [];
-    const [col, row] = this.findPositionFromMapGrid(startRect, grid);
-    for (let y = row; y < row + h; y += 1) {
-      for (let x = col; x < col + w; x += 1) {
-        const cell = this.findRectangleFromGrid(x, y, grid);
-        if (!rectEquals(cell, EmptyRecT)) {
-          cells.push({
-            hitRect: cell,
-            column: x + 1,
-            row: y + 1,
-            texture: null, // leave this to next `map` loop
-            textureId: 0, // leave this to next `map` loop
-            painted: false,
-          });
-        }
-      }
-    }
-    return cells.map((c, i) => ({
-      ...c,
-      textureId: textures[i].id,
-      texture: textures[i].texture,
-    }));
-  }
-
-  /**
    * Get pattern size to predict the cells to use in map
    * @returns pattern fill rectangle size
    */
@@ -682,7 +646,7 @@ export class TiledCore extends BaseEditor {
   }
 
   /**
-   * draw hover rect and selected rect
+   * draw hover rect and selected rect while mouse moving but not pressed down
    * @param hitRect
    */
   protected drawTilePickerHoverRects(hitRect: PIXI.Rectangle) {
@@ -766,6 +730,11 @@ export class TiledCore extends BaseEditor {
     }
   }
 
+  /**
+   * Flood filling with selected texture
+   * @param layerId
+   * @returns
+   */
   protected fillTileOnGameMap(layerId: number) {
     const texture = this.getSelectedTexture();
     if (!texture) return [];
@@ -946,6 +915,12 @@ export class TiledCore extends BaseEditor {
     this.hoveredMapLayer.clear();
     if (!this.hoveredMapLayer.children.length) return;
     this.hoveredMapLayer.removeChildren();
+  }
+
+  protected isBelowMapBoundary(mouseY: number) {
+    if (!this.screenRect) return true;
+    const mapAreaH = this.screenRect.height * this.mapHeightRatio;
+    return mapAreaH < mouseY;
   }
 
   /**
@@ -1163,16 +1138,9 @@ export class TiledCore extends BaseEditor {
     return grid;
   }
 
-  protected getSelectedTexture(hitRect?: PIXI.Rectangle) {
+  protected getSelectedTexture() {
     if (this.checkIsEmptyRect(this.lastSelectedRectInPicker)) return null;
     const { x, y } = this.lastSelectedTilePosition as PIXI.Point;
-    // consider pattern filling mode
-    if (this.isPatternFilling() && hitRect) {
-      const predictionOnHit = this.patternFillCells.find((cell) =>
-        rectEquals(cell.hitRect, hitRect)
-      );
-      return predictionOnHit ? predictionOnHit.texture : null;
-    }
     return this.findTextureByCoordinate(x, y);
   }
 

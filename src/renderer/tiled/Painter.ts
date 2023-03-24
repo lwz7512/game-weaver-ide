@@ -7,13 +7,11 @@ import * as PIXI from 'pixi.js';
 import { FederatedPointerEvent } from '@pixi/events';
 import { GeneralObject } from '../config';
 import { checkMacPlatform } from '../utils';
-// import { setDrawingSession } from '../state/session';
-import { rectEquals } from './Base';
+import { rectEquals, EmptyRecT } from './Base';
 import { TiledCore, PatternFillCell } from './Core';
 import { LayerManager } from './Layers';
 import { PointX } from './PointX';
 import { SpriteX } from './SpriteX';
-// import { flattenGrid, gridToPoints } from './Utils';
 import { GameWeaverLayer, GWMap, PhaserMap } from '.';
 
 type EventHandler = (event: Event) => void;
@@ -55,6 +53,9 @@ export class TiledPainter extends TiledCore {
   protected clickStartXpos = 0;
   protected clickStartYpos = 0;
   protected touchedTileMap = false;
+
+  /** save predicted filling pattern  */
+  protected patternFillCells: PatternFillCell[] = [];
 
   /**
    * Add interaction of drawing events
@@ -103,15 +104,6 @@ export class TiledPainter extends TiledCore {
   eraseTileInCurrentLayer() {
     const tiles = this.layerManager?.clearTilesInCurrentLayer();
     tiles && this.clearTilesFromMap(tiles);
-  }
-
-  fillFloodCurrentLayer() {
-    const currentLayer = this.layerManager?.getCurrentLayerId();
-    if (!currentLayer) return;
-    const textureId = this.getSelectedTextureId();
-    if (!textureId) return;
-    const sprites = this.fillTileOnGameMap(currentLayer);
-    this.layerManager?.floodFillTile(currentLayer, textureId, sprites);
   }
 
   renameLayer(id: number, name: string) {
@@ -280,7 +272,9 @@ export class TiledPainter extends TiledCore {
       const pt = new PIXI.Point(fdEvent.globalX, fdEvent.globalY);
       const tilegrid = this.buildTileGridInMap();
       // save the touch state
-      this.touchedTileMap = this.isTouchedGrid(pt, tilegrid);
+      // FIXME: check boundary of map @2023/03/21
+      const isUnderBottom = this.isBelowMapBoundary(pt.y);
+      this.touchedTileMap = !isUnderBottom && this.isTouchedGrid(pt, tilegrid);
 
       // touch on map, predict pattern cells ...
       // to figure out rectangles by the selected tiles pattern
@@ -472,8 +466,11 @@ export class TiledPainter extends TiledCore {
         }
         // Second: drawing with pattern ...
         if (this.isPatternFilling()) {
-          console.log(`>> drawing with pattern...`);
-          return this.safePaintPattern(currentLayerId, grid);
+          return this.safePaintPattern(
+            currentLayerId,
+            grid,
+            this.patternFillCells
+          );
         }
         // Third: *** DOING SINGLE TEXTURE PAINTING HERE ***
         this.safelyPaintTile(currentLayerId, hitRect, grid);
@@ -488,6 +485,94 @@ export class TiledPainter extends TiledCore {
       this.mapInterectLayer.addEventListener('wheel', this.onWheelMoveOnMap);
       this.mapInterectLayer.addEventListener('click', this.onClickPaintOnMap);
     }
+  }
+
+  /**
+   * Consider filling with pattern mode ...
+   * @2023/03/21
+   * @returns
+   */
+  fillFloodCurrentLayer() {
+    // clear layer first
+    this.eraseTileInCurrentLayer();
+    // safety check
+    const currentLayer = this.layerManager?.getCurrentLayerId();
+    if (!currentLayer) return;
+    const textureId = this.getSelectedTextureId();
+    if (!textureId) return;
+    // then draw all
+    if (this.isPatternFilling()) {
+      const grid = this.buildTileGridInMap();
+      const predictions = this.predictPatternFloodCells(grid);
+      this.safePaintPattern(currentLayer, grid, predictions);
+    } else {
+      const sprites = this.fillTileOnGameMap(currentLayer);
+      this.layerManager?.floodFillTile(currentLayer, textureId, sprites);
+    }
+  }
+
+  /**
+   * Figiure out list of cells for a pattern filling on map
+   * @param startRect hit rectangle
+   * @param grid hit map grid
+   * @returns list of cell to fill
+   */
+  protected predictPatternFillCells(
+    startRect: PIXI.Rectangle,
+    grid: PIXI.Rectangle[][]
+  ): PatternFillCell[] {
+    const textures = this.getSelectedTextures();
+    const [w, h] = this.getTilesPatternSize();
+    const cells: PatternFillCell[] = [];
+    const [col, row] = this.findPositionFromMapGrid(startRect, grid);
+    for (let y = row; y < row + h; y += 1) {
+      for (let x = col; x < col + w; x += 1) {
+        const cell = this.findRectangleFromGrid(x, y, grid);
+        const xInPattern = (x - col) % w;
+        const yInPattern = (y - row) % h;
+        const textureIndex = yInPattern * w + xInPattern;
+        const texturePair = textures[textureIndex];
+        if (!rectEquals(cell, EmptyRecT) && texturePair) {
+          cells.push({
+            hitRect: cell,
+            column: x + 1,
+            row: y + 1,
+            texture: texturePair.texture, // leave this to next `map` loop
+            textureId: texturePair.id, // leave this to next `map` loop
+            painted: false,
+          });
+        }
+      }
+    }
+    return cells;
+  }
+
+  /**
+   * Create a list of predictions for the whole grid with selected pattern
+   * @param grid Map grid to flood fill
+   */
+  protected predictPatternFloodCells(grid: PIXI.Rectangle[][]) {
+    const textures = this.getSelectedTextures();
+    const [w, h] = this.getTilesPatternSize();
+    const cells: PatternFillCell[] = [];
+    for (let x = 0; x < this.gameHoriTiles; x += 1) {
+      for (let y = 0; y < this.gameVertTiles; y += 1) {
+        const cell = this.findRectangleFromGrid(x, y, grid);
+        const xInPattern = x % w;
+        const yInPattern = y % h;
+        const textureIndex = yInPattern * w + xInPattern;
+        const { id, texture } = textures[textureIndex];
+        cells.push({
+          hitRect: cell,
+          column: x + 1,
+          row: y + 1,
+          texture,
+          textureId: id,
+          painted: false,
+        });
+      }
+    }
+    return cells;
   }
 
   /**
@@ -552,18 +637,21 @@ export class TiledPainter extends TiledCore {
 
   /**
    * Paint a pattern for selected tiles from saved `patternFillCells`
-   * @param currentLayerId
-   * @param hitRect
-   * @param grid
+   * @param currentLayerId layer id
+   * @param grid map grid
+   * @param cells predictions to apply
    * @returns
    */
-  protected safePaintPattern(currentLayerId: number, grid: PIXI.Rectangle[][]) {
+  protected safePaintPattern(
+    currentLayerId: number,
+    grid: PIXI.Rectangle[][],
+    cells: PatternFillCell[]
+  ) {
     // STEP 1: check layer availability
     const layerAvailable =
       this.layerManager?.checkLayerAvailable(currentLayerId);
     if (!layerAvailable) return;
     // STEP 2: clear existing tiles in predicted cells
-    const cells = this.patternFillCells;
     cells.forEach((cell) =>
       this.safelyEraseTile(currentLayerId, cell.hitRect, grid)
     );
