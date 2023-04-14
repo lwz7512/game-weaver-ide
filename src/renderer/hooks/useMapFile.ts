@@ -67,13 +67,43 @@ export const useMapFile = (
   };
 
   /**
-   * TODO: export map data to phaserjs format...
+   * export map data to phaserjs format...
+   * write tileset image path with relative path...
    */
-  const mapExportHandler = () => {
+  const mapExportHandler = async () => {
+    if (!mapName) return;
+
+    if (!wokspacePath) {
+      addToast({
+        icon: 'small-info-sign',
+        intent: Intent.WARNING,
+        message: `No workspace assigned!`,
+      });
+      return;
+    }
+
     const editor = editorRef.current as TiledPainter;
-    // console.log(`>>> save game map data:`);
-    const map = editor.getPhaserMapInfo();
-    // console.log(map);
+    const phaserMap = editor.getPhaserMapInfo();
+    const fileName = kebabCase(mapName);
+    const tilesheetFilePath = getTilesheetFilePath(selectedImage);
+    const tilesheetFolders = tilesheetFilePath.split('/').slice(0, -1);
+    const tilesheetFolder = tilesheetFolders.join('/');
+    const jsonFilePath = `${tilesheetFolder}/${fileName}.json`;
+    // console.log({ jsonFilePath });
+    const jsonFileContent = JSON.stringify(phaserMap);
+    // const jsonFileContent = JSON.stringify(phaserMap, null, 2);
+    // console.log(phaserMap);
+    await ipcRenderer.invoke(
+      IpcEvents.SAVE_MAP_FILE,
+      jsonFilePath,
+      jsonFileContent
+    );
+    // console.log(`save map exported!`);
+    addToast({
+      icon: 'tick-circle',
+      intent: Intent.SUCCESS,
+      message: `Map exported at: ${jsonFilePath}`,
+    });
   };
 
   /**

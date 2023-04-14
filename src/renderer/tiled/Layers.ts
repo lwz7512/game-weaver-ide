@@ -48,6 +48,9 @@ export class LayerManager {
       type: 'tilelayer',
       opacity: 1,
       data: flattenGrid(layer.grid), // FLATTEN...
+      objects: [],
+      draworder: 'topdown',
+      properties: [],
     }));
   }
 

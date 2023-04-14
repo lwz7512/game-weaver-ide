@@ -12,7 +12,8 @@ import { TiledCore, PatternFillCell } from './Core';
 import { LayerManager } from './Layers';
 import { PointX } from './PointX';
 import { SpriteX } from './SpriteX';
-import { GameWeaverLayer, GWMap, PhaserMap } from '.';
+import { GameWeaverLayer, GWMap, PhaserMap, TileSet } from '.';
+import { getTileSetBy } from '../state/cache';
 
 type EventHandler = (event: Event) => void;
 
@@ -56,6 +57,8 @@ export class TiledPainter extends TiledCore {
 
   /** save predicted filling pattern  */
   protected patternFillCells: PatternFillCell[] = [];
+  /** save currently used tielsheet */
+  protected selectedTilesheetURL: string | null = null;
 
   /**
    * Add interaction of drawing events
@@ -80,6 +83,11 @@ export class TiledPainter extends TiledCore {
     super.layout(mapWidth, mapHeight, tileWidth, tileHeight);
     this.layerManager = new LayerManager(mapWidth, mapHeight);
     this.layerManager.addNewLayer(1, 'Layer - 1');
+  }
+
+  setSelectedTilesheet(imgURL: string) {
+    this.selectedTilesheetURL = imgURL;
+    this.resetTileSize(imgURL);
   }
 
   setEraseMode(enabled: boolean) {
@@ -180,7 +188,29 @@ export class TiledPainter extends TiledCore {
    */
   getPhaserMapInfo(): PhaserMap {
     const layers = this.layerManager ? this.layerManager.toPhaserLayers() : [];
+    const imgBlob = getTileSetBy(this.selectedTilesheetURL as string);
+    const columns = imgBlob ? Math.round(imgBlob.width / this.tileWidth) : 0;
+    const rows = imgBlob ? Math.round(imgBlob.height / this.tileHeight) : 0;
+    const tilesheetFileNameWithSuffix = this.tilesetImage
+      ?.split('/')
+      .slice(-1)[0];
+    const tilesheetFile = tilesheetFileNameWithSuffix?.split('.')[0];
+    const dataset: TileSet = {
+      columns,
+      firstgid: 1,
+      image: `./${tilesheetFileNameWithSuffix}`,
+      imageheight: imgBlob ? imgBlob.height : 0,
+      imagewidth: imgBlob ? imgBlob.width : 0,
+      margin: 0,
+      name: tilesheetFile || 'no name',
+      properties: [],
+      spacing: 0,
+      tilecount: columns * rows,
+      tileheight: this.tileHeight,
+      tilewidth: this.tileWidth,
+    };
     return {
+      backgroundcolor: '#000000',
       type: 'map',
       width: this.gameHoriTiles,
       height: this.gameVertTiles,
@@ -190,7 +220,8 @@ export class TiledPainter extends TiledCore {
       tileheight: this.tileHeight,
       tilewidth: this.tileWidth,
       layers,
-      tilesets: [], // TODO: need to retieve tilesheet image file info...
+      tilesets: [dataset],
+      properties: [],
       version: '0.1',
     };
   }

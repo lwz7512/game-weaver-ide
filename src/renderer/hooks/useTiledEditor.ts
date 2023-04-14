@@ -11,6 +11,7 @@ import { getDrawingSession, addGWMapRecord } from '../state/session';
  * @param mapHeight
  * @param tileWidth
  * @param tileHeight
+ * @param selectedImage current tilesheet image url
  * @returns
  */
 export const useTiledEditor = (
@@ -93,7 +94,7 @@ export const useTiledEditor = (
       // console.log(`>> to resize tiles with: `);
       // console.log(selectedImage);
       // get editor after the 1st round rendering
-      editor.resetTileSize(selectedImage);
+      editor.setSelectedTilesheet(selectedImage);
     });
     // reset tile grid
   }, [selectedImage]);

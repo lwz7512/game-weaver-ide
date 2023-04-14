@@ -1183,13 +1183,13 @@ export class TiledCore extends BaseEditor {
       console.warn(`### no tiles grid initialized!!`);
       return null;
     }
-    console.log(`find texture: ${textureId}`);
+    // console.log(`find texture: ${textureId}`);
     const columns = this.tiles[0].length;
-    console.log(`tiles: ${this.tiles.length}/${columns}`);
+    // console.log(`tiles: ${this.tiles.length}/${columns}`);
 
     const rowIndex = Math.floor((textureId - 1) / columns);
     const columnIndex = (textureId - 1) % columns;
-    console.log(`from ${rowIndex}/${columnIndex}`);
+    // console.log(`from ${rowIndex}/${columnIndex}`);
 
     const rowTiles = this.tiles[rowIndex];
     if (!rowTiles) {

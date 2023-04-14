@@ -208,3 +208,7 @@ export const resetCachedTextures = (
 export const getTileSheetBy = (imgURL: string): ImageDataTiles => {
   return imageDataCache[imgURL] || {};
 };
+
+export const getTileSetBy = (imgURL: string): FileBlob | undefined => {
+  return imageBlobs.find((img) => img.imgURL === imgURL);
+};
