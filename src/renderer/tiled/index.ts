@@ -363,7 +363,7 @@ export type PhaserMapLayer = {
  */
 export type TileSet = {
   /**
-   * Name given to this tileset
+   * Name given to this tileset, important to have as a key to find the tiles data
    */
   name: string;
   /**

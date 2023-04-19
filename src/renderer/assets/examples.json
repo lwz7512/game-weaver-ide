@@ -84,47 +84,6 @@
     ]
   },
   {
-    "name": "assets",
-    "children": [
-      "assets/animations",
-      "assets/asset-pack1.json",
-      "assets/asset-pack2.json",
-      "assets/atlas",
-      "assets/audio",
-      "assets/bristoljs",
-      "assets/bullets",
-      "assets/buttons",
-      "assets/controllers",
-      "assets/creature",
-      "assets/demoscene",
-      "assets/fonts",
-      "assets/games",
-      "assets/html",
-      "assets/loader-tests",
-      "assets/misc",
-      "assets/normal-maps",
-      "assets/particles",
-      "assets/particlestorm",
-      "assets/phaser3",
-      "assets/physics",
-      "assets/pics",
-      "assets/psds",
-      "assets/screenshot.png",
-      "assets/shaders",
-      "assets/skies",
-      "assets/sprites",
-      "assets/svg",
-      "assets/tests",
-      "assets/text",
-      "assets/textures",
-      "assets/tilemaps",
-      "assets/video",
-      "assets/virtualjoystick",
-      "assets/warning - copyright.txt",
-      "assets/wip"
-    ]
-  },
-  {
     "name": "audio",
     "children": [
       "audio/audio sprite duration.html",
@@ -292,11 +251,7 @@
   },
   {
     "name": "css",
-    "children": [
-      "css/prism-tomorrow.css",
-      "css/rouge.css",
-      "css/site.css"
-    ]
+    "children": ["css/prism-tomorrow.css", "css/rouge.css", "css/site.css"]
   },
   {
     "name": "debug",
@@ -557,11 +512,7 @@
   },
   {
     "name": "js",
-    "children": [
-      "js/example.js",
-      "js/find.js",
-      "js/node_modules"
-    ]
+    "children": ["js/example.js", "js/find.js", "js/node_modules"]
   },
   {
     "name": "loader",
@@ -603,9 +554,7 @@
   },
   {
     "name": "multitexture",
-    "children": [
-      "multitexture/sample.html"
-    ]
+    "children": ["multitexture/sample.html"]
   },
   {
     "name": "ninja physics",
@@ -619,9 +568,7 @@
   },
   {
     "name": "noise",
-    "children": [
-      "noise/simplex+vs+perlin.html"
-    ]
+    "children": ["noise/simplex+vs+perlin.html"]
   },
   {
     "name": "p2 physics",
@@ -840,9 +787,7 @@
   },
   {
     "name": "texture-compression",
-    "children": [
-      "texture-compression/example.html"
-    ]
+    "children": ["texture-compression/example.html"]
   },
   {
     "name": "tile sprites",

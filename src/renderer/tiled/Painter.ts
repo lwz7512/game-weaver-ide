@@ -202,7 +202,7 @@ export class TiledPainter extends TiledCore {
       imageheight: imgBlob ? imgBlob.height : 0,
       imagewidth: imgBlob ? imgBlob.width : 0,
       margin: 0,
-      name: tilesheetFile || 'no name',
+      name: tilesheetFile || 'unknown',
       properties: [],
       spacing: 0,
       tilecount: columns * rows,

@@ -133,9 +133,13 @@ const CodeEditorPage = () => {
         {isWVFullscreen && (
           <IconToolButton icon="delete" onClick={closeFullscreenGameHandler} />
         )}
-        <IconToolButton icon="play" onClick={refreshPreview} />
-        <IconToolButton icon="floppy-disk" onClick={saveMainJS} />
-        <IconToolButton icon="console" onClick={toggleDevTools} />
+        <IconToolButton icon="play" title="Run Game" onClick={refreshPreview} />
+        <IconToolButton icon="floppy-disk" title="Save" onClick={saveMainJS} />
+        <IconToolButton
+          icon="console"
+          title="Open Console"
+          onClick={toggleDevTools}
+        />
         {/* ... */}
       </div>
       {/* lazy initialize dialog until open */}
