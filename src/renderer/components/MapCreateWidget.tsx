@@ -4,7 +4,7 @@
  */
 
 // import clsx from 'clsx';
-import { Button, ButtonGroup } from '@blueprintjs/core';
+import { Button, ButtonGroup, Intent } from '@blueprintjs/core';
 import { InputField, SelectInput } from './InputField';
 import { SaveGamePop } from './SaveGamePop';
 
@@ -41,6 +41,7 @@ type MapCreateWidgetProps = MapDimensionProps &
     createNewMapHandler: () => void;
     mapSaveHandler: (name: string, path: string) => void;
     mapExportHandler: () => void;
+    copyNamesHandler: () => void;
   };
 
 const MapFieldRow = ({ name, value }: MapFieldProp) => (
@@ -140,6 +141,7 @@ export const MapCreateWidget = ({
   mapWidthChangeHandler,
   tileHeightChangeHandler,
   tileWidthChangeHandler,
+  copyNamesHandler,
 }: MapCreateWidgetProps) => {
   const mapDimensionProps = {
     mapWidth,
@@ -179,6 +181,13 @@ export const MapCreateWidget = ({
           intent="warning"
           className="focus:outline-0 no-transform rounded-r-none"
           onClick={mapExportHandler}
+        />
+        <Button
+          icon="clipboard"
+          title="Copy key names to clipboard"
+          intent={Intent.DANGER}
+          className="focus:outline-0 no-transform rounded-r-none"
+          onClick={copyNamesHandler}
         />
       </ButtonGroup>
       {/* game properties grid */}

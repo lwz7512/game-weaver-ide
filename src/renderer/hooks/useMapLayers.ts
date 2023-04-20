@@ -6,7 +6,7 @@ import { getTilesheetFilePath, getTileSheetBy } from '../state/cache';
 export const initLayers: MapLayer[] = [
   {
     id: 1,
-    name: 'Layer - 1',
+    name: 'Layer-1',
     selected: true,
     editMode: false,
     visible: true,
@@ -59,7 +59,7 @@ export const useMapLayers = (
       0
     );
     const newLayerId = +maxLayerId + 1;
-    const newLayerName = `Layer - ${newLayerId}`;
+    const newLayerName = `Layer-${newLayerId}`;
     layers.forEach((l) => {
       l.selected = false;
     });

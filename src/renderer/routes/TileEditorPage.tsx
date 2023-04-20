@@ -50,6 +50,7 @@ const TiledEditorPage = () => {
     createNewMapHandler,
     mapSaveHandler,
     mapExportHandler,
+    copyNamesHandler,
     tileMapEditorSetter,
     toasterCallback,
   } = useMapFile(spacePath, selectedImage, setAllDimension, loadPngFile);
@@ -73,6 +74,7 @@ const TiledEditorPage = () => {
     createNewMapHandler,
     mapSaveHandler,
     mapExportHandler,
+    copyNamesHandler,
   };
 
   return (

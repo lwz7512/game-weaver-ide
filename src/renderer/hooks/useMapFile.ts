@@ -54,6 +54,35 @@ export const useMapFile = (
     toasterRef.current.show(toast);
   };
 
+  /**
+   *
+   */
+  const copyNamesHandler = () => {
+    const editor = editorRef.current as TiledPainter;
+    const fileName = kebabCase(mapName);
+    const tilesheetFilePath = getTilesheetFilePath(selectedImage);
+    const tilesheetFileNameWidthSuffix = tilesheetFilePath.split('/').pop();
+    const tilesheetFileName = tilesheetFileNameWidthSuffix?.split('.')[0];
+    const { layers } = editor.getPhaserMapInfo();
+    const layerNames = layers.map((l) => l.name);
+    const keyNames = `
+    /**
+      tilemap_key: ${mapName}
+      json_file_path: ./assets/${fileName}.json
+      tilesheet_image_path: ./assets/${tilesheetFileNameWidthSuffix}
+      tileset_name: ${tilesheetFileName}
+      layers: 
+        ${layerNames.join('\n        ')}
+    */`;
+    // copy to clipboard
+    navigator.clipboard.writeText(keyNames);
+    addToast({
+      icon: 'tick-circle',
+      intent: Intent.SUCCESS,
+      message: `Map key names for PhaserJS game copied to clipboard!`,
+    });
+  };
+
   const createNewMapHandler = () => {
     // reset side bar
     setMapName('');
@@ -314,6 +343,7 @@ export const useMapFile = (
     mapSaveHandler,
     mapExportHandler,
     createNewMapHandler,
+    copyNamesHandler,
     tileMapEditorSetter,
   };
 };
