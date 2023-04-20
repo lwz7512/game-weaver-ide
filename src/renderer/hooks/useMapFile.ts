@@ -24,6 +24,7 @@ import {
   getLastGWMap,
   setDrawingSession,
   getSessionBy,
+  getLastOpenGame,
 } from '../state/session';
 
 export const useMapFile = (
@@ -46,6 +47,11 @@ export const useMapFile = (
   const [mapSaveHistory, setMapSaveHistory] = useState<SaveHistory[]>([]);
   const [selectedMap, setSelectedMap] = useState<string | null>(null);
   const [editorInjected, setEditorInjected] = useState(false);
+  // default export to same folder of tilesheet image
+  const lastGameSelected = getLastOpenGame();
+  const [gameToExport, setGameToExport] = useState(
+    lastGameSelected || 'default'
+  );
 
   const addToast = (toast: ToastProps) => {
     if (!toasterRef.current) return;
@@ -54,8 +60,12 @@ export const useMapFile = (
     toasterRef.current.show(toast);
   };
 
+  const onExportPathChange = (game: string) => {
+    setGameToExport(game);
+  };
+
   /**
-   *
+   * copy map keys to clickboard
    */
   const copyNamesHandler = () => {
     const editor = editorRef.current as TiledPainter;
@@ -117,8 +127,13 @@ export const useMapFile = (
     const tilesheetFilePath = getTilesheetFilePath(selectedImage);
     const tilesheetFolders = tilesheetFilePath.split('/').slice(0, -1);
     const tilesheetFolder = tilesheetFolders.join('/');
-    const jsonFilePath = `${tilesheetFolder}/${fileName}.json`;
-    // console.log({ jsonFilePath });
+    const defaultExportPath = `${tilesheetFolder}/${fileName}.json`; // default path
+    const gameAssetsPath = `${wokspacePath}/${gameToExport}/assets/${fileName}.json`;
+    const jsonFilePath =
+      gameToExport === 'default' ? defaultExportPath : gameAssetsPath;
+    console.log(`## game json map export to:`);
+    console.log(jsonFilePath);
+    // == export to json string ==
     const jsonFileContent = JSON.stringify(phaserMap);
     // const jsonFileContent = JSON.stringify(phaserMap, null, 2);
     // console.log(phaserMap);
@@ -163,12 +178,20 @@ export const useMapFile = (
   };
 
   /**
-   * save map to file system...
+   * save map to file system exposed to `MapCreateWidget`
    *
    * @param name map name
    * @param path json path
    */
   const mapSaveHandler = async (name: string, path: string) => {
+    if (!wokspacePath) {
+      addToast({
+        icon: 'small-info-sign',
+        intent: Intent.WARNING,
+        message: `No workspace assigned!`,
+      });
+      return;
+    }
     // keep map info
     const editor = editorRef.current as TiledPainter;
     const tilesheetFilePath = getTilesheetFilePath(selectedImage);
@@ -250,7 +273,7 @@ export const useMapFile = (
 
   /**
    * check `selectedImage` after tilesheet file loaded,
-   * then to build map layers in editor
+   * set map dimension widget
    */
   useEffect(() => {
     // console.log(`>>> 2. running sourceImage hook...`);
@@ -295,11 +318,11 @@ export const useMapFile = (
   }, [selectedImage]);
 
   /**
-   * draw layers in editor
+   * draw layers in editor from last saved map in history
    */
   useEffect(() => {
     if (!editorInjected) return;
-    // console.log(`>>> 4. start to build map layers...`);
+    // console.log(`>>> 3. start to build map layers...`);
     // check latest map to render!
     const savedMap = getLastGWMap();
     if (!savedMap) {
@@ -327,6 +350,7 @@ export const useMapFile = (
   }, [editorInjected]);
 
   return {
+    gameToExport,
     mapName,
     mapFilePath,
     newMapSaved,
@@ -345,5 +369,6 @@ export const useMapFile = (
     createNewMapHandler,
     copyNamesHandler,
     tileMapEditorSetter,
+    onExportPathChange,
   };
 };

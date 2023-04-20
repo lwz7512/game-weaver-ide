@@ -10,6 +10,7 @@ import { useMapLayers } from '../hooks/useMapLayers';
 import { useMapDimension } from '../hooks/useMapSession';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useMapFile } from '../hooks/useMapFile';
+import { useGMSpaceFolders } from '../hooks/useWorkspaceFile';
 
 import LeftSideBar from '../components/LeftSideBar';
 import { MiniIconButton } from '../components/Buttons';
@@ -37,6 +38,7 @@ const TiledEditorPage = () => {
   useSpritesPreview(selectedImage, dots);
 
   const {
+    gameToExport,
     mapName,
     mapFilePath,
     newMapSaved,
@@ -53,6 +55,7 @@ const TiledEditorPage = () => {
     copyNamesHandler,
     tileMapEditorSetter,
     toasterCallback,
+    onExportPathChange,
   } = useMapFile(spacePath, selectedImage, setAllDimension, loadPngFile);
 
   const {
@@ -65,12 +68,17 @@ const TiledEditorPage = () => {
     ...layerCRUDProps
   } = useMapLayers(savedGWMap, selectedImage);
 
+  const { gameFolders: games } = useGMSpaceFolders();
+
   const mapWidgetProps = {
     ...mapDimensions,
     spacePath,
     newMapSaved,
     mapName,
     mapFilePath,
+    games,
+    gameToExport,
+    onExportPathChange,
     createNewMapHandler,
     mapSaveHandler,
     mapExportHandler,

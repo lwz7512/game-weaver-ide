@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { IpcEvents } from '../../ipc-events';
-import { gamePreviewDefaultURL as homepage, ConfigType } from '../config';
+import { gamePreviewDefaultURL as homepage } from '../config';
 import { safeActionWithWorkspace } from '../state/storage';
 import { useWorkspaceMainJS, useGMSpaceFolders } from './useWorkspaceFile';
+import { getLastOpenGame, saveLastOpenGame } from '../state/session';
 
 /**
  * Central hook used in `CodeEditorPage`.
@@ -11,8 +12,8 @@ import { useWorkspaceMainJS, useGMSpaceFolders } from './useWorkspaceFile';
  */
 export const useWorkspaceGames = () => {
   const { ipcRenderer } = window.electron;
-
-  const [selectedGame, setselectedGame] = useState(''); // select game to preview game
+  const lastOpenGame = getLastOpenGame();
+  const [selectedGame, setselectedGame] = useState(lastOpenGame); // select game to preview game
   const [gameLocalURL, setGameLocalURL] = useState(homepage);
 
   const { gameFolders, refreshGamesInSpace } = useGMSpaceFolders();
@@ -20,6 +21,7 @@ export const useWorkspaceGames = () => {
 
   const gameSelectedHandler = (game: string) => {
     setselectedGame(game);
+    saveLastOpenGame(game);
   };
 
   const openWorkspaceFolder = () => {

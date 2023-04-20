@@ -7,6 +7,28 @@
 import { GWMap } from 'renderer/tiled';
 import { GeneralObject } from '../config';
 
+// ============== Game editing session management ==================
+
+const gameEditSession: GeneralObject = {};
+
+export const saveLastOpenGame = (game: string) => {
+  gameEditSession.game = game;
+};
+
+export const getLastOpenGame = () => {
+  return (gameEditSession.game as string) || '';
+};
+
+export const cacheLastGameCode = (game: string, code: string) => {
+  gameEditSession[game] = code;
+};
+
+export const getLastGameCode = (game: string) => {
+  return (gameEditSession[game] as string) || '';
+};
+
+// ============== Drawing session management ==================
+
 const drawingHistory: GWMap[] = [];
 
 /**

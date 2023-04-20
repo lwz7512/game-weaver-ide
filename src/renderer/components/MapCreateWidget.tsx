@@ -13,6 +13,13 @@ type MapFieldProp = {
   value: string;
 };
 
+type MapExportProp = {
+  name: string;
+  games: string[];
+  gameToExport: string;
+  onExportPathChange: (game: string) => void;
+};
+
 type MapSizeProps = {
   mapWidth: string;
   mapHeight: string;
@@ -30,6 +37,9 @@ type MapSizeHandlersProps = {
 type MapDimensionProps = MapSizeProps & {
   mapName: string;
   mapFilePath: string;
+  games: string[];
+  gameToExport: string;
+  onExportPathChange: (game: string) => void;
 };
 
 type MapSizeComboProps = MapSizeProps & MapSizeHandlersProps;
@@ -58,6 +68,35 @@ const MapFieldRow = ({ name, value }: MapFieldProp) => (
   </li>
 );
 
+const MapFieldSelect = ({
+  name,
+  games,
+  gameToExport,
+  onExportPathChange,
+}: MapExportProp) => (
+  <li className="border-b border-gray-400 flex">
+    <span className="p-1 w-20 bg-amber-100 inline-block border-r border-gray-400">
+      {name}:
+    </span>
+    <select
+      className="px-1 w-36 h-6 leading-6 inline-block overflow-hidden focus:outline-none"
+      title="Export to game assets folder"
+      value={gameToExport}
+      onChange={(event) => onExportPathChange(event.target.value)}
+    >
+      <option value="default">Default</option>
+      {games.map((game) => (
+        <option key={game} value={game}>
+          {game}
+        </option>
+      ))}
+    </select>
+  </li>
+);
+
+/**
+ * Map info list display
+ */
 const MapDimensionGroup = ({
   mapName,
   mapFilePath,
@@ -65,17 +104,29 @@ const MapDimensionGroup = ({
   mapHeight,
   tileWidth,
   tileHeight,
+  games,
+  gameToExport,
+  onExportPathChange,
 }: MapDimensionProps) => (
-  <ul className="bg-white h-40 mt-1 text-xs">
+  <ul className="bg-white h-44 mt-1 text-xs">
     <MapFieldRow name="Map Name" value={mapName} />
     <MapFieldRow name="Map Width" value={`${mapWidth}tiles`} />
     <MapFieldRow name="Map Height" value={`${mapHeight}tiles`} />
     <MapFieldRow name="Tile Width" value={`${tileWidth}px`} />
     <MapFieldRow name="Tile Hight" value={`${tileHeight}px`} />
     <MapFieldRow name="Save Path" value={mapFilePath} />
+    <MapFieldSelect
+      name="Export Path"
+      games={games}
+      gameToExport={gameToExport}
+      onExportPathChange={onExportPathChange}
+    />
   </ul>
 );
 
+/**
+ * Map dimension settings
+ */
 const MapDimensionSetting = ({
   mapWidth,
   mapHeight,
@@ -134,6 +185,8 @@ export const MapCreateWidget = ({
   mapHeight,
   tileWidth,
   tileHeight,
+  games,
+  gameToExport,
   createNewMapHandler,
   mapSaveHandler,
   mapExportHandler,
@@ -142,7 +195,9 @@ export const MapCreateWidget = ({
   tileHeightChangeHandler,
   tileWidthChangeHandler,
   copyNamesHandler,
+  onExportPathChange,
 }: MapCreateWidgetProps) => {
+  // basic dimension props
   const mapDimensionProps = {
     mapWidth,
     mapHeight,
@@ -155,6 +210,14 @@ export const MapCreateWidget = ({
     mapWidthChangeHandler,
     tileHeightChangeHandler,
     tileWidthChangeHandler,
+  };
+
+  const mapExportProps = {
+    mapName,
+    mapFilePath,
+    games,
+    gameToExport,
+    onExportPathChange,
   };
 
   return (
@@ -192,12 +255,9 @@ export const MapCreateWidget = ({
       </ButtonGroup>
       {/* game properties grid */}
       {newMapSaved && (
-        <MapDimensionGroup
-          mapName={mapName}
-          mapFilePath={mapFilePath}
-          {...mapDimensionProps}
-        />
+        <MapDimensionGroup {...mapDimensionProps} {...mapExportProps} />
       )}
+      {/* new map editing ... */}
       {!newMapSaved && (
         <MapDimensionSetting {...mapDimensionProps} {...mapDimensionHandlers} />
       )}

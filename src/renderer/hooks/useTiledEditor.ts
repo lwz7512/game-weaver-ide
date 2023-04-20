@@ -39,7 +39,7 @@ export const useTiledEditor = (
         editor.resetApp(bw - 298, bh);
         return;
       }
-      console.log(`>>> create new editor...`);
+      // console.log(`>>> create new editor...`);
       // create new editor
       const selector = '.tiled-editor-root';
       const root = document.querySelector(selector) as HTMLElement;
