@@ -60,6 +60,9 @@ export class TiledPainter extends TiledCore {
   /** save currently used tielsheet */
   protected selectedTilesheetURL: string | null = null;
 
+  /** map source file to export */
+  protected mapSourcePath: string | null = null;
+
   /**
    * Add interaction of drawing events
    *
@@ -238,16 +241,25 @@ export class TiledPainter extends TiledCore {
     this.tilesetImage = tilesheetFilePath;
   }
 
+  /**
+   * Save source path to export later
+   * @param filePath .gw file path
+   */
+  setGWMapSource(filePath: string) {
+    this.mapSourcePath = filePath;
+  }
+
   getGWMapInfo(): GWMap {
-    const layers = this.layerManager ? this.layerManager.getRawLayers() : [];
+    const layers = this.layerManager?.getRawLayers();
     return {
+      layers: layers || [],
       name: this.mapName || '',
       mapWidth: this.gameHoriTiles,
       mapHeight: this.gameVertTiles,
       tileWidth: this.tileWidth,
       tileHeight: this.tileHeight,
       tilesetImage: this.tilesetImage || '',
-      layers,
+      mapFilePath: this.mapSourcePath || '',
     };
   }
 

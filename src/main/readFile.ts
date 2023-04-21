@@ -90,8 +90,10 @@ export const readFile = (path: string): string | null => {
 export const readDirectoriesInSpace = (path: string): string[] => {
   const entries = fs.readdirSync(path, { withFileTypes: true });
   const folders = entries.filter((item) => item.isDirectory());
-
-  return folders
+  const ignoreDotFolders = folders.filter(
+    (folder) => !folder.name.startsWith('.')
+  );
+  return ignoreDotFolders
     .map((folder) => {
       const fullFolderPath = pathModule.join(
         pathModule.resolve(path),

@@ -39,6 +39,10 @@ export const addGWMapRecord = (gm: GWMap) => {
   drawingHistory.push(gm);
 };
 
+/**
+ * Get the last saved map object
+ * @returns gm instance
+ */
 export const getLastGWMap = (): GWMap | null => {
   if (drawingHistory.length) {
     return drawingHistory.slice(-1)[0];

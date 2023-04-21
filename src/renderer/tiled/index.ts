@@ -14,7 +14,10 @@ export type GWMap = {
   tileHeight: number;
   /** tilesheet file path */
   tilesetImage: string;
+  /** layers data used to rebuild layers */
   layers: GameWeaverLayer[];
+  /** map source path used to rebuild map */
+  mapFilePath: string;
 };
 
 export type GameWeaverLayer = {
