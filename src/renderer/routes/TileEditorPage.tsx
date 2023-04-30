@@ -1,4 +1,4 @@
-import { Toaster } from '@blueprintjs/core';
+import { Toaster, Spinner } from '@blueprintjs/core';
 
 import { MODULETYPES } from '../config';
 import { TiledEditor } from '../tiled/Editor';
@@ -11,6 +11,7 @@ import { useMapDimension } from '../hooks/useMapSession';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useMapFile } from '../hooks/useMapFile';
 import { useGMSpaceFolders } from '../hooks/useWorkspaceFile';
+import { useBPToast } from '../hooks/useToast';
 
 import LeftSideBar from '../components/LeftSideBar';
 import { MiniIconButton } from '../components/Buttons';
@@ -21,18 +22,34 @@ import { MapListSwitch, LayersCRUD } from '../components/MapLayerHistoryList';
 const TiledEditorPage = () => {
   const { onModuleChanged } = useLeftSideBar();
   const { spacePath } = useLocalStorage();
+  const {
+    toastState,
+    toasterCallback,
+    addToast,
+    addSuccessToast,
+    addWarningToast,
+  } = useBPToast();
+
   // define tilemap parameters
   const mapDimensions = useMapDimension();
   const { mapHeight, mapWidth, tileHeight, tileWidth, setAllDimension } =
     mapDimensions;
   const {
     dots,
+    isLoadingTilesheet,
     selectedImage,
     loadPngFile,
     openFileDialog,
     navigateToNext,
     navigateToPrev,
-  } = useSpriteSheetImage(+tileWidth || 0, +tileHeight || 0);
+    loadRemoteTilesheets,
+  } = useSpriteSheetImage(
+    +tileWidth || 0,
+    +tileHeight || 0,
+    spacePath,
+    addSuccessToast,
+    addWarningToast
+  );
 
   // draw bird view of tilesheet
   useSpritesPreview(selectedImage, dots);
@@ -43,7 +60,6 @@ const TiledEditorPage = () => {
     mapFilePath,
     newMapSaved,
     mapSaveHistory,
-    toastState,
     tabType,
     selectedMap,
     savedGWMap,
@@ -54,9 +70,14 @@ const TiledEditorPage = () => {
     mapExportHandler,
     copyNamesHandler,
     tileMapEditorSetter,
-    toasterCallback,
     onExportPathChange,
-  } = useMapFile(spacePath, selectedImage, setAllDimension, loadPngFile);
+  } = useMapFile(
+    spacePath,
+    selectedImage,
+    setAllDimension,
+    loadPngFile,
+    addToast
+  );
 
   const {
     layers,
@@ -117,10 +138,14 @@ const TiledEditorPage = () => {
           </button>
           <button
             type="button"
-            className="orange-btn no-transform rounded-l-none  rounded-none"
-            onClick={() => console.log('TODO: ...')}
+            className="orange-btn no-transform rounded-l-none  rounded-none w-33"
+            onClick={() => loadRemoteTilesheets()}
           >
-            Download Remote
+            {isLoadingTilesheet ? (
+              <Spinner size={12} intent="warning" className="white-track" />
+            ) : (
+              `Download Remote`
+            )}
           </button>
         </div>
         {/* sprites sheet preview, use width, height attributes only! */}

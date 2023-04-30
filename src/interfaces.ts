@@ -1,4 +1,5 @@
 export type PNGFile = {
+  path: string;
   buffer: Buffer;
   width: number;
   height: number;

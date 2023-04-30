@@ -1,11 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import {
-  Intent,
-  IToasterProps,
-  Position,
-  Toaster,
-  ToastProps,
-} from '@blueprintjs/core';
+import { Intent, ToastProps } from '@blueprintjs/core';
 
 import { kebabCase } from '../utils';
 import { IpcEvents } from '../../ipc-events';
@@ -30,11 +24,11 @@ export const useMapFile = (
   selectedImage: string,
   onDimensionChange: (mh: number, mw: number, th: number, tw: number) => void,
   /** load tilesheet png file, to initialize `mapParams.sourceImage` */
-  loadPngFile: (path: string) => Promise<boolean>
+  loadPngFile: (path: string) => Promise<boolean>,
+  addToast: (toast: ToastProps) => void
 ) => {
   const { ipcRenderer } = window.electron;
 
-  const toasterRef = useRef<Toaster | null>(null);
   const editorRef = useRef<TiledPainter | null>(null);
 
   // tab switch
@@ -52,15 +46,6 @@ export const useMapFile = (
   const [gameToExport, setGameToExport] = useState(
     lastGameSelected || 'default'
   );
-
-  console.log({ mapFilePath });
-
-  const addToast = (toast: ToastProps) => {
-    if (!toasterRef.current) return;
-    // toast.className = '';
-    toast.timeout = 3000;
-    toasterRef.current.show(toast);
-  };
 
   const onExportPathChange = (game: string) => {
     setGameToExport(game);
@@ -164,19 +149,6 @@ export const useMapFile = (
     // console.log(`## tilemap editor instance received!`);
     editorRef.current = editor;
     setEditorInjected(true);
-  };
-
-  // toast properties
-  const toastState: IToasterProps = {
-    autoFocus: false,
-    canEscapeKeyClear: true,
-    position: Position.TOP,
-    usePortal: true,
-    maxToasts: 1,
-  };
-
-  const toasterCallback = (ref: Toaster) => {
-    toasterRef.current = ref;
   };
 
   /**
@@ -360,7 +332,6 @@ export const useMapFile = (
     mapName,
     mapFilePath,
     newMapSaved,
-    toastState,
     mapSaveHistory,
     tabType,
     /** map name to be loaded by click history item */
@@ -369,7 +340,6 @@ export const useMapFile = (
     loadMapBy,
     setSelectedMap,
     setTabType,
-    toasterCallback,
     mapSaveHandler,
     mapExportHandler,
     createNewMapHandler,

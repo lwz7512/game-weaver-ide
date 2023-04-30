@@ -8,3 +8,11 @@
   padding-top: 5px;
   padding-bottom: 5px;
 }
+
+.bp4-spinner.bp4-intent-warning.white-track .bp4-spinner-head {
+  stroke: #fff;
+}
+
+.w-33 {
+  width: 132px;
+}

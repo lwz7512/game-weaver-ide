@@ -32,7 +32,9 @@ export const getLastGameCode = (game: string) => {
 const drawingHistory: GWMap[] = [];
 
 /**
- * Cache one map object for page switching restore
+ * Cache one map object for page switching restore, two places use it:
+ * 1. manually load map from history
+ * 2. editor instance destroy at `useTiledEditor`
  * @param gm GWMap instance
  */
 export const addGWMapRecord = (gm: GWMap) => {

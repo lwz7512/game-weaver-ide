@@ -8,6 +8,10 @@ import { getLastOpenGame, saveLastOpenGame } from '../state/session';
 /**
  * Central hook used in `CodeEditorPage`.
  *
+ * using two hooks:
+ * - useGMSpaceFolders
+ * - useWorkspaceMainJS
+ *
  * @returns
  */
 export const useWorkspaceGames = () => {

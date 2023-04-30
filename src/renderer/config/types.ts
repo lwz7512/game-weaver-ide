@@ -1,3 +1,9 @@
+export type TileSheetImage = {
+  path: string;
+  tileSize: number;
+  space: number;
+};
+
 export type SaveHistory = {
   /** map name */
   name: string;

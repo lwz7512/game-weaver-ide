@@ -18,6 +18,7 @@ import {
   checkDirectoryExistence,
   deleteDirectory,
   writeFile,
+  fetchRemoteJSON,
 } from './readFile';
 
 export const setupIpcMainHandler = () => {
@@ -46,10 +47,6 @@ export const setupIpcMainHandler = () => {
     return readFile(path);
   });
 
-  ipcMain.handle(IpcEvents.DOWNLOAD_GAME_DEMO, (_, fileObjs: []) => {
-    return downloadFileList(fileObjs);
-  });
-
   ipcMain.handle(IpcEvents.READ_GAMESPACE_DIRS, (_, path: string) => {
     return readDirectoriesInSpace(path);
   });
@@ -58,7 +55,15 @@ export const setupIpcMainHandler = () => {
     return checkDirectoryExistence(path);
   });
 
+  ipcMain.handle(IpcEvents.DOWNLOAD_GAME_DEMO, (_, fileObjs: []) => {
+    return downloadFileList(fileObjs);
+  });
+
   ipcMain.handle(IpcEvents.DOWNLOAD_GAME_TEMPLATE, (_, fileObjs: []) => {
+    return downloadFileList(fileObjs);
+  });
+
+  ipcMain.handle(IpcEvents.DOWNLOAD_TILESHEETTS, (_, fileObjs: []) => {
     return downloadFileList(fileObjs);
   });
 
@@ -76,6 +81,10 @@ export const setupIpcMainHandler = () => {
 
   ipcMain.handle(IpcEvents.READ_PNG_IMAGE, (_, imageFilePath: string) => {
     return readPngImage(imageFilePath);
+  });
+
+  ipcMain.handle(IpcEvents.FETCH_REMOTE_JSON, (_, jsonFileURL: string) => {
+    return fetchRemoteJSON(jsonFileURL);
   });
 
   ipcMain.handle(

@@ -97,15 +97,19 @@ export const useGMSpaceFolders = () => {
 
   const fetchGamesInSpace = useCallback(async (workspace: string) => {
     const { ipcRenderer } = window.electron;
+
     // step1: check gmspace
     const folders = (await ipcRenderer.invoke(
       IpcEvents.READ_GAMESPACE_DIRS,
       workspace
     )) as string[];
     // console.log(folders);
+    // ignore tiles folder in the game space
+    // @2023/04/26
+    const validGameFolders = folders.filter((dir) => dir !== 'tiles');
 
     if (folders.length) {
-      return setGameFolders(folders);
+      return setGameFolders(validGameFolders);
     }
 
     // step2: download demo game to empty workspace if run IDE first

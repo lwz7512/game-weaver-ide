@@ -47,6 +47,7 @@ export const readPngImage = (path: string): PNGFile | null => {
   if (cachedBlob) {
     const dimension = PNG.calculate(cachedBlob);
     return {
+      path,
       buffer: cachedBlob,
       width: dimension.width || 0,
       height: dimension.height || 0,
@@ -63,6 +64,7 @@ export const readPngImage = (path: string): PNGFile | null => {
   console.log(`png height is: ${dimension.height}`);
 
   return {
+    path,
     buffer,
     width: dimension.width || 0,
     height: dimension.height || 0,
@@ -109,8 +111,10 @@ export const readDirectoriesInSpace = (path: string): string[] => {
 };
 
 export const downloadRemoteFile = async (url: string, path: string) => {
+  // check already downloaded @2023/04/26
+  const exist = fs.existsSync(path);
   // NOTE: this make sure folder/file created to enable stream writing
-  fs.outputFileSync(path, '');
+  !exist && fs.outputFileSync(path, '');
 
   // prepare write stream
   const fstream = fs.createWriteStream(path);
@@ -146,6 +150,16 @@ export const downloadFileList = async (fileObjs: FileObj[]) => {
   await downloadFileList(fileObjs);
 
   return true;
+};
+
+/**
+ * Fetch remote json file content
+ * @param url json file url
+ * @returns
+ */
+export const fetchRemoteJSON = async (url: string) => {
+  const content = await got(url).text();
+  return content;
 };
 
 export const checkDirectoryExistence = (path: string): boolean => {
