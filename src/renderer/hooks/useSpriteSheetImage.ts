@@ -108,7 +108,7 @@ export const useSpriteSheetImage = (
   /**
    * Tricky function for Promise Array handling from:
    * https://css-tricks.com/why-using-reduce-to-sequentially-resolve-promises-works/
-   *
+   * @date 2023/04/30
    * @param pngPaths
    * @returns
    */

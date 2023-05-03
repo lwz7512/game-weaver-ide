@@ -1,5 +1,6 @@
 import { app, dialog } from 'electron';
 import * as fs from 'fs-extra';
+import * as path from 'path';
 
 export async function showOpenImageDialog(title: string): Promise<string[]> {
   const { filePaths } = await dialog.showOpenDialog({
@@ -42,16 +43,29 @@ export async function showSaveDialog(dir = 'gmspace'): Promise<string[]> {
     title: `Save Workspace ${dir}`,
   });
 
+  // cancel
   if (!Array.isArray(filePaths) || filePaths.length === 0) {
     return [];
   }
 
-  const gmspacePath = `${filePaths[0]}/${dir}`;
+  // FIXME: do not create gmspace under gmspace
+  // @2023/05/02
+  const gmSelected = filePaths[0].includes(dir);
+  if (gmSelected) {
+    const gmspacePosition = filePaths[0].indexOf(dir);
+    const originGMSpacePath = filePaths[0].substring(0, gmspacePosition);
+    return [`${originGMSpacePath}${dir}`]; // return original gmspace path
+  }
+
+  // assume current selected directory is the parent of `gmspace` folder
+  const gmspacePath = `${filePaths[0]}${path.sep}${dir}`;
   const gmExisted = fs.existsSync(gmspacePath);
   if (!gmExisted) {
     await fs.mkdir(gmspacePath);
   } else {
-    await fs.writeFile(`${gmspacePath}/empty.txt`, '');
+    // why create an empty file? placeholder? @2023/05/02
+    const placeholderPath = `${gmspacePath}/empty.txt`;
+    await fs.writeFile(placeholderPath, '');
   }
   console.log(`### Saved to ${gmspacePath}`);
   return [gmspacePath];
