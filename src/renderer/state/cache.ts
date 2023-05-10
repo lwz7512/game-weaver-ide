@@ -103,6 +103,8 @@ export const checkImageLoaded = (pngFilePath: string) => {
   return imageBlobs.find((item) => item.path === pngFilePath);
 };
 
+export const checkImageBlobSize = () => imageBlobs.length;
+
 /**
  * Put loaded png into a list
  * @param pngFilePath png path

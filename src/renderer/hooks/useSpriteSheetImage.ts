@@ -8,6 +8,7 @@ import { getImageContext } from '../tiled/ImageBit';
 import {
   getTileImageDots,
   checkImageLoaded,
+  checkImageBlobSize,
   cacheImageBlob,
   cacheImageTextures,
   getNextImageURL,
@@ -148,10 +149,26 @@ export const useSpriteSheetImage = (
   };
 
   const loadRemoteTilesheets = async () => {
+    // 1st check: space
     if (!workspacePath) {
       return addWarningToast('Setting workspace first!');
     }
+    // 2nd check: is loading
     if (isLoadingTilesheet) return;
+
+    // 4th check: is downloaded locally ?
+    const tilesPath = `${workspacePath}/tiles`;
+    const isTileDirExisting = await ipcRenderer.invoke(
+      IpcEvents.CHECK_DIR_EXISTS,
+      tilesPath
+    );
+    // console.log({ isTileDirExisting });
+
+    // 3rd check: is loaded in memory ?
+    // the tile object size in index.json is 8 at this moment
+    // @2023/05/08
+    const tileSize = checkImageBlobSize();
+    if (tileSize >= 8) return;
 
     // start downloading...
     setIsLoadingTilesheet(true);
@@ -175,9 +192,11 @@ export const useSpriteSheetImage = (
     // console.log(fileObjs);
 
     // download tilesheet pngs ...
-    await ipcRenderer.invoke(IpcEvents.DOWNLOAD_TILESHEETTS, fileObjs);
+    if (!isTileDirExisting) {
+      await ipcRenderer.invoke(IpcEvents.DOWNLOAD_TILESHEETTS, fileObjs);
+      addSuccessToast('Tilesheets Download Completed!');
+    }
     // console.log(`>>> invoke completed!`);
-    addSuccessToast('Tilesheets Download Completed!');
     setIsLoadingTilesheet(false);
 
     // load into memory and display thumbnails ...
