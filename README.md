@@ -2,7 +2,7 @@
 
 # Game Weaver
 
-> The Best Coding Education Kit for kids through game challenges
+> The Best Coding Education Kit for kids through web game challenges
 
 Created @2022/08/16
 
@@ -63,3 +63,7 @@ Created @2022/08/16
 ### v0.6 ...
 
 ## More...
+
+## Credits
+
+- Banner Image by <a href="https://www.freepik.com/free-vector/flat-neon-gaming-landing-page-template_33809377.htm#&position=4&from_view=collections">Freepik</a>
