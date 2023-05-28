@@ -1,8 +1,17 @@
+<img src="./assets/gw_banner_2023_0526.png" />
+
 # Game Weaver
 
-> Javascript Coding Education Kit for kids through game challenges
+> The Best Coding Education Kit for kids through game challenges
 
 Created @2022/08/16
+
+## Main features
+
+- HTML5 2D game coding editor based on template(support phaserjs, pixijs) - v0.1;
+- Game refresh with live preview - v0.1;
+- PhaserJS-CE version game examples gallery - v0.1;
+- Tilemap editor bisic for PhaserJS games - v0.2;
 
 ## Based on boilerplate
 
@@ -17,15 +26,40 @@ Created @2022/08/16
 - [tailwindcss](https://tailwindcss.com/);
 - [zustand](https://github.com/pmndrs/zustand);
 
-## Main features
-
-- HTML5 2D game developement based on phaserjs game template(and pixijs);
-- Tilemap form phaserjs game engine authoring;
-- Game development with live preview;
-
 ## Version history
 
 - V0.1 - Game code editor & examples module completion @2022/10/08
-- V0.2 - Game map editor completion @2022/??/??
+- V0.2 - Game map editor completion @2023/05/09
+
+## Roadmap:
+
+### v0.1 basic module
+
+- main module setup
+- code editor
+- phaser game examples gallery
+- ...
+
+### v0.2 tile-editor basis
+
+- tilemap editor
+- single tilesheet only
+- tilemap json(tiled compatible format) export
+
+### v0.3 primary game creation workflow
+
+- paint using multiple tilesheet ... --- v0.3 GW completion
+- ...
+
+### v0.4 tile-editor plus
+
+- paint object layer ... --- v0.4 GW completion
+- ...
+
+### v0.5 classic 2D games 1st season
+
+- ...
+
+### v0.6 ...
 
 ## More...
