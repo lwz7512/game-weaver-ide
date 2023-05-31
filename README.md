@@ -2,13 +2,19 @@
 
 # Game Weaver
 
-> The Best Coding Education Kit for kids through web game challenges
+> The Best Coding Education Kit for kids through game challenges
 
 Created @2022/08/16
 
+## What it is:
+
+```
+Game weaver is an light-weight integrated development environment for Web games development, it includes built-in web view to preview game result, JavaScript code editor to implement game logic, as well as a light-weight tile map editor to draw & export tile map that could be loaded in PhaserJS games. Last but not the least, it also has rich set of game examples and source code of classic nostalgic games for beginner's learning.
+```
+
 ## Main features
 
-- HTML5 2D game coding editor based on template(support phaserjs, pixijs) - v0.1;
+- HTML5(web) 2D game coding editor based on template(support phaserjs, pixijs) - v0.1;
 - Game refresh with live preview - v0.1;
 - PhaserJS-CE version game examples gallery - v0.1;
 - Tilemap editor bisic for PhaserJS games - v0.2;
