@@ -9,11 +9,11 @@ Created @2022/08/16
 ## What it is:
 
 ```
-Game weaver is an light-weight integrated development environment for Web games development,
-it includes built-in web view to preview game result, JavaScript code editor to implement
+Game weaver is an light-weight web game integrated development environment for beginners.
+It includes built-in web view to preview game result, JavaScript code editor to implement
 game logic, as well as a light-weight tile map editor to draw & export tile map that could be
 loaded in PhaserJS games. Last but not the least, it also has rich set of game examples
-and source code of classic nostalgic games for beginner's learning.
+and source code of classic nostalgic games for coding beginners to get their feet wet.
 ```
 
 ## Main features
@@ -43,14 +43,14 @@ and source code of classic nostalgic games for beginner's learning.
 
 ## Roadmap:
 
-### v0.1 basic module
+### v0.1 basic modules
 
 - main module setup
 - code editor
 - phaser game examples gallery
 - ...
 
-### v0.2 tile-editor basis
+### v0.2 tile-editor basic
 
 - tilemap editor
 - single tilesheet only
@@ -58,19 +58,24 @@ and source code of classic nostalgic games for beginner's learning.
 
 ### v0.3 primary game creation workflow
 
-- paint using multiple tilesheet ... --- v0.3 GW completion
+- docs & tutorials ... --- v0.3 GW completion
 - ...
 
 ### v0.4 tile-editor plus
 
-- paint object layer ... --- v0.4 GW completion
+- sample game challenges ... --- v0.4 GW completion
 - ...
 
 ### v0.5 classic 2D games 1st season
 
+- paint using multiple tilesheet ... --- v0.3 GW completion
 - ...
 
+
 ### v0.6 ...
+
+- paint object layer ... --- v0.4 GW completion
+- ...
 
 ## More...
 

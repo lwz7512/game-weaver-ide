@@ -98,6 +98,11 @@ a {
   text-decoration: none;
 }
 
+.list-item li {
+  list-style-type: disc;
+  text-decoration: underline;
+}
+
 a:hover {
   opacity: 1;
   text-decoration: none;
