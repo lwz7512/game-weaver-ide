@@ -9,12 +9,21 @@ Created @2022/08/16
 ## What it is:
 
 ```
-Game weaver is an light-weight web game integrated development environment for beginners.
-It includes built-in web view to preview game result, JavaScript code editor to implement
-game logic, as well as a light-weight tile map editor to draw & export tile map that could be
-loaded in PhaserJS games. Last but not the least, it also has rich set of game examples
-and source code of classic nostalgic games for coding beginners to get their feet wet.
+Game Weaver is a lightweight web game  development environment designed for beginners.It includes a built-in web view for previewing game results and a JavaScript code editor for implementing game logic. Additionally, it features a lightweight tile map editor for drawing and exporting tile maps that can be loaded in PhaserJS games. Last but not  least, it also includes a rich set of game examples and source code for classic nostalgic games, providing coding beginners with an opportunity to dive in and get started.
 ```
+
+## Who is this for:
+
+- Coding beginners.
+- Game development beginers.
+- Anyone who want to try coding with an easy path.
+
+
+## Main goals
+
+- Programming cold start
+- Coding with Javascript
+- Game development fundamentals
 
 ## Main features
 

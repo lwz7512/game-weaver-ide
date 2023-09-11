@@ -2,6 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  h1 {
+    @apply text-2xl my-4;
+  }
+  h2 {
+    @apply text-xl my-4;
+  }
+
+  h3 {
+    @apply text-lg my-2;
+  }
+
+  pre {
+    @apply p-2 bg-gray-100 rounded-lg;
+  }
+
+  p {
+    @apply text-base leading-6 text-gray-600;
+  }
+
+  ul {
+    /*  */
+    /* @apply pl-3; */
+  }
+}
+
 @layer components {
   .verti-align-center {
     @apply flex flex-col items-center;
@@ -59,9 +85,10 @@
 @import './style/welcome.css';
 @import './style/code-editor.css';
 @import './style/inputs.css';
+@import './style//markdown.css';
 
 :root {
-  --gw-wheat: rgb(241, 222, 184); /* wheat */
+  --gw-wheat: rgb(75, 50, 2); /* wheat */
   --gw-yellow: rgb(215, 198, 160);
   --gw-dark-slate: rgb(71 85 105);
   --gw-logo-silver: rgb(167, 192, 217);

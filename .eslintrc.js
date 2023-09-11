@@ -20,6 +20,7 @@ module.exports = {
     'react/require-default-props': 'off',
     'react/jsx-props-no-spreading': 'off',
     'react/no-unused-prop-types': 'warn',
+    'react/no-danger': 'off',
     'prettier/prettier': ['off', { singleQuote: true, trailingComma: 'all' }],
     'no-unused-vars': 'off',
     'no-console': 'off',

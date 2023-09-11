@@ -1,0 +1,15 @@
+.markdown-container ul {
+  padding: 0 12px ;
+}
+
+.markdown-container a {
+  font-size: 14px;
+  color:cornflowerblue;
+  line-height: 24px;
+}
+
+.markdown-container a:hover {
+  text-decoration: underline;
+  color: royalblue;
+  font-size: 16px;
+}

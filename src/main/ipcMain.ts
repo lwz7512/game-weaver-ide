@@ -19,6 +19,7 @@ import {
   deleteDirectory,
   writeFile,
   fetchRemoteJSON,
+  fetchRemoteTextFile,
 } from './readFile';
 
 export const setupIpcMainHandler = () => {
@@ -85,6 +86,10 @@ export const setupIpcMainHandler = () => {
 
   ipcMain.handle(IpcEvents.FETCH_REMOTE_JSON, (_, jsonFileURL: string) => {
     return fetchRemoteJSON(jsonFileURL);
+  });
+
+  ipcMain.handle(IpcEvents.FETCH_REMOTE_TEXT, (_, textFileURL: string) => {
+    return fetchRemoteTextFile(textFileURL);
   });
 
   ipcMain.handle(

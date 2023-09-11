@@ -72,7 +72,7 @@ export const readPngImage = (path: string): PNGFile | null => {
 };
 
 /**
- * Read javascript file source code content
+ * Read javascript file source code content from local machine
  * @param path main.js path
  * @returns string or null
  */
@@ -110,6 +110,13 @@ export const readDirectoriesInSpace = (path: string): string[] => {
     .map((item) => item.name);
 };
 
+/**
+ * Fetch remote file to save at local path
+ *
+ * @param url remote url path to download
+ * @param path local file path to save download file
+ * @returns
+ */
 export const downloadRemoteFile = async (url: string, path: string) => {
   // check already downloaded @2023/04/26
   const exist = fs.existsSync(path);
@@ -150,6 +157,11 @@ export const downloadFileList = async (fileObjs: FileObj[]) => {
   await downloadFileList(fileObjs);
 
   return true;
+};
+
+export const fetchRemoteTextFile = async (url: string) => {
+  const content = await got(url).text();
+  return content;
 };
 
 /**
