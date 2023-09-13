@@ -49,6 +49,7 @@ Game Weaver is a lightweight web game  development environment designed for begi
 
 - V0.1 - Game code editor & examples module completion @2022/10/08
 - V0.2 - Game map editor completion @2023/05/09
+- V0.3 - Completion of Learning Page module @2023/09/13
 
 ## Roadmap:
 

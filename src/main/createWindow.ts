@@ -121,6 +121,9 @@ export const closeView = () => {
   const win = browserWindows[0];
   const view = gameViews.shift();
   if (win && view) {
+    // FIXME: this works for youtube video stop playing after close!!!
+    // @2023/09/13
+    view.webContents.loadURL('about:blank');
     win.removeBrowserView(view);
   }
 };

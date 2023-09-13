@@ -27,6 +27,7 @@ module.exports = {
     'no-useless-return': 'warn',
     'consistent-return': 'off',
     'class-methods-use-this': 'off',
+    'jsx-a11y/no-noninteractive-element-interactions': 'off',
   },
   parserOptions: {
     ecmaVersion: 2020,

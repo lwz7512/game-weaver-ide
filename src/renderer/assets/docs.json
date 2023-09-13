@@ -2,19 +2,31 @@
   "baseURL": "https://raw.githubusercontent.com/lwz7512/game-weaver-ast/master",
   "learning": [
     {
-      "name": "Javascript basics",
+      "id": 1,
+      "name": "Javascript basic knowledges",
       "title": "for Beginners",
-      "url": "/docs/javasctipt_basic.md"
+      "url": "/docs/javasctipt_basic.md",
+      "description": "Learning Javascript language step by step for coding beginners.",
+      "border": "border-red-600",
+      "theme": "danger"
     },
     {
+      "id": 2,
       "name": "Game development fundamentals",
       "title": "for junior devs",
-      "url": "/docs/javasciprt_2dgame.md"
+      "url": "/docs/javasciprt_2dgame.md",
+      "description": "Learning game development with javascript game engine.",
+      "border": "border-green-600",
+      "theme": "success"
     },
     {
+      "id": 3,
       "name": "Javascript Advanced Techniques",
       "title": "for Professional devs",
-      "url": "/docs/javascript_advanced.md"
+      "url": "/docs/javascript_advanced.md",
+      "description": "Exploring software development beyond javascript world.",
+      "border": "border-blue-600",
+      "theme": "primary"
     }
   ]
 }

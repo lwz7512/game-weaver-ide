@@ -1,15 +1,37 @@
+.markdown-container h1 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  margin: 1em 0;
+}
+
+.markdown-container h2 {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  margin: 1em 0;
+}
+
+.markdown-container h3 {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  margin: 0.5em 0;
+}
+
 .markdown-container ul {
   padding: 0 12px ;
 }
 
 .markdown-container a {
   font-size: 14px;
-  color:cornflowerblue;
+  color:dodgerblue;
   line-height: 24px;
 }
 
 .markdown-container a:hover {
   text-decoration: underline;
-  color: royalblue;
+  color: blue;
   font-size: 16px;
+}
+
+.markdown-container a:focus {
+  outline: none;
 }

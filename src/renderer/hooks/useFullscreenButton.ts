@@ -11,10 +11,10 @@ const useFullscreenButton = (gamePreviewDefaultURL: string) => {
 
   const [isWVFullscreen, setIsWVFullscreen] = useState(false);
 
-  const fullScreenOpenHandler = () => {
+  const fullScreenOpenHandler = (url?: string) => {
     const domRect = document.body.getBoundingClientRect();
     ipcRenderer.sendMessage(IpcEvents.OPEN_GAME_VIEW, [
-      gamePreviewDefaultURL,
+      url || gamePreviewDefaultURL,
       { width: domRect.width - 56, height: domRect.height },
     ]);
     // lazy showing up close button

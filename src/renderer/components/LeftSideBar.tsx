@@ -52,20 +52,20 @@ const LeftSideBar = ({
         title="Game Map Editor"
         onModuleChanged={changeModuleType}
       />
-      {/* === CODE BLOCK === */}
-      <ModuleToolButton
-        icon="code-block"
-        module={MODULETYPES.BLOCKS}
-        currentModule={currentModule}
-        title="Phaser Game Examples"
-        onModuleChanged={changeModuleType}
-      />
       {/* === LEARNING MODULE === */}
       <ModuleToolButton
         icon="learning"
         module={MODULETYPES.LEARN}
         currentModule={currentModule}
         title="Tutorial and Docs"
+        onModuleChanged={changeModuleType}
+      />
+      {/* === CODE BLOCK === */}
+      <ModuleToolButton
+        icon="code-block"
+        module={MODULETYPES.BLOCKS}
+        currentModule={currentModule}
+        title="Phaser Game Examples"
         onModuleChanged={changeModuleType}
       />
       {/* === PROJECTS MODULE === */}
