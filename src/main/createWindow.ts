@@ -63,6 +63,20 @@ export const createWindow = async (isDebug: boolean) => {
 
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
+  // FIXME: keep the same size while main window resize
+  // @2023/09/13
+  mainWindow.on('resize', () => {
+    if (!gameViews[0]) return;
+    const [width, height] = mainWindow.getSize();
+    const view = gameViews[0];
+    view.setBounds({
+      x: 0,
+      y: 0,
+      width: width - 56,
+      height,
+    });
+  });
+
   mainWindow.on('ready-to-show', () => {
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
@@ -104,7 +118,7 @@ export const createWindow = async (isDebug: boolean) => {
 export const createView = (url: string, width = 400, height = 300) => {
   const win = browserWindows[0];
   if (win) {
-    const view = new BrowserView();
+    const view = gameViews[0] || new BrowserView();
     win.addBrowserView(view);
     view.setBounds({
       x: 0,
@@ -113,18 +127,19 @@ export const createView = (url: string, width = 400, height = 300) => {
       height,
     });
     view.webContents.loadURL(url);
-    gameViews.push(view);
+    // cache a view if not cached
+    !gameViews[0] && gameViews.push(view);
   }
 };
 
 export const closeView = () => {
   const win = browserWindows[0];
-  const view = gameViews.shift();
+  const view = gameViews[0];
   if (win && view) {
+    win.removeBrowserView(view);
     // FIXME: this works for youtube video stop playing after close!!!
     // @2023/09/13
     view.webContents.loadURL('about:blank');
-    win.removeBrowserView(view);
   }
 };
 

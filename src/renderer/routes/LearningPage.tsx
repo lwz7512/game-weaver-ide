@@ -60,7 +60,12 @@ const LearningPage = () => {
       {/* === right panel === */}
       <div className="flex-1 bg-slate-50 ">
         <div className="header relative w-full">
-          <h1 className="m-0 text-2xl text-center underline p-8 border-b border-gray-300 bg-sky-50">
+          <h1
+            className={clsx(
+              'm-0 text-center underline border-b border-gray-300 bg-sky-50',
+              learningContent ? 'text-base p-2' : 'text-2xl p-8'
+            )}
+          >
             Welcome to learning page!
           </h1>
           {isWVFullscreen && (
@@ -82,13 +87,31 @@ const LearningPage = () => {
               key={doc.id}
               interactive
               elevation={Elevation.TWO}
-              className={clsx('w-56 h-60 border', doc.border)}
+              className={clsx(
+                'w-56 border',
+                doc.border,
+                learningContent ? 'h-32 px-2 py-0' : 'h-60'
+              )}
             >
               <span
                 className={clsx('border-b-4 inline-block w-8', doc.border)}
               />
-              <h1 className="text-lg font-semibold h-14">{doc.name}</h1>
-              <p className="block w-full h-24 py-2">{doc.description}</p>
+              <h1
+                className={clsx(
+                  'font-semibold h-14',
+                  learningContent ? 'text-base' : 'text-lg'
+                )}
+              >
+                {doc.name}
+              </h1>
+              <p
+                className={clsx(
+                  'w-full h-24 py-2',
+                  learningContent ? 'hidden' : 'block '
+                )}
+              >
+                {doc.description}
+              </p>
               <Button
                 intent={doc.theme as Intent}
                 onClick={() => openDocBy(doc.id)}
@@ -101,7 +124,7 @@ const LearningPage = () => {
         {/* learning content from remot */}
         <div
           role="note"
-          className="p-4 overflow-y-scroll h-4/5 markdown-container"
+          className="p-4 overflow-y-scroll h-2/3 markdown-container"
           dangerouslySetInnerHTML={{ __html: learningContent }}
           onKeyDown={() => null}
           onClick={markdownLinkHandler}
