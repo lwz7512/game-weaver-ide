@@ -34,6 +34,7 @@ const WelcomePage = () => {
       </div>
       <div className="flex-1">
         <HeroBanner
+          slogan={appCfg.slogan}
           title={appCfg.heroTitle}
           heroURL={appCfg.baseURL + appCfg.heroImage}
           placeHolder={placeHolderImg}
@@ -49,7 +50,7 @@ const WelcomePage = () => {
             </ul>
           </div>
           <div className="section">
-            <h2 className="text-lg font-semibold">Recent</h2>
+            <h2 className="text-lg font-semibold">Recent Challenge</h2>
           </div>
           <div className="section right-cell">
             <h2 className="text-lg font-semibold">Tutorials</h2>
@@ -58,7 +59,7 @@ const WelcomePage = () => {
             <h2 className="text-lg font-semibold">Samples</h2>
           </div>
           <div className="section">
-            <h2 className="text-lg font-semibold">Projects</h2>
+            <h2 className="text-lg font-semibold">My Projects</h2>
           </div>
           <div className="section right-cell">
             <h2 className="text-lg font-semibold">Updates</h2>

@@ -60,6 +60,14 @@ const LeftSideBar = ({
         title="Tutorial and Docs"
         onModuleChanged={changeModuleType}
       />
+      {/* === CHALLENGES MODULE === */}
+      <ModuleToolButton
+        icon="badge"
+        module={MODULETYPES.PROJECTS}
+        currentModule={currentModule}
+        title="Coding Challenges"
+        onModuleChanged={changeModuleType}
+      />
       {/* === CODE BLOCK === */}
       <ModuleToolButton
         icon="code-block"
@@ -68,15 +76,7 @@ const LeftSideBar = ({
         title="Phaser Game Examples"
         onModuleChanged={changeModuleType}
       />
-      {/* === PROJECTS MODULE === */}
-      <ModuleToolButton
-        icon="projects"
-        module={MODULETYPES.PROJECTS}
-        currentModule={currentModule}
-        title="Coding Challenges"
-        onModuleChanged={changeModuleType}
-      />
-      {/* SPACER */}
+      {/* ================ SPACER ============== */}
       <div className="spacer-vertical flex-1" />
       {/* === USER MODULE === */}
       <ModuleToolButton

@@ -11,7 +11,7 @@ import useFullscreenButton from './useFullscreenButton';
 
 import docs from '../assets/docs.json';
 
-type LearningDoc = {
+export type LearningDoc = {
   id: number;
   name: string;
   title: string;

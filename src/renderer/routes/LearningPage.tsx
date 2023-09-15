@@ -1,6 +1,11 @@
 import { Button, Card, Elevation, Intent, Icon } from '@blueprintjs/core';
 import clsx from 'clsx';
 import LeftSideBar from '../components/LeftSideBar';
+import {
+  DocButtonInList,
+  DocCardInList,
+  LearningDocHeader,
+} from '../components/LearningDocItem';
 import useLeftSideBar from '../hooks/useLeftSideBar';
 import { MODULETYPES } from '../config';
 import { useLearningDocs } from '../hooks/useLearningDocs';
@@ -36,95 +41,45 @@ const LearningPage = () => {
           </h1>
           <ul className=" text-sm list-none text-gray-800 leading-7">
             {learningDocs.map((doc) => (
-              <li
+              <DocButtonInList
                 key={doc.name}
-                className={clsx(
-                  'bg-slate-500',
-                  'hover:bg-sky-500',
-                  doc.selected ? 'bg-sky-600' : ''
-                )}
-              >
-                <button
-                  type="button"
-                  className="game-item inline-block border-b w-full"
-                  title={doc.title}
-                  onClick={() => docLoadHandler(doc.name, doc.url)}
-                >
-                  {doc.name}
-                </button>
-              </li>
+                doc={doc}
+                docLoadHandler={docLoadHandler}
+              />
             ))}
           </ul>
         </div>
       </div>
       {/* === right panel === */}
       <div className="flex-1 bg-slate-50 ">
-        <div className="header relative w-full">
-          <h1
-            className={clsx(
-              'm-0 text-center underline border-b border-gray-300 bg-sky-50',
-              learningContent ? 'text-base p-2' : 'text-2xl p-8'
-            )}
-          >
-            Welcome to learning page!
-          </h1>
-          {isWVFullscreen && (
-            <button
-              type="button"
-              className="absolute top-0 right-1"
-              onClick={closeFullscreenGameHandler}
-            >
-              <Icon icon="chevron-left" size={20} color="gray" />
-              <span className="text-base leading-6 text-gray-600">Back</span>
-            </button>
-          )}
-        </div>
-
+        <LearningDocHeader
+          content={learningContent}
+          isWVFullscreen={isWVFullscreen}
+          closeWebpageHandler={closeFullscreenGameHandler}
+        />
         {/* learning doc cards */}
-        <div className="card-list flex flex-wrap gap-6 p-4">
+        <div
+          className={clsx(
+            'card-list flex flex-wrap gap-6 p-4',
+            isWVFullscreen ? 'bg-black' : ''
+          )}
+        >
           {learningDocs.map((doc) => (
-            <Card
-              key={doc.id}
-              interactive
-              elevation={Elevation.TWO}
-              className={clsx(
-                'w-56 border',
-                doc.border,
-                learningContent ? 'h-32 px-2 py-0' : 'h-60'
-              )}
-            >
-              <span
-                className={clsx('border-b-4 inline-block w-8', doc.border)}
-              />
-              <h1
-                className={clsx(
-                  'font-semibold h-14',
-                  learningContent ? 'text-base' : 'text-lg'
-                )}
-              >
-                {doc.name}
-              </h1>
-              <p
-                className={clsx(
-                  'w-full h-24 py-2',
-                  learningContent ? 'hidden' : 'block '
-                )}
-              >
-                {doc.description}
-              </p>
-              <Button
-                intent={doc.theme as Intent}
-                onClick={() => openDocBy(doc.id)}
-              >
-                Read
-              </Button>
-            </Card>
+            <DocCardInList
+              key={doc.name}
+              content={learningContent}
+              doc={doc}
+              openDocHandler={openDocBy}
+            />
           ))}
         </div>
         {/* learning content from remot */}
         <div
           role="note"
-          className="p-4 overflow-y-scroll h-2/3 markdown-container"
+          className={clsx(
+            'p-4 pr-14 overflow-y-scroll h-3/4 markdown-container',
+            isWVFullscreen ? 'bg-black' : ''
+          )}
           dangerouslySetInnerHTML={{ __html: learningContent }}
           onKeyDown={() => null}
           onClick={markdownLinkHandler}

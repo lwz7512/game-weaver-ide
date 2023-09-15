@@ -18,7 +18,7 @@ const useFullscreenButton = (gamePreviewDefaultURL: string) => {
       { width: domRect.width - 56, height: domRect.height },
     ]);
     // lazy showing up close button
-    setTimeout(() => setIsWVFullscreen(true), 700);
+    setTimeout(() => setIsWVFullscreen(true), 800);
   };
 
   const closeFullscreenGameHandler = () => {

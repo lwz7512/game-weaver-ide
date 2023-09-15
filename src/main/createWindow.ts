@@ -118,14 +118,20 @@ export const createWindow = async (isDebug: boolean) => {
 export const createView = (url: string, width = 400, height = 300) => {
   const win = browserWindows[0];
   if (win) {
+    // only one allowed
+    const hasBrowserViews = !!win.getBrowserView();
+    if (hasBrowserViews) return;
+
     const view = gameViews[0] || new BrowserView();
-    win.addBrowserView(view);
+    win.setBrowserView(view);
+    // win.addBrowserView(view);
     view.setBounds({
       x: 0,
       y: 0,
       width,
       height,
     });
+    view.setBackgroundColor('black');
     view.webContents.loadURL(url);
     // cache a view if not cached
     !gameViews[0] && gameViews.push(view);
