@@ -1,4 +1,3 @@
-import { Button, Card, Elevation, Intent, Icon } from '@blueprintjs/core';
 import clsx from 'clsx';
 import LeftSideBar from '../components/LeftSideBar';
 import {
@@ -24,7 +23,6 @@ const LearningPage = () => {
     closeFullscreenGameHandler,
     docLoadHandler,
     markdownLinkHandler,
-    openDocBy,
   } = useLearningDocs();
 
   return (
@@ -69,7 +67,7 @@ const LearningPage = () => {
               key={doc.name}
               content={learningContent}
               doc={doc}
-              openDocHandler={openDocBy}
+              openDocHandler={docLoadHandler}
             />
           ))}
         </div>

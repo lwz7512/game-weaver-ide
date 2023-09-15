@@ -65,18 +65,20 @@ export const useLearningDocs = () => {
   };
 
   const docLoadHandler = async (name: string, url: string) => {
+    // step 1:
     const learningCp = learningDocs.map((doc) => {
       if (doc.name === name)
         return {
           ...doc,
           name: 'loading ...',
+          loading: true,
         };
       return doc;
     });
     setLearningDocs(learningCp);
-
+    // step 2:
     await fetchDocBy(url);
-
+    // step 3:
     const learningDownloaded = learningDocs.map((doc) => {
       if (doc.name === name)
         return {
@@ -87,14 +89,7 @@ export const useLearningDocs = () => {
         };
       return { ...doc, selected: false };
     });
-
     setLearningDocs(learningDownloaded);
-  };
-
-  const openDocBy = async (id: number) => {
-    const result = learning.find((doc) => doc.id === id);
-    if (!result) return;
-    await fetchDocBy(result.url);
   };
 
   return {
@@ -103,7 +98,6 @@ export const useLearningDocs = () => {
     isWVFullscreen,
     closeFullscreenGameHandler,
     docLoadHandler,
-    openDocBy,
     markdownLinkHandler,
   };
 };

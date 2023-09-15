@@ -67,7 +67,7 @@ export const DocCardInList = ({
 }: {
   content: string;
   doc: LearningDoc;
-  openDocHandler: (id: number) => void;
+  openDocHandler: (name: string, url: string) => void;
 }) => (
   <Card
     key={doc.id}
@@ -90,7 +90,10 @@ export const DocCardInList = ({
     <p className={clsx('w-full h-24 py-2', content ? 'hidden' : 'block ')}>
       {doc.description}
     </p>
-    <Button intent={doc.theme as Intent} onClick={() => openDocHandler(doc.id)}>
+    <Button
+      intent={doc.theme as Intent}
+      onClick={() => openDocHandler(doc.name, doc.url)}
+    >
       Read
     </Button>
   </Card>
