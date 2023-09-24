@@ -51,7 +51,7 @@ export const DocButtonInList = ({
   >
     <button
       type="button"
-      className="game-item inline-block border-b w-full"
+      className="game-item inline-block border-b w-full text-base"
       title={doc.title}
       onClick={() => docLoadHandler(doc.name, doc.url)}
     >

@@ -43,9 +43,7 @@ export const useLearningDocs = () => {
     const isLink = clickedTag.tagName === 'A';
     if (isLink) {
       const { href } = clickedTag as HTMLLinkElement;
-      // TODO: implement a iframe view ...
-      console.log(`>>> to open webpage in next view: `);
-      console.log(href);
+      // open a browser view
       fullScreenOpenHandler(href);
     }
   };

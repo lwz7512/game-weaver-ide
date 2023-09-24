@@ -34,7 +34,7 @@ const LearningPage = () => {
         />
         {/* === left panel === */}
         <div className="file-explorer bg-gray-300 w-60 p-0">
-          <h1 className="text-lg bg-slate-600 m-0 p-2 text-white text-center">
+          <h1 className="text-lg bg-slate-600 m-0 p-4 text-white text-center">
             Learning Paths
           </h1>
           <ul className=" text-sm list-none text-gray-800 leading-7">
