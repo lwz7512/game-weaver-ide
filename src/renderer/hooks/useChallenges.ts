@@ -9,6 +9,7 @@ export type Challenge = {
   name: string;
   description: string;
   objective: string;
+  keywords: string[];
   prerequsite: string;
   reference: string;
   videoURL: string;

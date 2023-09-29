@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { useState } from 'react';
+// import { useState } from 'react';
 import { Icon, IconName } from '@blueprintjs/core';
 
 type ToolButtonProps = {

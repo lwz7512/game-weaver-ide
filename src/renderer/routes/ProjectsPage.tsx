@@ -1,11 +1,11 @@
 import clsx from 'clsx';
 import LeftSideBar from '../components/LeftSideBar';
+import { ChallengeContent } from '../components/ChallengeDocContent';
 import {
-  ChallengeContentHeader,
   ChalllengeItem,
   ChallengeInstructions,
-  ChallengeContent,
-} from '../components/ChallengeDocItem';
+  ChallengeContentHeader,
+} from '../components/ChallengeModules';
 import { MODULETYPES } from '../config';
 import useLeftSideBar from '../hooks/useLeftSideBar';
 import { useChallenges } from '../hooks/useChallenges';
@@ -51,22 +51,14 @@ const ProjectsPage = () => {
         </div>
       </div>
       {/* === right part content === */}
-      {/* structure may like this: */}
-      {/* ######|| */}
-      {/* ######|| */}
-      {/* ======|| */}
-      {/* ======|| */}
-      <div className="flex-1 bg-white">
-        {/* <h1 className="text-2xl text-center p-8 m-0 underline border-b border-gray-300 bg-sky-50">
-          Welcome to challenges page!
-        </h1> */}
+      <div className="flex-1 bg-white overflow-y-scroll">
         <ChallengeContentHeader
           isChallengeOpen={challengeLoaded}
           goWelcomeHandler={goBackChallengeHome}
         />
         <h2
           className={clsx(
-            'm-12 p-4 text-slate-700 text-xl border-l-8 border-green-600 bg-gray-100 rounded-r-lg',
+            'm-12 mt-36 p-4 text-slate-700 text-xl border-l-8 border-green-600 bg-gray-100 rounded-r-lg',
             challengeLoaded ? 'hidden' : ''
           )}
         >
@@ -75,7 +67,9 @@ const ProjectsPage = () => {
         </h2>
         <ChallengeInstructions challengeLoaded={challengeLoaded} />
         {/* === Challenge content area === */}
-        {challengeLoaded && <ChallengeContent challenge={currentChallenge} />}
+        {challengeLoaded && currentChallenge && (
+          <ChallengeContent selectedChallenge={currentChallenge} />
+        )}
       </div>
     </div>
   );

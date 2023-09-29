@@ -16,3 +16,26 @@
 .w-33 {
   width: 132px;
 }
+
+.drop-shadow {
+  -webkit-box-shadow: -4px 6px 8px 0px #808080; 
+  box-shadow: -4px 6px 8px 0px #808080;
+}
+
+.slidein-right-menu {
+  position: fixed;
+  top: 2.5rem;
+  right: -10.5rem;
+  width: 13rem;
+  transition: right .3s;
+  transition-timing-function: ease-out;
+  line-height: 1.5rem;
+}
+
+.slidein-right-menu.active {
+  right: 0;
+}
+
+.slidein-right-menu:hover {
+  right: 0;
+}
