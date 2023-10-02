@@ -23,19 +23,7 @@ import {
 } from './readFile';
 
 export const setupIpcMainHandler = () => {
-  ipcMain.on('ipc-example', async (event, arg) => {
-    const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-    // console.log(msgTemplate(arg));
-    event.reply('ipc-example', msgTemplate('pong'));
-  });
-
-  ipcMain.on('showNativeMessage', (e, message) => {
-    const mainWindow = browserWindows[0];
-    if (mainWindow) {
-      dialog.showMessageBox(mainWindow, { message: 'Gotit!' });
-    }
-  });
-
+  // === handling async calls =====================
   ipcMain.handle('showDialog', (e, message) => {
     return showOpenDialog(message);
   });
@@ -112,6 +100,25 @@ export const setupIpcMainHandler = () => {
 
   ipcMain.handle(IpcEvents.TOGGLE_DEV_TOOLS, () => {
     return toggleDevTools();
+  });
+
+  ipcMain.handle(IpcEvents.OPEN_EXTERNAL_URL, (_, url: string) => {
+    shell.openExternal(url);
+  });
+
+  // ========= processing message =====================
+
+  ipcMain.on('ipc-example', async (event, arg) => {
+    const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
+    // console.log(msgTemplate(arg));
+    event.reply('ipc-example', msgTemplate('pong'));
+  });
+
+  ipcMain.on('showNativeMessage', (e, message) => {
+    const mainWindow = browserWindows[0];
+    if (mainWindow) {
+      dialog.showMessageBox(mainWindow, { message: 'Gotit!' });
+    }
   });
 
   ipcMain.on(IpcEvents.OPEN_GAME_VIEW, (e, args: unknown[]) => {

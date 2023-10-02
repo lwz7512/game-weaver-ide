@@ -10,3 +10,5 @@ export const WORKSPACE_GONE_WARNING =
 export const MAIN_JS_CODE_DEFAULT = `// Welcome to GameWeaver code editor!
 // please click one game at left side to load source...
 `;
+export const CHALLENGE_AWARD_SLOGAN =
+  'following these instructions to complete a mission, you will get a badge!';

@@ -1,13 +1,15 @@
-import clsx from 'clsx';
-import { Icon } from '@blueprintjs/core';
+// import clsx from 'clsx';
+// import { Icon } from '@blueprintjs/core';
 import { Challenge } from '../hooks/useChallenges';
 import { ChallengePlayground } from './ChallengePlayground';
-import { ChallengeModuleItem, challengeModules } from './ChallengeModules';
+import appCfg from '../assets/app.json';
 
 export const ChallengeContent = ({
   selectedChallenge,
+  openChallengeLearningPage,
 }: {
   selectedChallenge: Challenge;
+  openChallengeLearningPage: (url: string) => void;
 }) => {
   return (
     <div className="w-full ">
@@ -19,46 +21,74 @@ export const ChallengeContent = ({
         {/* keywords */}
         <ul className="flex text-base gap-3 absolute bottom-4 right-16">
           {selectedChallenge.keywords.map((word) => (
-            <li className="px-3 py-0 border border-green-800 bg-green-500 text-white rounded-xl">
+            <li
+              key={word}
+              className="px-3 py-0 border border-green-800 bg-green-500 text-white rounded-xl"
+            >
               {word}
             </li>
           ))}
         </ul>
-        {/* fixed right menu */}
-        <ul className="slidein-right-menu bg-yellow-50 border-l border-gray-300 drop-shadow text-sm">
-          {challengeModules.map((module) => (
-            <ChallengeModuleItem
-              key={module.label}
-              icon={module.icon}
-              label={module.label}
-              clickHandler={() => null}
-            />
-          ))}
-        </ul>
       </div>
-      {/* === challenge content === */}
+      {/* === challenge content: PART 1 === */}
       <div className="mx-4 my-8 w-10/12 h-96 flex justify-center">
         <div className=" w-2/3 h-96 border border-gray-400 bg-slate-50">
           Video Introduction
         </div>
       </div>
-      <div className="mx-4 my-16">
+      {/** === PART 2 === */}
+      <div className="mx-4 my-16 h-48">
         <h2 className="text-xl underline my-8">Mission Briefing</h2>
-        <p className="p-4 mx-8 text-lg border-l-4 border-green-500 pl-3 bg-gray-50 text-green-800  text-shadow-md">
+        <p className="p-4 mx-8 my-16 text-lg border-l-4 border-green-500 pl-3 bg-gray-50 text-green-800  text-shadow-md">
           {selectedChallenge.description || 'coming soon...'}
           <br />
           {selectedChallenge.objective || 'no objective'}
         </p>
       </div>
-      <div className="mx-4 my-8 h-16">
-        <h2 className="text-xl underline my-4">Prerequisites Part</h2>
+      {/** === PART 3 === */}
+      <div className="mx-4 my-8 h-48">
+        <h2 className="text-xl underline my-4">Prerequisite Reading Tasks</h2>
+        <ul className="py-4 px-8 text-lg ">
+          {selectedChallenge.prerequsite.map((it) => (
+            <li className=" leading-8 py-1" key={it.name}>
+              <button
+                type="button"
+                title={it.title}
+                className=" text-slate-500 hover:text-green-600 focus:outline-none"
+                onClick={() => openChallengeLearningPage(it.url)}
+              >
+                👉 {it.name}
+              </button>
+            </li>
+          ))}
+        </ul>
       </div>
-      <div className="mx-4 my-8 h-96 ">
-        <h2 className="text-xl underline my-4">Coding Part </h2>
+      {/** === PART 4 === */}
+      <div className="mx-4 my-8 ">
+        <h2 className="text-xl underline my-4">
+          Checking points before Coding
+        </h2>
+        <div className="py-4 px-8 text-slate-500 bg-white flex flex-wrap">
+          {selectedChallenge.keypoints.map((k) => (
+            <div className="relative bg-slate-300 w-72 h-72 text-lg" key={k}>
+              <img
+                src={appCfg.baseURL + appCfg.stickyImage}
+                alt="banner"
+                className="absolute top-0 left-0 w-full object-cover z-0 h-full"
+              />
+              <p className="absolute z-0 px-14 py-20">{k}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      {/** === PART 5 === */}
+      <div className="mx-4 my-8 ">
+        <h2 className="text-xl underline my-8">Lets Coding Now </h2>
         <ChallengePlayground />
       </div>
-      <div className="mx-4 my-16 h-16">
-        <h2 className="text-xl underline my-4">Submit Part</h2>
+      {/** === PART 6 === */}
+      <div className="mx-4 my-16 h-48">
+        <h2 className="text-xl underline my-4">Submit Your Completion</h2>
       </div>
     </div>
   );

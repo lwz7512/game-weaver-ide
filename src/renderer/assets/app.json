@@ -3,6 +3,7 @@
   "slogan": "The Best Coding Education Kit for beginners through game challenges",
   "baseURL": "https://raw.githubusercontent.com/lwz7512/game-weaver-ast/master",
   "heroImage": "/images/space-game-level-banner-with-platforms-flying-spaceship_md.jpg",
+  "stickyImage": "/images/stickyote_512.jpg",
   "tilesIndex": "/tiles/index.json",
   "examplesPath": "/examples",
   "examples": [

@@ -75,7 +75,7 @@ const LearningPage = () => {
         <div
           role="note"
           className={clsx(
-            'p-4 pr-14 overflow-y-scroll h-3/4 markdown-container',
+            'pt-4 pl-4 pb-8 pr-14 overflow-y-scroll h-3/4 markdown-container',
             isWVFullscreen ? 'bg-black' : ''
           )}
           dangerouslySetInnerHTML={{ __html: learningContent }}

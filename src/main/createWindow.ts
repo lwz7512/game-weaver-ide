@@ -155,3 +155,7 @@ export const toggleDevTools = () => {
     win.webContents.toggleDevTools();
   }
 };
+
+export const openExternalURL = (url: string) => {
+  shell.openExternal(url);
+};

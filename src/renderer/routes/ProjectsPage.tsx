@@ -1,12 +1,14 @@
 import clsx from 'clsx';
+import { Icon } from '@blueprintjs/core';
 import LeftSideBar from '../components/LeftSideBar';
 import { ChallengeContent } from '../components/ChallengeDocContent';
 import {
   ChalllengeItem,
   ChallengeInstructions,
   ChallengeContentHeader,
+  SideFixeModules,
 } from '../components/ChallengeModules';
-import { MODULETYPES } from '../config';
+import { MODULETYPES, CHALLENGE_AWARD_SLOGAN } from '../config';
 import useLeftSideBar from '../hooks/useLeftSideBar';
 import { useChallenges } from '../hooks/useChallenges';
 
@@ -25,10 +27,11 @@ const ProjectsPage = () => {
     challengeLoaded,
     openChallenge,
     goBackChallengeHome,
+    openChallengeLearningPage,
   } = useChallenges();
 
   return (
-    <div className="w-full h-screen flex">
+    <div className="w-full h-screen flex relative">
       <div className="left-sidepanel flex">
         <LeftSideBar
           activeModule={MODULETYPES.PROJECTS}
@@ -56,21 +59,27 @@ const ProjectsPage = () => {
           isChallengeOpen={challengeLoaded}
           goWelcomeHandler={goBackChallengeHome}
         />
+        {/* fixed right menu */}
+        <SideFixeModules />
         <h2
           className={clsx(
             'm-12 mt-36 p-4 text-slate-700 text-xl border-l-8 border-green-600 bg-gray-100 rounded-r-lg',
             challengeLoaded ? 'hidden' : ''
           )}
         >
-          following these instructions to complete a mission, you will get a
-          badge!
+          {CHALLENGE_AWARD_SLOGAN}
         </h2>
         <ChallengeInstructions challengeLoaded={challengeLoaded} />
         {/* === Challenge content area === */}
         {challengeLoaded && currentChallenge && (
-          <ChallengeContent selectedChallenge={currentChallenge} />
+          <ChallengeContent
+            selectedChallenge={currentChallenge}
+            openChallengeLearningPage={openChallengeLearningPage}
+          />
         )}
       </div>
+      {/* floating webview - 2023/10/02 */}
+      {/* <WebDocViewer /> */}
     </div>
   );
 };

@@ -5,7 +5,7 @@
  */
 export const ChallengePlayground = () => {
   return (
-    <div className="flex h-full">
+    <div className="flex h-96">
       {/* coding area */}
       <div className="coding-editor border  h-full border-gray-400 bg-slate-50 inline-block">
         code...

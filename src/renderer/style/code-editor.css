@@ -43,6 +43,10 @@
   border-width: 1px;
 }
 
+.full-screen-webview {
+  background-color: rgba(9, 2, 28, 0.8);
+}
+
 @media only screen and (max-width: 1024px) {
   /* FIXME: cause horizontal scroll bar while resize the window */
   /* .tile-editor .object-explorer {
