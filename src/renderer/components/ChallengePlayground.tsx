@@ -14,7 +14,7 @@ export const ChallengePlayground = () => {
       <div className="play-button-column w-3 h-full flex relative">
         <button
           type="button"
-          className="center-run-button bg-green-700 border-green-800 drop-shadow-xl hover:bg-green-600"
+          className="center-run-button bg-green-700 border-green-800 hover:drop-shadow-xl hover:bg-green-600"
         >
           Run
         </button>

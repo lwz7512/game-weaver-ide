@@ -5,6 +5,7 @@
     "description": "Draw a mole matrix(or grid) made up of static image.",
     "objective": "In order to know how to do something repeatedly, that is called loop",
     "keywords": ["loop"],
+    "videoURL": "",
     "keypoints": [
       "What statement is used as looping operation?",
       "How to stop a looping process(iteration)?",
@@ -23,7 +24,6 @@
       }
     ],
     "reference": "",
-    "videoURL": "",
     "level": 1,
     "expect": "",
     "finalCode": ""

@@ -1,5 +1,5 @@
 // import clsx from 'clsx';
-// import { Icon } from '@blueprintjs/core';
+import { Button, Icon } from '@blueprintjs/core';
 import { Challenge } from '../hooks/useChallenges';
 import { ChallengePlayground } from './ChallengePlayground';
 import appCfg from '../assets/app.json';
@@ -81,7 +81,7 @@ export const ChallengeContent = ({
           ))}
         </div>
       </div>
-      {/** === PART 5 === */}
+      {/** === PART 5: Coding area === */}
       <div className="mx-4 my-8 ">
         <h2 className="text-xl underline my-8">Lets Coding Now </h2>
         <ChallengePlayground />
@@ -89,6 +89,16 @@ export const ChallengeContent = ({
       {/** === PART 6 === */}
       <div className="mx-4 my-16 h-48">
         <h2 className="text-xl underline my-4">Submit Your Completion</h2>
+        <div className="button-row h-24 w-full p-8 text-center">
+          <Button
+            intent="success"
+            color="green"
+            className=" w-44 h-14 text-2xl rounded-xl hover:drop-shadow-xl"
+          >
+            <Icon icon="endorsed" size={24} color="white" />
+            <span className="ml-4">Done</span>
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { Icon } from '@blueprintjs/core';
+// import { Icon } from '@blueprintjs/core';
 import LeftSideBar from '../components/LeftSideBar';
 import { ChallengeContent } from '../components/ChallengeDocContent';
 import {
@@ -60,7 +60,7 @@ const ProjectsPage = () => {
           goWelcomeHandler={goBackChallengeHome}
         />
         {/* fixed right menu */}
-        <SideFixeModules />
+        {challengeLoaded && <SideFixeModules />}
         <h2
           className={clsx(
             'm-12 mt-36 p-4 text-slate-700 text-xl border-l-8 border-green-600 bg-gray-100 rounded-r-lg',
