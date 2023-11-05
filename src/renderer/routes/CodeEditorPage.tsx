@@ -86,7 +86,7 @@ const CodeEditorPage = () => {
             />
           </Tabs>
         </div>
-        {/* code editor container */}
+        {/* === Monaco Code Editor Container === */}
         <div className="bg-white flex-1 p-1">
           <div id="code-editors" className="code-editors bg-slate-100" />
         </div>

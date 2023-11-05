@@ -71,7 +71,7 @@ export const codeEditorOptions = {
     enabled: false, // TODO: config on global settings
   },
   lineDecorationsWidth: 0,
-  lineNumbersMinChars: 3, // default is 5
+  lineNumbersMinChars: 2, // default is 5
   // contextmenu: false,
 };
 

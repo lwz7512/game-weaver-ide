@@ -1,3 +1,6 @@
+import Editor from '@monaco-editor/react';
+import { codeEditorOptions } from '../config';
+
 /**
  * Code editor & Running result, as well as error console
  *
@@ -7,8 +10,12 @@ export const ChallengePlayground = () => {
   return (
     <div className="flex h-96">
       {/* coding area */}
-      <div className="coding-editor border  h-full border-gray-400 bg-slate-50 inline-block">
-        code...
+      <div className="code-editors border h-full border-gray-400 bg-white inline-block">
+        <Editor
+          defaultLanguage="javascript"
+          defaultValue="// some comment"
+          options={codeEditorOptions}
+        />
       </div>
       {/* run button */}
       <div className="play-button-column w-3 h-full flex relative">

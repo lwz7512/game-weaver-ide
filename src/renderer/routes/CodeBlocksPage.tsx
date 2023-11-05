@@ -40,7 +40,7 @@ const CodeBlocksPage = () => {
         />
         <div className="file-explorer bg-gray-100 w-60 overflow-y-scroll">
           <h1 className="p-4 bg-slate-600 text-white text-base">
-            Code Example Categories
+            Phaserjs Game Examples
           </h1>
           <Tree
             contents={nodes}
