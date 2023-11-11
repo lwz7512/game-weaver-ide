@@ -1,8 +1,8 @@
 import clsx from 'clsx';
-import { ChangeEvent, useCallback, useState, useRef, useEffect } from 'react';
+import { ChangeEvent, useState, useRef, useEffect } from 'react';
 import {
-  Tab,
-  Tabs,
+  // Tab,
+  // Tabs,
   Dialog,
   Classes,
   Button,

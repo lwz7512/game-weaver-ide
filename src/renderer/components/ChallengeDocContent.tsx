@@ -14,8 +14,8 @@ export const ChallengeContent = ({
   return (
     <div className="w-full ">
       {/* === header === */}
-      <div className="challenge-header relative bg-slate-500 text-white">
-        <h1 className="text-2xl text-center w-5/6 p-10 mt-9">
+      <div className="challenge-header relative bg-slate-300 text-gray-600">
+        <h1 className="text-2xl font-semibold text-center w-5/6 p-10 mt-9 text-shadow">
           {selectedChallenge.name}
         </h1>
         {/* keywords */}
@@ -84,16 +84,16 @@ export const ChallengeContent = ({
       {/** === PART 5: Coding area === */}
       <div className="mx-4 my-8 ">
         <h2 className="text-xl underline my-8">Lets Coding Now </h2>
-        <ChallengePlayground />
+        <ChallengePlayground challenge={selectedChallenge} />
       </div>
       {/** === PART 6 === */}
       <div className="mx-4 my-16 h-48">
-        <h2 className="text-xl underline my-4">Submit Your Completion</h2>
+        <h2 className="text-xl underline my-4">Submit Your Completion:</h2>
         <div className="button-row h-24 w-full p-8 text-center">
           <Button
             intent="success"
             color="green"
-            className=" w-44 h-14 text-2xl rounded-xl hover:drop-shadow-xl"
+            className=" w-44 h-14 text-2xl rounded-xl hover:drop-shadow-xl border-2 border-green-600"
           >
             <Icon icon="endorsed" size={24} color="white" />
             <span className="ml-4">Done</span>
