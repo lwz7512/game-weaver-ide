@@ -52,6 +52,12 @@
   background-color: rgba(9, 2, 28, 0.8);
 }
 
+.finish-project-button.bp4-button {
+  border-color: lightgreen;
+  border-style: solid;
+}
+
+
 @media only screen and (max-width: 1024px) {
   /* FIXME: cause horizontal scroll bar while resize the window */
   /* .tile-editor .object-explorer {

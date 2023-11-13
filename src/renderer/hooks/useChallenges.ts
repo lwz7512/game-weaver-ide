@@ -85,6 +85,7 @@ export const useChallenges = () => {
     challenges,
     openChallenge,
     goBackChallengeHome,
+    /** open external web page by browser */
     openChallengeLearningPage,
   };
 };

@@ -23,7 +23,7 @@ export const ChallengeContent = ({
           {selectedChallenge.keywords.map((word) => (
             <li
               key={word}
-              className="px-3 py-0 border border-green-800 bg-green-500 text-white rounded-xl"
+              className="px-3 py-0 border border-green-200 bg-green-500 text-white rounded-xl"
             >
               {word}
             </li>
@@ -89,11 +89,11 @@ export const ChallengeContent = ({
       {/** === PART 6 === */}
       <div className="mx-4 my-16 h-48">
         <h2 className="text-xl underline my-4">Submit Your Completion:</h2>
-        <div className="button-row h-24 w-full p-8 text-center">
+        <div className="button-row h-32 w-full p-8 text-center">
           <Button
             intent="success"
             color="green"
-            className=" w-44 h-14 text-2xl rounded-xl hover:drop-shadow-xl border-2 border-green-600"
+            className="finish-project-button w-44 h-14 text-2xl rounded-xl hover:drop-shadow-xl border-2 "
           >
             <Icon icon="endorsed" size={24} color="white" />
             <span className="ml-4">Done</span>

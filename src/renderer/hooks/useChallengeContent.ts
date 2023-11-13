@@ -6,9 +6,11 @@
 import { useState, useEffect } from 'react';
 
 import { Challenge } from './useChallenges';
+import { sourceRepo } from '../config';
+import { executeScript } from '../utils';
 
-export const useChallengeContent = (clg: Challenge) => {
-  const { id } = clg;
+export const useChallengeContent = (challenge: Challenge) => {
+  const { id } = challenge;
   const [runningCode, setRunningCode] = useState(
     '// Welcome to challenge project ONE!'
   );
@@ -28,7 +30,16 @@ export const useChallengeContent = (clg: Challenge) => {
 
   useEffect(() => {
     // TODO: fetching challenge code...
-  }, []);
+    const fetchChallengeCodes = async () => {
+      const startURL = sourceRepo + challenge.startCode;
+      // console.log(`>>> loading: ${startURL}`);
+      const response = await fetch(startURL);
+      const results = await response.text();
+      // console.log(results);
+      executeScript(results);
+    };
+    fetchChallengeCodes();
+  }, [challenge]);
 
   return {
     id,

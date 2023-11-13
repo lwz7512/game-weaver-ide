@@ -1,5 +1,16 @@
 // import { IFrameContext } from './config';
 
+export const executeScript = (code: string) => {
+  const id = 'dynaCode';
+  const dynaCode = document.getElementById(id);
+  if (dynaCode) dynaCode.remove(); // remove self
+  const script = document.createElement('script');
+  // TODO:  add try...catch handling
+  script.text = code;
+  script.id = id;
+  document.body.appendChild(script);
+};
+
 export const checkMacPlatform = () => {
   const ua =
     typeof navigator !== 'undefined' &&

@@ -83,10 +83,10 @@ const TiledEditorPage = () => {
             )}
           </button>
         </div>
-        {/* sprites sheet preview, use width, height attributes only! */}
-        {/* DO NOT USE CSS CLASS!!! */}
         <div className="flex items-center">
           <MiniIconButton icon="caret-left" onClick={navigateToPrev} />
+          {/* Sprites Sheet Preview, use width, height attributes only! */}
+          {/* DO NOT USE CSS CLASS!!! - @2022/10/23 */}
           <canvas
             id="spritesPreview"
             width="192"

@@ -13,14 +13,6 @@
   stroke: #fff;
 }
 
-.bp4-spinner.bp4-intent-warning .bp4-spinner-head {
-  stroke: #fff;
-}
-
-.bp4-button {
-  border-color: unset;
-}
-
 .bp4-button.border {
   border-width: 1px;
 }
