@@ -7,14 +7,13 @@ import { useState, useEffect } from 'react';
 
 import { Challenge } from './useChallenges';
 import { sourceRepo } from '../config';
-import { executeScript } from '../utils';
 
 export const useChallengeContent = (challenge: Challenge) => {
   const { id } = challenge;
-  const [runningCode, setRunningCode] = useState(
-    '// Welcome to challenge project ONE!'
-  );
+  const [runningCode, setRunningCode] = useState('');
   const [startRunning, setRunningStart] = useState(false);
+  // base code
+  const [baseCode, setBaseCode] = useState('');
 
   const runCodeHandler = () => {
     if (startRunning) return console.warn('[skip repeated running!]');
@@ -29,20 +28,27 @@ export const useChallengeContent = (challenge: Challenge) => {
   };
 
   useEffect(() => {
-    // TODO: fetching challenge code...
+    // fetching challenge code...
     const fetchChallengeCodes = async () => {
-      const startURL = sourceRepo + challenge.startCode;
-      // console.log(`>>> loading: ${startURL}`);
-      const response = await fetch(startURL);
-      const results = await response.text();
-      // console.log(results);
-      executeScript(results);
+      const baseCodeURL = sourceRepo + challenge.baseCode;
+      console.log(`>>> loading: ${baseCodeURL}`);
+      const resp4Base = await fetch(baseCodeURL);
+      const code4Base = await resp4Base.text();
+      // console.log(code4Base);
+      setBaseCode(code4Base);
+
+      const startCodeURL = sourceRepo + challenge.startCode;
+      console.log(`>>> loading: ${startCodeURL}`);
+      const resp4Start = await fetch(startCodeURL);
+      const code4Start = await resp4Start.text();
+      setRunningCode(code4Start);
     };
     fetchChallengeCodes();
   }, [challenge]);
 
   return {
     id,
+    baseCode,
     runningCode,
     startRunning,
     editChangeChandler,

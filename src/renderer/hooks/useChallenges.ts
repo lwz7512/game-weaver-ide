@@ -32,6 +32,8 @@ export type Challenge = {
   videoURL: string;
   /** learning task before start coding */
   prerequsite: PreLearnItem[];
+  /** base code */
+  baseCode: string;
   /** coding start point loaded from remote repository */
   startCode: string;
   /** code testing method or code auditor function defined in challenges.js */

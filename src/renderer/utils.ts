@@ -1,14 +1,26 @@
 // import { IFrameContext } from './config';
 
-export const executeScript = (code: string) => {
+const executeScript = (code: string) => {
   const id = 'dynaCode';
   const dynaCode = document.getElementById(id);
   if (dynaCode) dynaCode.remove(); // remove self
+
+  console.log(`>> to create script element ...`);
   const script = document.createElement('script');
-  // TODO:  add try...catch handling
   script.text = code;
   script.id = id;
   document.body.appendChild(script);
+};
+
+/**
+ * add try...catch handling script execution
+ *
+ * @param baseCode
+ * @param userCode
+ */
+export const safeRunCode = (baseCode: string, userCode: string) => {
+  const safeCompleteCode = `${baseCode} \n\n try { \n ${userCode} \n } catch (error) { \n console.error(error); \n }`;
+  executeScript(safeCompleteCode);
 };
 
 export const checkMacPlatform = () => {
