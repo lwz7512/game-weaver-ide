@@ -150,9 +150,10 @@ const useMonocaEditor = (navbarTabId: TabId, mainJSCode: string) => {
     console.log('>>> Hacking monaco languages....');
     // ****** add extra libraries for test ******
 
-    async function fetchPhaserLib(fileName: string) {
+    async function fetchExternalLib(fileName: string) {
       const response = await fetch(sourceRepo + fileName);
       const source = await response.text();
+      // console.log(source);
       monaco.languages.typescript.javascriptDefaults.addExtraLib(
         source,
         `ts:${fileName}`
@@ -161,12 +162,14 @@ const useMonocaEditor = (navbarTabId: TabId, mainJSCode: string) => {
 
     async function fetchAll() {
       // console.log('>>> fetching phaser lib...');
-      await fetchPhaserLib(TSLIB.P2);
+      await fetchExternalLib(TSLIB.P2);
       // console.log('## p2.d done!');
-      await fetchPhaserLib(TSLIB.PIXI);
+      await fetchExternalLib(TSLIB.PIXI);
       // console.log('## pixi.d done!');
-      await fetchPhaserLib(TSLIB.PHASER);
+      await fetchExternalLib(TSLIB.PHASER);
       // console.log('## phaser.d done!');
+      // await fetchExternalLib(TSLIB.GLOBAL);
+      // console.log(`## global function fetched!`);
     }
     // fetching remote phaser lib..
     fetchAll();

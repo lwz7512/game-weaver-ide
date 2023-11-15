@@ -6,9 +6,11 @@ import appCfg from '../assets/app.json';
 
 export const ChallengeContent = ({
   selectedChallenge,
+  externalFunctions,
   openChallengeLearningPage,
 }: {
   selectedChallenge: Challenge;
+  externalFunctions: string;
   openChallengeLearningPage: (url: string) => void;
 }) => {
   return (
@@ -84,7 +86,10 @@ export const ChallengeContent = ({
       {/** === PART 5: Coding area === */}
       <div className="mx-4 my-8 ">
         <h2 className="text-xl underline my-8">Lets Coding Now </h2>
-        <ChallengePlayground challenge={selectedChallenge} />
+        <ChallengePlayground
+          challenge={selectedChallenge}
+          editorLibSource={externalFunctions}
+        />
       </div>
       {/** === PART 6 === */}
       <div className="mx-4 my-16 h-48">

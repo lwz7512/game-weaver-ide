@@ -20,6 +20,7 @@ export enum TSLIB {
   PIXI = 'phaser/pixi.comments.d.txt',
   PHASER = 'phaser/phaser.comments.d.txt',
   FACTS = 'ts:filename/facts.d.ts',
+  GLOBAL = 'challenges/global.d.txt',
 }
 
 export const libSource = [

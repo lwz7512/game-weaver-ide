@@ -19,7 +19,16 @@ const executeScript = (code: string) => {
  * @param userCode
  */
 export const safeRunCode = (baseCode: string, userCode: string) => {
-  const safeCompleteCode = `${baseCode} \n\n try { \n ${userCode} \n } catch (error) { \n console.error(error); \n }`;
+  const codeLines = [
+    baseCode,
+    'try { ',
+    userCode,
+    '} catch (error) {',
+    ' console.error(error);',
+    '}',
+  ];
+  // const safeCompleteCode = `${baseCode} \n\n try { \n ${userCode} \n } catch (error) { \n console.error(error); \n }`;
+  const safeCompleteCode = codeLines.join('\n');
   executeScript(safeCompleteCode);
 };
 

@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 
 import { IpcEvents } from '../../ipc-events';
 
-import { sourceRepo } from '../config';
+import { sourceRepo, TSLIB } from '../config';
 
 type PreLearnItem = {
   name: string;
@@ -52,6 +52,7 @@ export const useChallenges = () => {
   const [currentChallenge, setCurrentChallenge] = useState<Challenge | null>(
     null
   );
+  const [globalFunctions, setGlobalFunctions] = useState('');
 
   const openChallenge = (doc: Challenge) => {
     setChallengeLoaded(true);
@@ -79,12 +80,20 @@ export const useChallenges = () => {
       setChallenges(results);
     };
     fetchChallenges();
+
+    const fetchLibCode = async () => {
+      const response = await fetch(sourceRepo + TSLIB.GLOBAL);
+      const source = await response.text();
+      setGlobalFunctions(source);
+    };
+    fetchLibCode();
   }, []);
 
   return {
     challengeLoaded,
     currentChallenge,
     challenges,
+    globalFunctions,
     openChallenge,
     goBackChallengeHome,
     /** open external web page by browser */

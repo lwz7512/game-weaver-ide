@@ -12,10 +12,12 @@ import { Challenge } from '../hooks/useChallenges';
  */
 export const ChallengePlayground = ({
   challenge,
+  editorLibSource,
 }: {
+  editorLibSource: string;
   challenge: Challenge;
 }) => {
-  const ucc = useChallengeContent(challenge);
+  const ucc = useChallengeContent(challenge, editorLibSource);
 
   return (
     <div className="flex h-96">

@@ -5,15 +5,22 @@
 
 import { useState, useEffect } from 'react';
 
-import { Challenge } from './useChallenges';
-import { sourceRepo } from '../config';
+import { useMonaco } from '@monaco-editor/react';
 
-export const useChallengeContent = (challenge: Challenge) => {
+import { Challenge } from './useChallenges';
+import { sourceRepo, TSLIB } from '../config';
+
+export const useChallengeContent = (
+  challenge: Challenge,
+  editorLib: string
+) => {
   const { id } = challenge;
   const [runningCode, setRunningCode] = useState('');
   const [startRunning, setRunningStart] = useState(false);
   // base code
   const [baseCode, setBaseCode] = useState('');
+  // editor instance
+  const monaco = useMonaco();
 
   const runCodeHandler = () => {
     if (startRunning) return console.warn('[skip repeated running!]');
@@ -45,6 +52,16 @@ export const useChallengeContent = (challenge: Challenge) => {
     };
     fetchChallengeCodes();
   }, [challenge]);
+
+  useEffect(() => {
+    if (monaco) {
+      console.log('here is the monaco instance:', monaco);
+      monaco.languages.typescript.javascriptDefaults.addExtraLib(
+        editorLib,
+        `ts:${TSLIB.GLOBAL}`
+      );
+    }
+  }, [monaco, editorLib]);
 
   return {
     id,

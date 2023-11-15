@@ -25,6 +25,7 @@ const ProjectsPage = () => {
     challenges,
     currentChallenge,
     challengeLoaded,
+    globalFunctions,
     openChallenge,
     goBackChallengeHome,
     openChallengeLearningPage,
@@ -74,6 +75,7 @@ const ProjectsPage = () => {
         {challengeLoaded && currentChallenge && (
           <ChallengeContent
             selectedChallenge={currentChallenge}
+            externalFunctions={globalFunctions}
             openChallengeLearningPage={openChallengeLearningPage}
           />
         )}
