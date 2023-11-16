@@ -82,9 +82,10 @@ export const useChallenges = () => {
     fetchChallenges();
 
     const fetchLibCode = async () => {
-      const r = `?r=${Math.random()}`;
-      const response = await fetch(sourceRepo + TSLIB.GLOBAL + r);
+      // const r = `?r=${Math.random()}`;
+      const response = await fetch(sourceRepo + TSLIB.GLOBAL);
       const source = await response.text();
+      // console.log(source);
       setGlobalFunctions(source);
     };
     fetchLibCode();

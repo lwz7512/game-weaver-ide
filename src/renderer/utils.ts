@@ -13,19 +13,22 @@ const executeScript = (code: string) => {
 };
 
 /**
- * add try...catch handling script execution
+ * Wrap base code and user code into a javascript closure
  *
+ * @date 2023/11/15
  * @param baseCode
  * @param userCode
  */
 export const safeRunCode = (baseCode: string, userCode: string) => {
   const codeLines = [
+    '(function(){',
     baseCode,
-    'try { ',
+    '  try { ',
     userCode,
-    '} catch (error) {',
-    ' console.error(error);',
-    '}',
+    '  } catch (error) {',
+    '    console.error(error);',
+    '  }',
+    '})()',
   ];
   // const safeCompleteCode = `${baseCode} \n\n try { \n ${userCode} \n } catch (error) { \n console.error(error); \n }`;
   const safeCompleteCode = codeLines.join('\n');

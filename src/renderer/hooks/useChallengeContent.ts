@@ -37,15 +37,16 @@ export const useChallengeContent = (
   useEffect(() => {
     // fetching challenge code...
     const fetchChallengeCodes = async () => {
-      const baseCodeURL = sourceRepo + challenge.baseCode;
-      console.log(`>>> loading: ${baseCodeURL}`);
+      const r = `?r=${Math.random()}`;
+      const baseCodeURL = sourceRepo + challenge.baseCode + r;
+      // console.log(`>>> loading: ${baseCodeURL}`);
       const resp4Base = await fetch(baseCodeURL);
       const code4Base = await resp4Base.text();
       // console.log(code4Base);
       setBaseCode(code4Base);
 
       const startCodeURL = sourceRepo + challenge.startCode;
-      console.log(`>>> loading: ${startCodeURL}`);
+      // console.log(`>>> loading: ${startCodeURL}`);
       const resp4Start = await fetch(startCodeURL);
       const code4Start = await resp4Start.text();
       setRunningCode(code4Start);
