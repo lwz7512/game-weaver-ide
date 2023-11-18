@@ -1,11 +1,19 @@
 // import { IFrameContext } from './config';
 
+/**
+ * Global Custom Events
+ */
+export enum GWEvents {
+  EXCEPTION = 'ExceptionInCodeEvent',
+  SUCCESS = 'SuccessCodeRunEvent',
+}
+
 const executeScript = (code: string) => {
   const id = 'dynaCode';
   const dynaCode = document.getElementById(id);
   if (dynaCode) dynaCode.remove(); // remove self
 
-  console.log(`>> to create script element ...`);
+  // console.log(`>> to create script element ...`);
   const script = document.createElement('script');
   script.text = code;
   script.id = id;
@@ -13,7 +21,7 @@ const executeScript = (code: string) => {
 };
 
 /**
- * Wrap base code and user code into a javascript closure
+ * Wrap base code and user code into a javascript closure, and handle exception
  *
  * @date 2023/11/15
  * @param baseCode
@@ -25,12 +33,15 @@ export const safeRunCode = (baseCode: string, userCode: string) => {
     baseCode,
     '  try { ',
     userCode,
+    `    document.dispatchEvent(new Event('${GWEvents.SUCCESS}'))`,
     '  } catch (error) {',
-    '    console.error(error);',
+    '    console.log(`## Got error:`)',
+    '    const detail = {detail: error.message}',
+    `    const evt = new CustomEvent('${GWEvents.EXCEPTION}', detail)`,
+    `    document.dispatchEvent(evt)`,
     '  }',
     '})()',
   ];
-  // const safeCompleteCode = `${baseCode} \n\n try { \n ${userCode} \n } catch (error) { \n console.error(error); \n }`;
   const safeCompleteCode = codeLines.join('\n');
   executeScript(safeCompleteCode);
 };

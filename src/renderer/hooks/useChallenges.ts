@@ -64,6 +64,11 @@ export const useChallenges = () => {
     }));
     setChallenges(challengesCopy);
     setCurrentChallenge(doc);
+    // FIXME: reset project page to top
+    setTimeout(() => {
+      const scrollable = document.querySelector('.project-content');
+      scrollable?.scrollTo({ top: 0, behavior: 'smooth' });
+    });
   };
 
   const goBackChallengeHome = () => setChallengeLoaded(false);

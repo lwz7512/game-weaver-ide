@@ -76,6 +76,9 @@
   .map-history-item {
     @apply hover:bg-blue-400 py-1 px-2 w-full text-left focus:outline-none;
   }
+  .coding-tips-panel {
+    @apply text-sm bg-yellow-100 h-24 w-full left-0 -bottom-24 p-3 border-t border-yellow-600;
+  }
 }
 
 @import "~@blueprintjs/core/lib/css/blueprint.css";

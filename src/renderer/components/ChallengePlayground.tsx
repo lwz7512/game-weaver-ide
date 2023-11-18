@@ -47,11 +47,7 @@ export const ChallengePlayground = ({
         </button>
       </div>
       {/* result result & error console */}
-      <CodeResultStage
-        baseCode={ucc.baseCode}
-        code={ucc.runningCode}
-        startRun={ucc.startRunning}
-      />
+      <CodeResultStage />
     </div>
   );
 };

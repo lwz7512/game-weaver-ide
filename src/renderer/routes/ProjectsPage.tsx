@@ -55,7 +55,7 @@ const ProjectsPage = () => {
         </div>
       </div>
       {/* === right part content === */}
-      <div className="flex-1 bg-white overflow-y-scroll">
+      <div className="project-content flex-1 bg-white overflow-y-scroll">
         <ChallengeContentHeader
           isChallengeOpen={challengeLoaded}
           goWelcomeHandler={goBackChallengeHome}
