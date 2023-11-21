@@ -50,14 +50,10 @@
 
 .slidein-from-bottom {
   position: absolute;
-  transition: bottom .2s;
+  transition: bottom .3s;
   transition-timing-function: ease-out;
 }
 
 .slidein-from-bottom.animate {
   bottom: 0;
-}
-
-.slidein-from-bottom.red {
-  color: red;
 }

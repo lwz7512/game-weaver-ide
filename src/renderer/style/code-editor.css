@@ -57,6 +57,24 @@
   border-style: solid;
 }
 
+.coding-tips-panel p {
+  line-height: 18px;
+}
+
+.coding-tips-panel p.success {
+  color: green;
+}
+.coding-tips-panel p.failure {
+  color: red;
+}
+
+.coding-tips-panel p.success::before {
+  content: '✔ ';
+}
+.coding-tips-panel p.failure::before {
+  content: '✘ ';
+}
+
 
 @media only screen and (max-width: 1024px) {
   /* FIXME: cause horizontal scroll bar while resize the window */
