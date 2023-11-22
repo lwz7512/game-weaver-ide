@@ -13,6 +13,7 @@ import {
   safeTestCode,
   TestCase,
   toggleCodeTips,
+  stringLoader,
 } from '../codeRunner';
 import { Challenge } from './useChallenges';
 
@@ -83,44 +84,29 @@ export const useChallengeContent = (
    */
   useEffect(() => {
     const fetchChallengeCodes = async () => {
-      const r = `?r=${Math.random()}`;
-      const baseCodeURL = sourceRepo + challenge.baseCode + r;
-
       // STEP 1: base code loading
-      console.log(`>>> loading base code: ${baseCodeURL}`);
-      const resp4Base = await fetch(baseCodeURL);
-      const code4Base = await resp4Base.text();
-      console.log(code4Base);
-      setBaseCode(code4Base);
+      await stringLoader(
+        sourceRepo + challenge.baseCode,
+        'txt',
+        (code) => setBaseCode(code),
+        () => console.error('load error!')
+      );
 
       // STEP 2: start code loading
-      const startCodeURL = sourceRepo + challenge.startCode;
-      try {
-        console.log(`>>> loading start code: ${startCodeURL}`);
-        const resp4Start = await fetch(startCodeURL);
-        const { status } = resp4Start;
-        if (status === 200) {
-          const code4Start = await resp4Start.text();
-          console.log(code4Start);
-          setRunningCode(code4Start);
-        } else {
-          throw new Error('Load Code Error!');
-        }
-      } catch (error) {
-        setRunningCode('');
-      }
+      await stringLoader(
+        sourceRepo + challenge.startCode,
+        'txt',
+        (code) => setRunningCode(code),
+        () => setRunningCode('')
+      );
 
       // STEP 3: test code loading
-      const testCodeURL = sourceRepo + challenge.testCode;
-      console.log(`>>> loading test code:`);
-      const resp4Test = await fetch(testCodeURL);
-      if (resp4Test.status === 200) {
-        const tests: TestCase[] = await resp4Test.json();
-        setTestCases(tests);
-        console.log(tests);
-      } else {
-        console.warn('No test cases defined remotely on this challenge!');
-      }
+      await stringLoader(
+        sourceRepo + challenge.testCode,
+        'json',
+        (tests) => setTestCases(tests),
+        () => console.error('load error!')
+      );
     };
     fetchChallengeCodes();
   }, [challenge]);

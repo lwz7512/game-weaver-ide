@@ -1,4 +1,9 @@
 /**
+ * Remote Code Running in client Logic
+ * File Created at 2023/11/19
+ */
+
+/**
  * Custom Script Events
  */
 export enum GWEvents {
@@ -11,6 +16,46 @@ export enum GWEvents {
   /** user code running on success */
   SUCCESS = 'SuccessCodeRunEvent',
 }
+
+export type TestCase = {
+  /** case description */
+  description: string;
+  /** validator code logic */
+  comment: string;
+  /** validator function lines, defined remotely or implemented by user  */
+  validator: string[];
+  /** expected value from validator function */
+  expectation: boolean | number;
+  /** params from remote end, if validator functions are implemented by user, this is a must */
+  params: (number | string)[];
+};
+
+export const stringLoader = async (
+  url: string,
+  fileType = 'txt',
+  onSuccess: (result: any) => void,
+  onError?: (error: any) => void
+) => {
+  try {
+    console.log(`>>> loading start code: ${url}`);
+    const resp4File = await fetch(url);
+    const { status } = resp4File;
+    if (status === 200) {
+      if (fileType === 'txt') {
+        const strContent = await resp4File.text();
+        onSuccess(strContent);
+      }
+      if (fileType === 'json') {
+        const jsonContent = await resp4File.json();
+        onSuccess(jsonContent);
+      }
+    } else {
+      throw new Error('Load Code Error!');
+    }
+  } catch (error) {
+    onError && onError(error);
+  }
+};
 
 /**
  * Popup message panel, and close after 3 seconds
@@ -55,19 +100,6 @@ export const toggleCodeTips = (
   }, 10000);
   // mark scheduled close
   hCodeTips.dataset.scheduled = `${timeoutID}`;
-};
-
-export type TestCase = {
-  /** case description */
-  description: string;
-  /** validator code logic */
-  comment: string;
-  /** validator function lines, defined remotely or implemented by user  */
-  validator: string[];
-  /** expected value from validator function */
-  expectation: boolean | number;
-  /** params from remote end, if validator functions are implemented by user, this is a must */
-  params: (number | string)[];
 };
 
 const executeScript = (code: string, id = 'dynaCode') => {
@@ -155,34 +187,5 @@ export const safeTestCode = (
     '})();', // semi colon is required here to end a closure call
     '', // end of one test case
   ];
-
   executeScript(safeCompleteCode.join('\n'), 'assertCode');
 };
-
-/**
- * @deprecated
- * Wrap base code and user code into a javascript closure, and handle exception
- * FIXME: run testfunction after user code is a good idea ?
- *
- * @date 2023/11/15
- * @param baseCode
- * @param userCode
- */
-// export const safeRunCode = (baseCode: string, userCode: string) => {
-//   const codeLines = [
-//     '(function(){',
-//     baseCode,
-//     '  try { ',
-//     userCode,
-//     `    document.dispatchEvent(new Event('${GWEvents.SUCCESS}'))`,
-//     '  } catch (error) {',
-//     '    console.log(`## Got error:`)',
-//     '    const detail = {detail: error.message}',
-//     `    const evt = new CustomEvent('${GWEvents.EXCEPTION}', detail)`,
-//     `    document.dispatchEvent(evt)`,
-//     '  }',
-//     '})()',
-//   ];
-//   const safeCompleteCode = codeLines.join('\n');
-//   executeScript(safeCompleteCode);
-// };
