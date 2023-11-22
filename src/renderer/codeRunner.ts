@@ -1,17 +1,40 @@
 /**
+ * Custom Script Events
+ */
+export enum GWEvents {
+  /** test function return `true` */
+  TESTPASSED = 'testCasePassed',
+  /** test function return `false` */
+  TESTFAILED = 'testCaseFailed',
+  /** user code running with error */
+  EXCEPTION = 'ExceptionInCodeEvent',
+  /** user code running on success */
+  SUCCESS = 'SuccessCodeRunEvent',
+}
+
+/**
  * Popup message panel, and close after 3 seconds
  *
- * @param message
- * @param isError
+ * @param message message item to show
+ * @param isError if render in red
+ * @param isSolo if the message is exclusive info, clear existing to show itself.
  * @returns
  */
-export const toggleCodeTips = (message = 'Hooray!', isError = false) => {
+export const toggleCodeTips = (
+  message = 'Hooray!',
+  isError = false,
+  isSolo = false
+) => {
   const codeTips = document.querySelector('.coding-tips-panel');
   if (!codeTips) return;
 
   // open panel
   const style = codeTips.classList;
-  style.add('animate');
+  const hasAnim = style.contains('animate');
+  !hasAnim && style.add('animate');
+
+  // clear existing content
+  if (isSolo) codeTips.innerHTML = '';
 
   // add one message
   const info = document.createElement('p');
@@ -33,20 +56,6 @@ export const toggleCodeTips = (message = 'Hooray!', isError = false) => {
   // mark scheduled close
   hCodeTips.dataset.scheduled = `${timeoutID}`;
 };
-
-/**
- * Custom Script Events
- */
-export enum GWEvents {
-  /** test function return `true` */
-  TESTPASSED = 'testCasePassed',
-  /** test function return `false` */
-  TESTFAILED = 'testCaseFailed',
-  /** user code running with error */
-  EXCEPTION = 'ExceptionInCodeEvent',
-  /** user code running on success */
-  SUCCESS = 'SuccessCodeRunEvent',
-}
 
 export type TestCase = {
   /** case description */
@@ -105,8 +114,14 @@ export const safeTestCode = (
       '  try { ',
       `    const validator = ${testfunction};`,
       `    const testResult = validator(${paramsFormated});`,
+      `    // validate with remote validator & assert function: `,
       `    assertEqual(testResult, ${expectation}, '${description}');`,
-      `    document.dispatchEvent(new Event('${GWEvents.TESTPASSED}'));`,
+      `    // notify challeng playground: `,
+      `    const payload = { detail: '${description}'};`,
+      `    const event = new CustomEvent('${GWEvents.TESTPASSED}', payload);`,
+      `    document.dispatchEvent(event);`,
+      `    // record one case success`,
+      `    caseSuccess.push(1)`,
       '  } catch (error) {',
       '    console.log(`## Got error:`)',
       '    const detail = { detail: error.message }',
@@ -119,19 +134,23 @@ export const safeTestCode = (
   const safeCompleteCode = [
     '(function(){',
     // step 1: initialize base code for user code & all the test cases
-    baseCode,
+    `  ${baseCode}`,
     // step 2: run user code first
     '  try { ',
-    userCode,
-    `    document.dispatchEvent(new Event('${GWEvents.SUCCESS}'))`,
+    `  ${userCode}`,
     '  } catch (error) {',
     '    console.log(`## Got error:`)',
     '    const detail = {detail: error.message}',
     `    const evt = new CustomEvent('${GWEvents.EXCEPTION}', detail)`,
     `    document.dispatchEvent(evt)`,
     '  }',
+    // success count
+    ` const caseSuccess = [];`,
     // step 3: run test cases
     ...testLines,
+    `if(caseSuccess.length === ${tests.length}) {`,
+    `   document.dispatchEvent(new Event('${GWEvents.SUCCESS}'))`,
+    `}`,
     // end of closure
     '})();', // semi colon is required here to end a closure call
     '', // end of one test case
@@ -149,21 +168,21 @@ export const safeTestCode = (
  * @param baseCode
  * @param userCode
  */
-export const safeRunCode = (baseCode: string, userCode: string) => {
-  const codeLines = [
-    '(function(){',
-    baseCode,
-    '  try { ',
-    userCode,
-    `    document.dispatchEvent(new Event('${GWEvents.SUCCESS}'))`,
-    '  } catch (error) {',
-    '    console.log(`## Got error:`)',
-    '    const detail = {detail: error.message}',
-    `    const evt = new CustomEvent('${GWEvents.EXCEPTION}', detail)`,
-    `    document.dispatchEvent(evt)`,
-    '  }',
-    '})()',
-  ];
-  const safeCompleteCode = codeLines.join('\n');
-  executeScript(safeCompleteCode);
-};
+// export const safeRunCode = (baseCode: string, userCode: string) => {
+//   const codeLines = [
+//     '(function(){',
+//     baseCode,
+//     '  try { ',
+//     userCode,
+//     `    document.dispatchEvent(new Event('${GWEvents.SUCCESS}'))`,
+//     '  } catch (error) {',
+//     '    console.log(`## Got error:`)',
+//     '    const detail = {detail: error.message}',
+//     `    const evt = new CustomEvent('${GWEvents.EXCEPTION}', detail)`,
+//     `    document.dispatchEvent(evt)`,
+//     '  }',
+//     '})()',
+//   ];
+//   const safeCompleteCode = codeLines.join('\n');
+//   executeScript(safeCompleteCode);
+// };

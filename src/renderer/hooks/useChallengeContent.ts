@@ -4,14 +4,13 @@
  * @date 2023/11/11
  */
 
+import JSConfetti from 'js-confetti';
 import { useState, useEffect } from 'react';
-
 import { useMonaco } from '@monaco-editor/react';
 import { sourceRepo, TSLIB } from '../config';
 import {
   GWEvents,
   safeTestCode,
-  safeRunCode,
   TestCase,
   toggleCodeTips,
 } from '../codeRunner';
@@ -144,6 +143,8 @@ export const useChallengeContent = (
    * Listening code testing and running sttus events
    */
   useEffect(() => {
+    const jsConfetti = new JSConfetti();
+
     const { EXCEPTION, SUCCESS, TESTFAILED, TESTPASSED } = GWEvents;
     // error event handling
     const codeExecuteErrorHandler = (err: Event) => {
@@ -154,19 +155,21 @@ export const useChallengeContent = (
     };
 
     const codeExecuteSuccessHandler = () => {
-      // toggleCodeTips('## Hooray! ##');
+      toggleCodeTips('Hooray! You completed this challenge! ', false, true);
+      // fire confetti !
+      jsConfetti.addConfetti();
     };
 
+    // one test case FAILED
     const codeTestFailedHandler = (event: Event) => {
       const { detail } = event as CustomEvent;
       toggleCodeTips(detail, true);
-      console.log(`## code test failed:`);
-      console.log(detail);
     };
 
-    const codeTestSPassedHandler = () => {
-      console.log(`## code test Success!`);
-      toggleCodeTips('Code Test Success!');
+    // one test case SUCCESS
+    const codeTestSPassedHandler = (event: Event) => {
+      const { detail } = event as CustomEvent;
+      toggleCodeTips(detail);
     };
 
     document.addEventListener(TESTFAILED, codeTestFailedHandler);
@@ -179,6 +182,9 @@ export const useChallengeContent = (
       document.removeEventListener(TESTPASSED, codeTestSPassedHandler);
       document.removeEventListener(EXCEPTION, codeExecuteErrorHandler);
       document.removeEventListener(SUCCESS, codeExecuteSuccessHandler);
+      // recycle confetti canvas
+      const rootCanvas = document.querySelector('body > canvas');
+      rootCanvas && rootCanvas.remove();
     };
   }, []);
 
