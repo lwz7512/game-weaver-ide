@@ -39,7 +39,12 @@ const ProjectsPage = () => {
           onModuleChanged={onModuleChanged}
         />
         {/* === left panel to list all the challenges === */}
-        <div className="file-explorer bg-gray-300 w-60 overflow-y-scroll">
+        <div
+          className={clsx(
+            'file-explorer bg-gray-300 w-60 overflow-y-scroll',
+            challengeLoaded ? 'hidden' : ''
+          )}
+        >
           <h1 className=" text-lg bg-slate-600 m-0 p-4 text-white text-center">
             Challenge explorer
           </h1>

@@ -32,7 +32,7 @@ export const ChallengePlayground = ({
           onChange={ucc.editChangeChandler}
         />
       </div>
-      {/* run button */}
+      {/* === Run button === */}
       <div className="running-code-button w-3 h-full flex relative">
         <button
           type="button"

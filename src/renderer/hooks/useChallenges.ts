@@ -28,8 +28,10 @@ export type Challenge = {
   keypoints: string[];
   /** difficulty degree */
   level: number;
-  /** video introduction to this challenge */
+  /** video introduction path to this challenge */
   videoURL: string;
+  /** video subtitle path with English/Chinse version  */
+  videoSubtitle: string;
   /** learning task before start coding */
   prerequsite: PreLearnItem[];
   /** base code */

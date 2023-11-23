@@ -33,10 +33,11 @@ export const ChallengeContent = ({
         </ul>
       </div>
       {/* === challenge content: PART 1 === */}
-      <div className="mx-4 my-8 w-10/12 h-96 flex justify-center">
-        <div className=" w-2/3 h-96 border border-gray-400 bg-slate-50">
+      <div className="mx-4 my-8 h-96 flex justify-center">
+        <div className=" w-1/2 h-96 mt-8 border border-gray-400 bg-slate-50">
           Video Introduction
         </div>
+        {/* TODO: add video subtitles tab and content */}
       </div>
       {/** === PART 2 === */}
       <div className="mx-4 my-16 h-48">

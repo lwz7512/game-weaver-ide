@@ -5,7 +5,7 @@
  */
 
 import JSConfetti from 'js-confetti';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useMonaco } from '@monaco-editor/react';
 import { sourceRepo, TSLIB } from '../config';
 import {
@@ -51,6 +51,16 @@ export const useChallengeContent = (
    */
   const [testCases, setTestCases] = useState<TestCase[]>([]);
 
+  /**
+   * save the number of semicolon in the code
+   */
+  const semiColonCountRef = useRef(0);
+
+  /**
+   * `Run` button press handler to open run flag
+   *
+   * @returns
+   */
   const runCodeHandler = () => {
     if (!runningCode) {
       return toggleCodeTips('No Code to run!', true);
@@ -61,9 +71,31 @@ export const useChallengeContent = (
     setTimeout(() => setRunningStart(false), 400);
   };
 
+  /**
+   * Editor code content change handler to do:
+   *
+   * 1. save the latest code
+   * 2. check `;` to invoke run button heatbeating
+   *
+   * @param code
+   * @returns
+   */
   const editChangeChandler = (code: string | undefined) => {
     if (!code) return console.warn('## got undefined code!');
     setRunningCode(code);
+
+    // count the `;` then add animation to run button
+    const countOfSemicolon = (code.match(/;/g) || []).length;
+    // check if `;` count is more
+    if (countOfSemicolon > semiColonCountRef.current) {
+      semiColonCountRef.current = countOfSemicolon;
+      // add animation to button
+      const runButton = document.querySelector('.center-run-button');
+      runButton?.classList.add('heart');
+      setTimeout(() => {
+        runButton?.classList.remove('heart');
+      }, 3000);
+    }
   };
 
   /**
@@ -130,6 +162,7 @@ export const useChallengeContent = (
    */
   useEffect(() => {
     const jsConfetti = new JSConfetti();
+    const hooraySound = new Audio(`${sourceRepo}assets/sound/hooray.mp3`);
 
     const { EXCEPTION, SUCCESS, TESTFAILED, TESTPASSED } = GWEvents;
     // error event handling
@@ -140,10 +173,16 @@ export const useChallengeContent = (
       toggleCodeTips(detail, true);
     };
 
+    // *** Mission Completed: ***
+    // - fire confetti
+    // - play sound
+    // @2023/11/22
     const codeExecuteSuccessHandler = () => {
       toggleCodeTips('Hooray! You completed this challenge! ', false, true);
       // fire confetti !
       jsConfetti.addConfetti();
+      // make noise !
+      hooraySound.play();
     };
 
     // one test case FAILED

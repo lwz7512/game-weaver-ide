@@ -75,6 +75,17 @@
   content: '✘ ';
 }
 
+.heart {
+	animation: beat .25s 12 alternate;
+	transform-origin: center;
+}
+
+/* Heart beat animation */
+@keyframes beat{
+	to { transform: scale(1.4); }
+}
+
+
 
 @media only screen and (max-width: 1024px) {
   /* FIXME: cause horizontal scroll bar while resize the window */
