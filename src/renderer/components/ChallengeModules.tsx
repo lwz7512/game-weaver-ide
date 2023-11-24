@@ -34,12 +34,12 @@ export const ChallengeContentHeader = ({
   <div
     className={clsx(
       'challenge-home-header w-full fixed z-20',
-      isChallengeOpen ? 'bg-none bg-sky-50' : 'bg-image'
+      isChallengeOpen ? 'bg-none bg-slate-500' : 'bg-image'
     )}
   >
     <h1
       className={clsx(
-        'm-0 border-b border-gray-300 ',
+        'm-0 border-b border-gray-300 text-white cursor-default',
         isChallengeOpen
           ? 'text-base p-2 pl-24'
           : 'text-3xl p-8 pl-72 text-shadow-md text-slate-700 font-semibold'
@@ -53,8 +53,8 @@ export const ChallengeContentHeader = ({
         className="absolute top-2 left-1"
         onClick={goWelcomeHandler}
       >
-        <Icon icon="chevron-left" size={20} color="gray" />
-        <span className="text-base leading-6 text-slate-600">Back</span>
+        <Icon icon="chevron-left" size={20} color="orange" />
+        <span className="text-base leading-6 text-slate-300">Back</span>
       </button>
     )}
   </div>
