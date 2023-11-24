@@ -12,3 +12,4 @@ export const MAIN_JS_CODE_DEFAULT = `// Welcome to GameWeaver code editor!
 `;
 export const CHALLENGE_AWARD_SLOGAN =
   'following these instructions to complete a mission, you will get a badge!';
+export const CHALLENGES_WELCOME = 'Welcome to Challenges zone!';

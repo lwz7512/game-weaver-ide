@@ -1,0 +1,8 @@
+.challenges-page {
+  /*  */
+}
+
+.challenges-page .challenge-home-header.bg-image {
+  object-fit: cover;
+  background-image: url(../assets/gw_challenge_banner_1_xs.png);
+}

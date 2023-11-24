@@ -4,6 +4,7 @@
 import clsx from 'clsx';
 import { IconName, Icon } from '@blueprintjs/core';
 import { Challenge } from '../hooks/useChallenges';
+import { CHALLENGES_WELCOME } from '../config/labels';
 
 export type ChallengeModuleType = {
   icon: IconName;
@@ -30,16 +31,21 @@ export const ChallengeContentHeader = ({
   isChallengeOpen: boolean;
   goWelcomeHandler: () => void;
 }) => (
-  <div className="header w-full fixed z-20">
+  <div
+    className={clsx(
+      'challenge-home-header w-full fixed z-20',
+      isChallengeOpen ? 'bg-none bg-sky-50' : 'bg-image'
+    )}
+  >
     <h1
       className={clsx(
-        'm-0 underline border-b border-gray-300 ',
+        'm-0 border-b border-gray-300 ',
         isChallengeOpen
-          ? 'text-base p-2 pl-24 bg-sky-50'
-          : 'text-2xl p-8 pl-72 bg-sky-100'
+          ? 'text-base p-2 pl-24'
+          : 'text-3xl p-8 pl-72 text-shadow-md text-slate-700 font-semibold'
       )}
     >
-      Welcome to Challenges zone!
+      {CHALLENGES_WELCOME}
     </h1>
     {isChallengeOpen && (
       <button

@@ -16,8 +16,11 @@ export const ChallengeContent = ({
   return (
     <div className="w-full ">
       {/* === header === */}
-      <div className="challenge-header relative bg-slate-300 text-gray-600">
-        <h1 className="text-2xl font-semibold text-center w-5/6 p-10 mt-9 text-shadow">
+      <div className="challenge-content-header relative bg-slate-300 ">
+        <h1
+          className="object-cover text-gray-700 text-3xl font-semibold text-center w-full p-12 mt-9 text-shadow"
+          style={{ backgroundImage: `url(${selectedChallenge.bannerURL})` }}
+        >
           {selectedChallenge.name}
         </h1>
         {/* keywords */}
@@ -37,7 +40,7 @@ export const ChallengeContent = ({
         <div className=" w-1/2 h-96 mt-8 border border-gray-400 bg-slate-50">
           Video Introduction
         </div>
-        {/* TODO: add video subtitles tab and content */}
+        {/* TODO: add video subtitles tab and content loaded from remote md file */}
       </div>
       {/** === PART 2 === */}
       <div className="mx-4 my-16 h-48">

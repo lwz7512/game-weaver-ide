@@ -44,6 +44,8 @@ export type Challenge = {
   finalCode: string;
   /** if current challenge is in use */
   selected?: boolean;
+  /** banner image path */
+  bannerURL?: string;
 };
 
 export const useChallenges = () => {
@@ -81,11 +83,34 @@ export const useChallenges = () => {
 
   // fetching remote challenges data
   useEffect(() => {
+    /**
+     * Add random banner path to challenge
+     * @param clgs
+     * @param bannerPaths
+     * @returns
+     */
+    const challengeEnhancer = (
+      clgs: Challenge[],
+      bannerPaths: string[]
+    ): Challenge[] => {
+      return clgs.map((clg) => {
+        const randomBannerIndex = Math.floor(
+          Math.random() * bannerPaths.length
+        );
+        const bannerURL = sourceRepo + bannerPaths[randomBannerIndex];
+        return { ...clg, bannerURL };
+      });
+    };
+
     const fetchChallenges = async () => {
       const response = await fetch(`${sourceRepo}data/challenges.json`);
-      const results = await response.json();
-      setChallenges(results);
+      const results = (await response.json()) as Challenge[];
+      const bannersResp = await fetch(`${sourceRepo}data/banners.json`);
+      const { challengePage } = await bannersResp.json();
+      const challengesWithBanner = challengeEnhancer(results, challengePage);
+      setChallenges(challengesWithBanner);
     };
+    // load challenges ....
     fetchChallenges();
 
     const fetchLibCode = async () => {
@@ -95,6 +120,7 @@ export const useChallenges = () => {
       // console.log(source);
       setGlobalFunctions(source);
     };
+    // load challenge interface functions available to user ...
     fetchLibCode();
   }, []);
 

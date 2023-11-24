@@ -32,7 +32,7 @@ const ProjectsPage = () => {
   } = useChallenges();
 
   return (
-    <div className="w-full h-screen flex relative">
+    <div className="challenges-page w-full h-screen flex relative">
       <div className="left-sidepanel flex">
         <LeftSideBar
           activeModule={MODULETYPES.PROJECTS}

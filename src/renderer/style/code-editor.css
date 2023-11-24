@@ -34,6 +34,10 @@
   background-color: #F8FAFC;
 }
 
+.code-editors .map-layers {
+  height: 34%;
+}
+
 
 .center-run-button {
   display: block;
