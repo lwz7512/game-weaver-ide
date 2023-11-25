@@ -1,8 +1,12 @@
 // import clsx from 'clsx';
+import { useState, useEffect } from 'react';
 import { Button, Icon } from '@blueprintjs/core';
+import MarkdownIt from 'markdown-it';
+
 import { Challenge } from '../hooks/useChallenges';
 import { ChallengePlayground } from './ChallengePlayground';
 import appCfg from '../assets/app.json';
+import { sourceRepo } from '../config';
 
 export const ChallengeContent = ({
   selectedChallenge,
@@ -13,6 +17,23 @@ export const ChallengeContent = ({
   externalFunctions: string;
   openChallengeLearningPage: (url: string) => void;
 }) => {
+  const [subtitle, setSubtitle] = useState('');
+  const [showSubTitle, setshowSubTitle] = useState(false);
+
+  const toggleSubTitle = () => setshowSubTitle(!showSubTitle);
+
+  useEffect(() => {
+    const mdRenderer = MarkdownIt();
+    const mdURL = sourceRepo + selectedChallenge.videoSubtitle;
+    const fetchSubTitle = async () => {
+      const mdResp = await fetch(mdURL);
+      const mdFileContent = await mdResp.text();
+      const htmlFromMD = mdRenderer.render(mdFileContent);
+      setSubtitle(htmlFromMD);
+    };
+    fetchSubTitle();
+  }, [selectedChallenge]);
+
   return (
     <div className="w-full ">
       {/* === header === */}
@@ -36,11 +57,34 @@ export const ChallengeContent = ({
         </ul>
       </div>
       {/* === challenge content: PART 1 === */}
-      <div className="mx-4 my-8 h-96 flex justify-center">
-        <div className=" w-1/2 h-96 mt-8 border border-gray-400 bg-slate-50">
-          Video Introduction
+      <div className="mx-4 my-10 h-96 relative">
+        <div className="video-and-subtitle-row w-full flex">
+          {/* place holder */}
+          <div className="left-box flex-1" />
+          {/* center video */}
+          <div className="w-1/2 h-96 border border-gray-400 bg-slate-600 text-white">
+            <h2 className="p-1 text-base">Video Introduction</h2>
+          </div>
+          {/* markdown subtitle content */}
+          {showSubTitle ? (
+            <div
+              className="markdown-container h-96 flex-1 px-2 py-1 w-1/4 bg-slate-100 border border-gray-400 overflow-y-scroll"
+              dangerouslySetInnerHTML={{ __html: subtitle }}
+            />
+          ) : (
+            <div className="h-96 flex-1 px-2 py-1 w-1/4" />
+          )}
         </div>
-        {/* TODO: add video subtitles tab and content loaded from remote md file */}
+        {/* add video subtitles tab and content loaded from remote md file */}
+        <div className="absolute w-3/4 z-10 bottom-0 flex justify-end py-2 px-4">
+          <button
+            type="button"
+            className="orange text-xs text-gray-300 hover:underline focus:outline-none"
+            onClick={toggleSubTitle}
+          >
+            SUBTITLE
+          </button>
+        </div>
       </div>
       {/** === PART 2 === */}
       <div className="mx-4 my-16 h-48">

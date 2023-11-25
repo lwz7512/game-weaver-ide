@@ -26,6 +26,10 @@
   line-height: 24px;
 }
 
+.markdown-container p {
+  font-size: 14px;
+}
+
 .markdown-container a:hover {
   text-decoration: underline;
   color: blue;

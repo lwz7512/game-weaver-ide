@@ -86,9 +86,8 @@ export const useChallengeContent = (
 
     // count the `;` then add animation to run button
     const countOfSemicolon = (code.match(/;/g) || []).length;
-    // check if `;` count is more
+    // FIREST: check if `;` count is more
     if (countOfSemicolon > semiColonCountRef.current) {
-      semiColonCountRef.current = countOfSemicolon;
       // add animation to button
       const runButton = document.querySelector('.center-run-button');
       runButton?.classList.add('heart');
@@ -96,6 +95,8 @@ export const useChallengeContent = (
         runButton?.classList.remove('heart');
       }, 3000);
     }
+    // THEN: save the count
+    semiColonCountRef.current = countOfSemicolon;
   };
 
   /**

@@ -48,6 +48,11 @@ const ProjectsPage = () => {
           <h1 className=" text-lg bg-slate-600 m-0 p-4 text-white text-center">
             Challenge explorer
           </h1>
+          {/* loading indicator.. */}
+          {challenges.length === 0 && (
+            <p className="text-base p-2 text-sky-600">loading challenges...</p>
+          )}
+          {/* challenge list */}
           <ul className=" text-sm list-none text-gray-800 leading-7">
             {challenges.map((doc) => (
               <ChalllengeItem

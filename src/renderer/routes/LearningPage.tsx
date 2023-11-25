@@ -71,7 +71,7 @@ const LearningPage = () => {
             />
           ))}
         </div>
-        {/* learning content from remot */}
+        {/* learning content from remote */}
         <div
           role="note"
           className={clsx(

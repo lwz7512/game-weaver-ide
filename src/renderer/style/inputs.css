@@ -26,6 +26,10 @@ button.keep-color:not(.active):hover {
   color: #333333;
 }
 
+button.orange:not(.active):hover {
+  color: orange;
+}
+
 button[disabled], button[disabled]:hover {
   color: gray;
   transform: none;
