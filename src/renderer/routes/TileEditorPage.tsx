@@ -3,7 +3,7 @@ import { Toaster, Spinner } from '@blueprintjs/core';
 import { MODULETYPES } from '../config';
 import { TiledEditor } from '../tiled/Editor';
 
-import { useCodeEditorPage } from '../controllers/useTileEditorPage';
+import { useTileEditorPage } from '../controllers/useTileEditorPage';
 
 import LeftSideBar from '../components/LeftSideBar';
 import { MiniIconButton } from '../components/Buttons';
@@ -39,7 +39,7 @@ const TiledEditorPage = () => {
     toggleAvailabilityHandler,
     toggleVisibilityHandler,
     toasterCallback,
-  } = useCodeEditorPage();
+  } = useTileEditorPage();
 
   return (
     <div className="tile-editor w-full h-screen flex">

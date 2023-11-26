@@ -1,4 +1,34 @@
-import { DOMEVENTS, GWSPACE_KEY, HISTORY_KEY, SaveHistory } from '../config';
+import { DOMEVENTS, SaveHistory } from '../config';
+
+const MISSION_KEY = 'challenges';
+const GWSPACE_KEY = 'workspace'; // DO NOT CHANGE
+const HISTORY_KEY = 'mapfiles'; // saved map source file list
+
+type ChallengeRecord = {
+  id: number;
+  /** completion date */
+  date: string;
+};
+
+export const getCompletedChallenges = (): ChallengeRecord[] => {
+  const savedMissions = localStorage.getItem(MISSION_KEY);
+  return savedMissions ? JSON.parse(savedMissions) : [];
+};
+
+export const saveChallengeCompletion = (id: number) => {
+  const savedMissions = localStorage.getItem(MISSION_KEY);
+  const missionList: ChallengeRecord[] = savedMissions
+    ? JSON.parse(savedMissions)
+    : [];
+  const newMission = {
+    id,
+    date: new Date().toISOString(),
+  };
+  const missionWithNew = missionList
+    .filter((m) => m.id !== id)
+    .concat(newMission);
+  localStorage.setItem(MISSION_KEY, JSON.stringify(missionWithNew));
+};
 
 const checkWorkspacePath = (): string => {
   const path = localStorage.getItem(GWSPACE_KEY);

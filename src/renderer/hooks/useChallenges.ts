@@ -1,11 +1,21 @@
 /**
  * Created at @2023/09/20
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import { IpcEvents } from '../../ipc-events';
-
-import { sourceRepo, TSLIB } from '../config';
+import {
+  sourceRepo,
+  TSLIB,
+  MISSION_COMPLETED,
+  MISSION_INCOMPLETED,
+} from '../config';
+import { useBPToast } from './useToast';
+import {
+  saveChallengeCompletion,
+  getCompletedChallenges,
+} from '../state/storage';
+import { ChallengeEvents } from '../codeRunner';
 
 type PreLearnItem = {
   name: string;
@@ -46,7 +56,12 @@ export type Challenge = {
   selected?: boolean;
   /** banner image path */
   bannerURL?: string;
+  /** completed all the tests of current challenge */
+  completed?: boolean;
 };
+
+const nextLevelMP3 = `${sourceRepo}assets/sound/nextLevel.mp3`;
+const warningMP3 = `${sourceRepo}assets/sound/warning.mp3`;
 
 export const useChallenges = () => {
   const { ipcRenderer } = window.electron;
@@ -58,6 +73,21 @@ export const useChallenges = () => {
   );
   const [globalFunctions, setGlobalFunctions] = useState('');
 
+  const { toastState, toasterCallback, addSuccessToast, addWarningToast } =
+    useBPToast();
+
+  /** cache all the completed challenges in memory */
+  const completionsRef = useRef<number[]>([]);
+
+  const missionSavedSound = new Audio(nextLevelMP3);
+  const notCompletedSound = new Audio(warningMP3);
+
+  /**
+   * Click challenge item to open challenge view
+   *
+   * @param doc
+   * @returns
+   */
   const openChallenge = (doc: Challenge) => {
     setChallengeLoaded(true);
     if (doc.id === currentChallenge?.id) return;
@@ -81,6 +111,24 @@ export const useChallenges = () => {
     await ipcRenderer.invoke(IpcEvents.OPEN_EXTERNAL_URL, url);
   };
 
+  // check, and save challenge to local cache...
+  const challengeSavedHandler = () => {
+    if (!currentChallenge) return;
+    const { id } = currentChallenge;
+    const completions = completionsRef.current;
+    if (!completions.includes(id)) {
+      // console.warn(`## current challenge not completed!`);
+      addWarningToast(MISSION_INCOMPLETED);
+      // play warning!
+      notCompletedSound.play();
+      return;
+    }
+    addSuccessToast(MISSION_COMPLETED);
+    saveChallengeCompletion(currentChallenge.id);
+    // play music!
+    missionSavedSound.play();
+  };
+
   // fetching remote challenges data
   useEffect(() => {
     /**
@@ -102,13 +150,23 @@ export const useChallenges = () => {
       });
     };
 
+    const completions = getCompletedChallenges();
+    const challengeCompletedEnhancer = (clg: Challenge) => {
+      const existing = completions.find((c) => c.id === clg.id);
+      return { ...clg, completed: !!existing };
+    };
+
     const fetchChallenges = async () => {
       const response = await fetch(`${sourceRepo}data/challenges.json`);
       const results = (await response.json()) as Challenge[];
       const bannersResp = await fetch(`${sourceRepo}data/banners.json`);
       const { challengePage } = await bannersResp.json();
       const challengesWithBanner = challengeEnhancer(results, challengePage);
-      setChallenges(challengesWithBanner);
+      const challengesWithCompleted = challengesWithBanner.map(
+        challengeCompletedEnhancer
+      );
+      // udpate challenge with `completed` & `bannerURL`
+      setChallenges(challengesWithCompleted);
     };
     // load challenges ....
     fetchChallenges();
@@ -124,7 +182,36 @@ export const useChallenges = () => {
     fetchLibCode();
   }, []);
 
+  /**
+   * listen one challenge completed, and enable a mark on the list item
+   */
+  useEffect(() => {
+    const challengeCompletedHandler = (evt: Event) => {
+      const { detail } = evt as CustomEvent;
+      const chlgCopy = challenges.map((clg) =>
+        clg.id === detail ? { ...clg, completed: true } : clg
+      );
+      setChallenges(chlgCopy);
+      // cache completed challenges, DO not update `currentChallenge`
+      completionsRef.current.push(detail);
+    };
+
+    document.addEventListener(
+      ChallengeEvents.MISSION_COMPLETED,
+      challengeCompletedHandler
+    );
+
+    return () => {
+      document.removeEventListener(
+        ChallengeEvents.MISSION_COMPLETED,
+        challengeCompletedHandler
+      );
+    };
+  }, [challenges, currentChallenge]);
+
   return {
+    toastState,
+    toasterCallback,
     challengeLoaded,
     currentChallenge,
     challenges,
@@ -133,5 +220,6 @@ export const useChallenges = () => {
     goBackChallengeHome,
     /** open external web page by browser */
     openChallengeLearningPage,
+    challengeSavedHandler,
   };
 };

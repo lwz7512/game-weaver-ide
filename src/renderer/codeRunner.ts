@@ -6,7 +6,7 @@
 /**
  * Custom Script Events
  */
-export enum GWEvents {
+export enum ChallengeEvents {
   /** test function return `true` */
   TESTPASSED = 'testCasePassed',
   /** test function return `false` */
@@ -15,6 +15,8 @@ export enum GWEvents {
   EXCEPTION = 'ExceptionInCodeEvent',
   /** user code running on success */
   SUCCESS = 'SuccessCodeRunEvent',
+  /** challenge completed */
+  MISSION_COMPLETED = 'MissionCompleted',
 }
 
 export type TestCase = {
@@ -150,14 +152,14 @@ export const safeTestCode = (
       `    assertEqual(testResult, ${expectation}, '${description}');`,
       `    // notify challeng playground: `,
       `    const payload = { detail: '${description}'};`,
-      `    const event = new CustomEvent('${GWEvents.TESTPASSED}', payload);`,
+      `    const event = new CustomEvent('${ChallengeEvents.TESTPASSED}', payload);`,
       `    document.dispatchEvent(event);`,
       `    // record one case success`,
       `    caseSuccess.push(1)`,
       '  } catch (error) {',
       '    console.log(`## Got error:`)',
       '    const detail = { detail: error.message }',
-      `    const evt = new CustomEvent('${GWEvents.TESTFAILED}', detail)`,
+      `    const evt = new CustomEvent('${ChallengeEvents.TESTFAILED}', detail)`,
       `    document.dispatchEvent(evt)`,
       '  }'
     );
@@ -173,7 +175,7 @@ export const safeTestCode = (
     '  } catch (error) {',
     '    console.log(`## Got error:`)',
     '    const detail = {detail: error.message}',
-    `    const evt = new CustomEvent('${GWEvents.EXCEPTION}', detail)`,
+    `    const evt = new CustomEvent('${ChallengeEvents.EXCEPTION}', detail)`,
     `    document.dispatchEvent(evt)`,
     '  }',
     // success count
@@ -181,7 +183,7 @@ export const safeTestCode = (
     // step 3: run test cases
     ...testLines,
     `if(caseSuccess.length === ${tests.length}) {`,
-    `   document.dispatchEvent(new Event('${GWEvents.SUCCESS}'))`,
+    `   document.dispatchEvent(new Event('${ChallengeEvents.SUCCESS}'))`,
     `}`,
     // end of closure
     '})();', // semi colon is required here to end a closure call

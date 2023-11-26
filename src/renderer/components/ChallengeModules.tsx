@@ -147,9 +147,12 @@ export const ChalllengeItem = ({
       onClick={() => docLoadHandler(doc)}
     >
       <span className="block text-base">{doc.name}</span>
-      <span className=" text-base">
-        {new Array(doc.level).fill(0).map(() => `🌟`)}
-      </span>
+      <div className="flex justify-between">
+        <span className="level text-base">
+          {new Array(doc.level).fill(0).map(() => `⭐ `)}
+        </span>
+        {doc.completed && <Icon icon="endorsed" size={18} color="yellow" />}
+      </div>
     </button>
   </li>
 );

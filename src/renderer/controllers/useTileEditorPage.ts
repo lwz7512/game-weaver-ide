@@ -13,7 +13,7 @@ import { useMapFile } from '../hooks/useMapFile';
 import { useGMSpaceFolders } from '../hooks/useWorkspaceFile';
 import { useBPToast } from '../hooks/useToast';
 
-export const useCodeEditorPage = () => {
+export const useTileEditorPage = () => {
   const { onModuleChanged } = useLeftSideBar();
   const { spacePath } = useLocalStorage();
   const { gameFolders: games } = useGMSpaceFolders();

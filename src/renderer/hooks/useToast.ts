@@ -1,9 +1,17 @@
+/**
+ * Shortcut functions for blueprint toaster,
+ * Created At:
+ *
+ * @date 2023/04/26
+ */
+
 import { useRef } from 'react';
 import {
   Intent,
   IToasterProps,
   Position,
   Toaster,
+  ToasterPosition,
   ToastProps,
 } from '@blueprintjs/core';
 
@@ -25,7 +33,7 @@ export const useBPToast = () => {
   const toastState: IToasterProps = {
     autoFocus: false,
     canEscapeKeyClear: true,
-    position: Position.TOP,
+    position: Position.RIGHT_TOP as ToasterPosition,
     usePortal: true,
     maxToasts: 1,
   };

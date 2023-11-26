@@ -11,5 +11,7 @@ export const MAIN_JS_CODE_DEFAULT = `// Welcome to GameWeaver code editor!
 // please click one game at left side to load source...
 `;
 export const CHALLENGE_AWARD_SLOGAN =
-  'following these instructions to complete a mission, you will get a badge!';
+  'following these instructions to complete a coding challenge, you will get a badge!';
 export const CHALLENGES_WELCOME = 'Welcome to Challenges zone!';
+export const MISSION_COMPLETED = 'Congratulations, mission completed!';
+export const MISSION_INCOMPLETED = 'Not finished yet!';

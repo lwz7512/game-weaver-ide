@@ -6,8 +6,6 @@ export const gamePreviewDefaultURL = `http://localhost:${port}`;
 export const sourceRepo =
   'https://raw.githubusercontent.com/lwz7512/game-weaver-ast/master/';
 
-export const GWSPACE_KEY = 'workspace'; // DO NOT CHANGE
-export const HISTORY_KEY = 'mapfiles'; // saved map source file list
 export const GWMAPFILE = '.gw';
 
 // global events

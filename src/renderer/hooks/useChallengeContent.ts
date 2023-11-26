@@ -9,7 +9,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useMonaco } from '@monaco-editor/react';
 import { sourceRepo, TSLIB } from '../config';
 import {
-  GWEvents,
+  ChallengeEvents,
   safeTestCode,
   TestCase,
   toggleCodeTips,
@@ -165,7 +165,8 @@ export const useChallengeContent = (
     const jsConfetti = new JSConfetti();
     const hooraySound = new Audio(`${sourceRepo}assets/sound/hooray.mp3`);
 
-    const { EXCEPTION, SUCCESS, TESTFAILED, TESTPASSED } = GWEvents;
+    const { EXCEPTION, SUCCESS, TESTFAILED, TESTPASSED, MISSION_COMPLETED } =
+      ChallengeEvents;
     // error event handling
     const codeExecuteErrorHandler = (err: Event) => {
       const { detail } = err as CustomEvent;
@@ -184,6 +185,11 @@ export const useChallengeContent = (
       jsConfetti.addConfetti();
       // make noise !
       hooraySound.play();
+      // NOTIFY CHALLENGES HOOK SUCCES EVENT
+      const completionEvt = new CustomEvent(MISSION_COMPLETED, {
+        detail: challenge.id,
+      });
+      document.dispatchEvent(completionEvt);
     };
 
     // one test case FAILED
@@ -212,7 +218,7 @@ export const useChallengeContent = (
       const rootCanvas = document.querySelector('body > canvas');
       rootCanvas && rootCanvas.remove();
     };
-  }, []);
+  }, [challenge]);
 
   return {
     id,

@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-// import { Icon } from '@blueprintjs/core';
+import { Toaster, Spinner } from '@blueprintjs/core';
 import LeftSideBar from '../components/LeftSideBar';
 import { ChallengeContent } from '../components/ChallengeDocContent';
 import {
@@ -22,13 +22,16 @@ import { useChallenges } from '../hooks/useChallenges';
 const ProjectsPage = () => {
   const { onModuleChanged } = useLeftSideBar();
   const {
+    toastState,
     challenges,
     currentChallenge,
     challengeLoaded,
     globalFunctions,
+    toasterCallback,
     openChallenge,
     goBackChallengeHome,
     openChallengeLearningPage,
+    challengeSavedHandler,
   } = useChallenges();
 
   return (
@@ -87,11 +90,14 @@ const ProjectsPage = () => {
             selectedChallenge={currentChallenge}
             externalFunctions={globalFunctions}
             openChallengeLearningPage={openChallengeLearningPage}
+            challengeSavedHandler={challengeSavedHandler}
           />
         )}
       </div>
-      {/* floating webview - 2023/10/02 */}
+      {/* floating webview ...use shell to open browser instead - 2023/10/02 */}
       {/* <WebDocViewer /> */}
+      {/* toaster */}
+      <Toaster {...toastState} ref={toasterCallback} />
     </div>
   );
 };

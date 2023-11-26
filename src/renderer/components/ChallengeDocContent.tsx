@@ -12,10 +12,12 @@ export const ChallengeContent = ({
   selectedChallenge,
   externalFunctions,
   openChallengeLearningPage,
+  challengeSavedHandler,
 }: {
   selectedChallenge: Challenge;
   externalFunctions: string;
   openChallengeLearningPage: (url: string) => void;
+  challengeSavedHandler: () => void;
 }) => {
   const [subtitle, setSubtitle] = useState('');
   const [showSubTitle, setshowSubTitle] = useState(false);
@@ -141,16 +143,24 @@ export const ChallengeContent = ({
       </div>
       {/** === PART 6 === */}
       <div className="mx-4 my-16 h-48">
-        <h2 className="text-xl underline my-4">Submit Your Completion:</h2>
-        <div className="button-row h-32 w-full p-8 text-center">
+        <h2 className="text-xl underline my-4">Save Your Achievement:</h2>
+        <div className="button-row h-32 w-full p-8 flex">
+          <div className="left-part flex-1 px-6 flex justify-end">
+            <span className="border-b border-gray-400 w-44 h-1 p-3" />
+          </div>
           <Button
             intent="success"
             color="green"
+            disabled={selectedChallenge.completed}
             className="finish-project-button w-44 h-14 text-2xl rounded-xl hover:drop-shadow-xl border-2 "
+            onClick={challengeSavedHandler}
           >
             <Icon icon="endorsed" size={24} color="white" />
             <span className="ml-4">Done</span>
           </Button>
+          <div className="left-part flex-1 px-6 flex justify-start">
+            <span className="border-b border-gray-400 w-44 h-1 p-3" />
+          </div>
         </div>
       </div>
     </div>
