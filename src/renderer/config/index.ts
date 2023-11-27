@@ -8,6 +8,29 @@ export const sourceRepo =
 
 export const GWMAPFILE = '.gw';
 
+export const badgeImages = {
+  bravery: {
+    url: `${sourceRepo}images/badge/challenge_badge_brave.png`,
+    score: 1,
+  },
+  beginner: {
+    url: `${sourceRepo}images/badge/challenge_badge_beginner.png`,
+    score: 10,
+  },
+  junior: {
+    url: `${sourceRepo}images/badge/challenge_badge_junior.png`,
+    score: 30,
+  },
+  master: {
+    url: `${sourceRepo}images/badge/challenge_badge_master.png`,
+    score: 60,
+  },
+  graduation: {
+    url: `${sourceRepo}images/badge/challenge_badge_graduation.png`,
+    score: 100,
+  },
+};
+
 // global events
 export enum DOMEVENTS {
   GMSPACE_UNDEFINED = 'GMSPACE_UNDEFINED',

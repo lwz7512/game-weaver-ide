@@ -51,7 +51,7 @@ const CodeBlocksPage = () => {
         </div>
       </div>
       <div className="flex-1 bg-white">
-        <h1 className="text-xl text-center p-8 border-b-2 font-semibold text-slate-600">
+        <h1 className="text-2xl text-center p-8 border-b-2 font-semibold text-slate-600">
           Welcome to code examples!
         </h1>
         {/* height: calc(100% - 100px); */}

@@ -14,8 +14,10 @@ export const LearningDocHeader = ({
   <div className="header relative w-full">
     <h1
       className={clsx(
-        'm-0 text-center underline border-b border-gray-300',
-        content ? 'text-base p-2 ' : 'text-2xl p-8 ',
+        'm-0 text-center border-b border-gray-300',
+        content
+          ? 'text-base p-2 '
+          : 'text-2xl p-8 font-semibold text-slate-600',
         isWVFullscreen ? 'bg-black' : 'bg-sky-50'
       )}
     >

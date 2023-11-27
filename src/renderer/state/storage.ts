@@ -10,6 +10,12 @@ type ChallengeRecord = {
   date: string;
 };
 
+export const getUserScore = () => {
+  const savedMissions = localStorage.getItem(MISSION_KEY);
+  const record = JSON.parse(savedMissions || '[]') as any[];
+  return record.length;
+};
+
 export const getCompletedChallenges = (): ChallengeRecord[] => {
   const savedMissions = localStorage.getItem(MISSION_KEY);
   return savedMissions ? JSON.parse(savedMissions) : [];

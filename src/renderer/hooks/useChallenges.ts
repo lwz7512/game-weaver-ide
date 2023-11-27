@@ -65,7 +65,11 @@ const warningMP3 = `${sourceRepo}assets/sound/warning.mp3`;
 
 export const useChallenges = () => {
   const { ipcRenderer } = window.electron;
+  const missionSavedSound = new Audio(nextLevelMP3);
+  const notCompletedSound = new Audio(warningMP3);
 
+  /** cache all the completed challenges in memory */
+  const completionsRef = useRef<number[]>([]);
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [challengeLoaded, setChallengeLoaded] = useState(false);
   const [currentChallenge, setCurrentChallenge] = useState<Challenge | null>(
@@ -76,11 +80,11 @@ export const useChallenges = () => {
   const { toastState, toasterCallback, addSuccessToast, addWarningToast } =
     useBPToast();
 
-  /** cache all the completed challenges in memory */
-  const completionsRef = useRef<number[]>([]);
+  const goBackChallengeHome = () => setChallengeLoaded(false);
 
-  const missionSavedSound = new Audio(nextLevelMP3);
-  const notCompletedSound = new Audio(warningMP3);
+  const openChallengeLearningPage = async (url: string) => {
+    await ipcRenderer.invoke(IpcEvents.OPEN_EXTERNAL_URL, url);
+  };
 
   /**
    * Click challenge item to open challenge view
@@ -103,12 +107,6 @@ export const useChallenges = () => {
       const scrollable = document.querySelector('.project-content');
       scrollable?.scrollTo({ top: 0, behavior: 'smooth' });
     });
-  };
-
-  const goBackChallengeHome = () => setChallengeLoaded(false);
-
-  const openChallengeLearningPage = async (url: string) => {
-    await ipcRenderer.invoke(IpcEvents.OPEN_EXTERNAL_URL, url);
   };
 
   // check, and save challenge to local cache...
@@ -207,7 +205,7 @@ export const useChallenges = () => {
         challengeCompletedHandler
       );
     };
-  }, [challenges, currentChallenge]);
+  }, [challenges]);
 
   return {
     toastState,
