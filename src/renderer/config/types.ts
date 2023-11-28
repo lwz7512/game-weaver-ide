@@ -1,3 +1,46 @@
+type PreLearnItem = {
+  name: string;
+  url: string;
+  title: string;
+};
+
+export type Challenge = {
+  /** challenge number */
+  id: number;
+  /** challenge name */
+  name: string;
+  /** challenge description */
+  description: string;
+  /** challenge target */
+  objective: string;
+  /** challenge knowledge points */
+  keywords: string[];
+  /** problems to be solved before coding */
+  keypoints: string[];
+  /** difficulty degree */
+  level: number;
+  /** video introduction path to this challenge */
+  videoURL: string;
+  /** video subtitle path with English/Chinse version  */
+  videoSubtitle: string;
+  /** learning task before start coding */
+  prerequsite: PreLearnItem[];
+  /** base code */
+  baseCode: string;
+  /** coding start point loaded from remote repository */
+  startCode: string;
+  /** code testing method or code auditor function defined in challenges.js */
+  testCode: string;
+  /** code snippet for challenge completion */
+  finalCode: string;
+  /** if current challenge is in use */
+  selected?: boolean;
+  /** banner image path */
+  bannerURL?: string;
+  /** completed all the tests of current challenge */
+  completed?: boolean;
+};
+
 export type TileSheetImage = {
   path: string;
   tileSize: number;

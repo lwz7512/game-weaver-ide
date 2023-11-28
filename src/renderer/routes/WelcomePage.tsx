@@ -13,16 +13,19 @@ import LeftSideBar from '../components/LeftSideBar';
 import { HeroBanner } from '../components/HeroBanner';
 import useLeftSideBar from '../hooks/useLeftSideBar';
 import { useHTTPServer } from '../hooks/useHTTPServer';
+import { useChallengeRecords } from '../hooks/useChallengeRecords';
 
 import placeHolderImg from '../assets/global-preloader.jpg';
 import appCfg from '../assets/app.json';
 
 const WelcomePage = () => {
-  const { onModuleChanged } = useLeftSideBar();
+  const { onModuleChanged, gotoChallengePage } = useLeftSideBar();
   const checkGoneHandler = () => toast.error(WG);
   const saySomething = () => toast.warn(WU);
 
   useHTTPServer(checkGoneHandler, saySomething);
+
+  const { challenges } = useChallengeRecords();
 
   return (
     <div className="welcome-page w-full h-screen flex">
@@ -42,7 +45,7 @@ const WelcomePage = () => {
         <div className="four-section-grid grid grid-cols-3 grid-rows-2">
           <div className="section">
             <h2 className="text-lg font-semibold">New...</h2>
-            <ul className="py-4 px-8 text-gray-200 text-sm leading-6">
+            <ul className="py-4 px-4 text-gray-200 text-sm leading-6">
               <li className="home-card-item">New Game (save to local)...</li>
               <li className="home-card-item">New Code Example ...</li>
               <li className="home-card-item">New Tutorial ...</li>
@@ -51,6 +54,19 @@ const WelcomePage = () => {
           </div>
           <div className="section">
             <h2 className="text-lg font-semibold">Recent Challenge</h2>
+            <ul className="py-4 px-4 text-gray-200 text-sm leading-6">
+              {challenges.map((clg) => (
+                <li className="home-card-item">
+                  <button
+                    type="button"
+                    className=""
+                    onClick={() => gotoChallengePage(clg.id)}
+                  >
+                    {clg.name}
+                  </button>
+                </li>
+              ))}
+            </ul>
           </div>
           <div className="section right-cell">
             <h2 className="text-lg font-semibold">Tutorials</h2>
