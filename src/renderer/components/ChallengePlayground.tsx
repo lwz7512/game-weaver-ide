@@ -1,9 +1,8 @@
 import { Spinner } from '@blueprintjs/core';
 import Editor from '@monaco-editor/react';
-import { codeEditorOptions } from '../config';
+import { codeEditorOptions, Challenge } from '../config';
 import { CodeResultStage } from './CodeResultStage';
 import { useChallengeContent } from '../hooks/useChallengeContent';
-import { Challenge } from '../hooks/useChallenges';
 
 /**
  * Code editor & Running result, as well as error console

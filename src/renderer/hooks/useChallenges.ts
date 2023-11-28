@@ -18,12 +18,6 @@ import {
 } from '../state/storage';
 import { ChallengeEvents } from '../codeRunner';
 
-type PreLearnItem = {
-  name: string;
-  url: string;
-  title: string;
-};
-
 const nextLevelMP3 = `${sourceRepo}assets/sound/nextLevel.mp3`;
 const warningMP3 = `${sourceRepo}assets/sound/warning.mp3`;
 
@@ -73,7 +67,10 @@ export const useChallenges = () => {
     });
   };
 
-  // check, and save challenge to local cache...
+  /**
+   * Save `completed` challenge to local cache
+   * @returns
+   */
   const challengeSavedHandler = () => {
     if (!currentChallenge) return;
     const { id } = currentChallenge;

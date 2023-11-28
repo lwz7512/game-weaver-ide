@@ -3,10 +3,9 @@ import { useState, useEffect } from 'react';
 import { Button, Icon } from '@blueprintjs/core';
 import MarkdownIt from 'markdown-it';
 
-import { Challenge } from '../hooks/useChallenges';
 import { ChallengePlayground } from './ChallengePlayground';
 import appCfg from '../assets/app.json';
-import { sourceRepo } from '../config';
+import { sourceRepo, Challenge } from '../config';
 
 export const ChallengeContent = ({
   selectedChallenge,

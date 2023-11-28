@@ -7,7 +7,8 @@
 import JSConfetti from 'js-confetti';
 import { useState, useEffect, useRef } from 'react';
 import { useMonaco } from '@monaco-editor/react';
-import { sourceRepo, TSLIB } from '../config';
+import { sourceRepo, TSLIB, Challenge } from '../config';
+import { saveChallengeCompletion } from '../state/storage';
 import {
   ChallengeEvents,
   safeTestCode,
@@ -15,7 +16,6 @@ import {
   toggleCodeTips,
   stringLoader,
 } from '../codeRunner';
-import { Challenge } from './useChallenges';
 
 export const useChallengeContent = (
   challenge: Challenge,
@@ -69,6 +69,9 @@ export const useChallengeContent = (
     setRunningStart(true);
     // reset to unstart after 400 ms, one round animation completed
     setTimeout(() => setRunningStart(false), 400);
+
+    // add history cache
+    saveChallengeCompletion(challenge.id, 'touched');
   };
 
   /**

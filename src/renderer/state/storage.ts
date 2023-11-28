@@ -8,6 +8,8 @@ type ChallengeRecord = {
   id: number;
   /** completion date */
   date: string;
+  /** status: completed | touched */
+  status: string;
 };
 
 export const getUserScore = () => {
@@ -21,7 +23,7 @@ export const getCompletedChallenges = (): ChallengeRecord[] => {
   return savedMissions ? JSON.parse(savedMissions) : [];
 };
 
-export const saveChallengeCompletion = (id: number) => {
+export const saveChallengeCompletion = (id: number, status = 'completed') => {
   const savedMissions = localStorage.getItem(MISSION_KEY);
   const missionList: ChallengeRecord[] = savedMissions
     ? JSON.parse(savedMissions)
@@ -29,9 +31,10 @@ export const saveChallengeCompletion = (id: number) => {
   const newMission = {
     id,
     date: new Date().toISOString(),
+    status,
   };
   const missionWithNew = missionList
-    .filter((m) => m.id !== id)
+    .filter((m) => m.id !== id) // remove lastly saved one
     .concat(newMission);
   localStorage.setItem(MISSION_KEY, JSON.stringify(missionWithNew));
 };

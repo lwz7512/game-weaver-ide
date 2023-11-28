@@ -39,6 +39,8 @@ export type Challenge = {
   bannerURL?: string;
   /** completed all the tests of current challenge */
   completed?: boolean;
+  /** if touched, run button pressed */
+  touched?: boolean;
 };
 
 export type TileSheetImage = {

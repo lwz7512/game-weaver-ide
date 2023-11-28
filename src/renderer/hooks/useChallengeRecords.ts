@@ -9,23 +9,24 @@ import { sourceRepo, Challenge } from '../config';
 import { getCompletedChallenges } from '../state/storage';
 
 export const useChallengeRecords = () => {
+  // save `touched` challenges
   const [challenges, setChallenges] = useState<Challenge[]>([]);
 
   // fetching remote challenges data
   useEffect(() => {
     const completions = getCompletedChallenges();
-    const challengeCompletedEnhancer = (clg: Challenge) => {
+    const challengeTouchedEnhancer = (clg: Challenge) => {
       const existing = completions.find((c) => c.id === clg.id);
-      return { ...clg, completed: !!existing };
+      return { ...clg, touched: !!existing };
     };
-    const completedFilter = (clg: Challenge) => !!clg.completed;
+    const touchedFilter = (clg: Challenge) => !!clg.touched;
 
     const fetchChallenges = async () => {
       const response = await fetch(`${sourceRepo}data/challenges.json`);
       const results = (await response.json()) as Challenge[];
       const completedChallenges = results
-        .map(challengeCompletedEnhancer)
-        .filter(completedFilter)
+        .map(challengeTouchedEnhancer)
+        .filter(touchedFilter)
         .reverse();
       setChallenges(completedChallenges);
     };
