@@ -3,8 +3,8 @@
  */
 import clsx from 'clsx';
 import { IconName, Icon } from '@blueprintjs/core';
-import { Challenge } from '../hooks/useChallenges';
 import { CHALLENGES_WELCOME } from '../config/labels';
+import { Challenge } from '../config';
 
 export type ChallengeModuleType = {
   icon: IconName;
