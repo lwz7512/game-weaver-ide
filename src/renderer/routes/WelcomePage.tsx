@@ -56,7 +56,7 @@ const WelcomePage = () => {
             <h2 className="text-lg font-semibold">Recent Challenge</h2>
             <ul className="py-4 px-4 text-gray-200 text-sm leading-6">
               {challenges.map((clg) => (
-                <li className="home-card-item">
+                <li className="home-card-item" key={clg.id}>
                   <button
                     type="button"
                     className=""

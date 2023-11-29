@@ -4,7 +4,7 @@
 import clsx from 'clsx';
 import { IconName, Icon } from '@blueprintjs/core';
 import { CHALLENGES_WELCOME } from '../config/labels';
-import { Challenge } from '../config';
+import { Challenge, sourceRepo } from '../config';
 
 export type ChallengeModuleType = {
   icon: IconName;
@@ -95,35 +95,37 @@ export const ChallengeInstructions = ({
 }: {
   challengeLoaded: boolean;
 }) => (
-  <ul
-    className={clsx(
-      'm-12 p-4 text-slate-700 text-lg leading-10',
-      challengeLoaded ? 'hidden' : ''
-    )}
-  >
-    <li className=" underline">
-      👉 Step 1: Select one challenge from left side list to get started.
-    </li>
-    <li className=" underline">
-      👉 Step 2: Watch the introduction video, understand the mission of current
-      challenge.
-    </li>
-    <li className=" underline">
-      👉 Step 3: Check the reference tutorial or document, learn the related
-      concepts or methods.
-    </li>
-    <li className=" underline">
-      👉 Step 4: Use your newly learned knoledges to write mission required
-      code.
-    </li>
-    <li className=" underline">
-      👉 Step 5: Test your code with trial and error approach, until your
-      mission completed.
-    </li>
-    <li className=" underline">
-      👉 Step 6: Accept your achievement, and go on to the next challenge!
-    </li>
-  </ul>
+  <div className={clsx('px-2', challengeLoaded ? 'hidden' : '')}>
+    <ul className="mx-12 px-4 py-2 text-slate-700 text-lg leading-10">
+      <li className=" underline">
+        👉 Step 1: Select one challenge from left side list to get started.
+      </li>
+      <li className=" underline">
+        👉 Step 2: Watch the introduction video, understand the mission of
+        current challenge.
+      </li>
+      <li className=" underline">
+        👉 Step 3: Check the reference tutorial or document, learn the related
+        concepts or methods.
+      </li>
+      <li className=" underline">
+        👉 Step 4: Use your newly learned knoledges to write mission required
+        code.
+      </li>
+      <li className=" underline">
+        👉 Step 5: Test your code with trial and error approach, until your
+        mission completed.
+      </li>
+      <li className=" underline">
+        👉 Step 6: Accept your achievement, and go on to the next challenge!
+      </li>
+    </ul>
+    <img
+      src={`${sourceRepo}images/challenge_steps.png`}
+      alt="challenge-steps"
+      className="w-5/6 h-auto my-4 mx-8"
+    />
+  </div>
 );
 
 export const ChalllengeItem = ({
