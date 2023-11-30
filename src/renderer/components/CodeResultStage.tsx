@@ -11,7 +11,7 @@ export const CodeResultStage = () => (
       height="378"
       className="code-presenter bg-slate-50 block"
     />
-    <div className="coding-tips-panel slidein-from-bottom ">
+    <div className="coding-tips-panel slidein-from-bottom">
       {/* dynamic `p` list */}
     </div>
   </div>

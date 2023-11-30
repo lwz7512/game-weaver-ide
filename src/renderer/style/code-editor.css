@@ -67,9 +67,11 @@
 
 .coding-tips-panel p.success {
   color: green;
+  padding: 2px;
 }
 .coding-tips-panel p.failure {
   color: red;
+  padding: 2px;
 }
 
 .coding-tips-panel p.success::before {

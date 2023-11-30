@@ -167,15 +167,20 @@ export const useChallengeContent = (
   useEffect(() => {
     const jsConfetti = new JSConfetti();
     const hooraySound = new Audio(`${sourceRepo}assets/sound/hooray.mp3`);
+    const warningSound = new Audio(`${sourceRepo}assets/sound/warning.mp3`);
 
     const { EXCEPTION, SUCCESS, TESTFAILED, TESTPASSED, MISSION_COMPLETED } =
       ChallengeEvents;
-    // error event handling
+
+    /**
+     * Caught Exception in code execution!
+     *
+     * @param err
+     */
     const codeExecuteErrorHandler = (err: Event) => {
       const { detail } = err as CustomEvent;
-      // console.log(` got error event info:`);
-      // console.log(detail);
       toggleCodeTips(detail, true);
+      warningSound.play();
     };
 
     // *** Mission Completed: ***
@@ -199,6 +204,7 @@ export const useChallengeContent = (
     const codeTestFailedHandler = (event: Event) => {
       const { detail } = event as CustomEvent;
       toggleCodeTips(detail, true);
+      warningSound.play();
     };
 
     // one test case SUCCESS
