@@ -45,7 +45,7 @@ const ProjectsPage = () => {
         {/* === left panel to list all the challenges === */}
         <div
           className={clsx(
-            'file-explorer bg-gray-300 w-60 overflow-y-scroll',
+            'file-explorer bg-sky-800 w-60 overflow-y-scroll',
             challengeLoaded ? 'hidden' : ''
           )}
         >
@@ -54,7 +54,7 @@ const ProjectsPage = () => {
           </h1>
           {/* loading indicator.. */}
           {challenges.length === 0 && (
-            <p className="text-base p-2 text-sky-600">loading challenges...</p>
+            <p className="text-base p-2 text-white">loading challenges...</p>
           )}
           {/* challenge list */}
           <ul className=" text-sm list-none text-gray-800 leading-7">

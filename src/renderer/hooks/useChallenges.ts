@@ -138,7 +138,9 @@ export const useChallenges = () => {
         challengeCompletedEnhancer
       );
       // udpate challenge with `completed` & `bannerURL`
-      setChallenges(challengesWithCompleted);
+      // lazy udpate for better UE
+      // @2023/11/30
+      setTimeout(() => setChallenges(challengesWithCompleted), 300);
     };
     // load challenges ....
     fetchChallenges();
