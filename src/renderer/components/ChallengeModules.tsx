@@ -9,18 +9,19 @@ import { Challenge, sourceRepo } from '../config';
 export type ChallengeModuleType = {
   icon: IconName;
   label: string;
-  clickHandler: () => void;
+  code: string;
+  clickHandler: (section: string) => void;
 };
 
-export const challengeModules: ChallengeModuleType[] = [
-  { icon: 'video', label: 'Video Intro', clickHandler: () => null },
-  { icon: 'locate', label: 'Mission possible', clickHandler: () => null },
-  { icon: 'learning', label: 'Prerequisites', clickHandler: () => null },
-  { icon: 'code', label: 'Coding & Run', clickHandler: () => null },
+export const challengeModules = [
+  { icon: 'video', label: 'Video Intro', code: 'V' },
+  { icon: 'locate', label: 'Mission to complete', code: 'M' },
+  { icon: 'learning', label: 'Prerequisites', code: 'P' },
+  { icon: 'code', label: 'Coding & Run', code: 'C' },
   {
     icon: 'confirm',
     label: 'Challenge Acknowledged',
-    clickHandler: () => null,
+    code: 'S',
   },
 ];
 
@@ -63,13 +64,14 @@ export const ChallengeContentHeader = ({
 const ChallengeModuleItem = ({
   icon,
   label,
+  code,
   clickHandler,
 }: ChallengeModuleType) => (
   <li className="p-2 border-b border-slate-300 hover:bg-white">
     <button
       type="button"
       className="text-gray-600 hover:text-green-600 focus:outline-none flex align-middle w-full"
-      onClick={clickHandler}
+      onClick={() => clickHandler(code)}
     >
       <Icon icon={icon} size={24} color="currentColor" className="mr-2 " />
       <span className=" inline-block">{label}</span>
@@ -77,14 +79,19 @@ const ChallengeModuleItem = ({
   </li>
 );
 
-export const SideFixeModules = () => (
+export const SideFixeModules = ({
+  sectionScrollHander,
+}: {
+  sectionScrollHander: (sectionCode: string) => void;
+}) => (
   <ul className="slidein-right-menu bg-yellow-50 border-l border-gray-300 drop-shadow text-sm z-20">
     {challengeModules.map((module) => (
       <ChallengeModuleItem
         key={module.label}
-        icon={module.icon}
+        icon={module.icon as IconName}
         label={module.label}
-        clickHandler={() => null}
+        code={module.code}
+        clickHandler={sectionScrollHander}
       />
     ))}
   </ul>

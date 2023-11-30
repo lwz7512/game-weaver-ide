@@ -32,6 +32,7 @@ const ProjectsPage = () => {
     goBackChallengeHome,
     openChallengeLearningPage,
     challengeSavedHandler,
+    scrollToChallengeSection,
   } = useChallenges();
 
   return (
@@ -74,7 +75,9 @@ const ProjectsPage = () => {
           goWelcomeHandler={goBackChallengeHome}
         />
         {/* fixed right menu */}
-        {challengeLoaded && <SideFixeModules />}
+        {challengeLoaded && (
+          <SideFixeModules sectionScrollHander={scrollToChallengeSection} />
+        )}
         <h2
           className={clsx(
             'm-12 mt-36 p-4 text-slate-700 text-xl border-l-8 border-green-600 bg-gray-100 rounded-r-lg',

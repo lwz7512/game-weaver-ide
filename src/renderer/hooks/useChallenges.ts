@@ -44,6 +44,22 @@ export const useChallenges = () => {
     await ipcRenderer.invoke(IpcEvents.OPEN_EXTERNAL_URL, url);
   };
 
+  const scrollContentBy = (offset: number) => {
+    const scrollable = document.querySelector('.project-content');
+    scrollable?.scrollTo({ top: offset, behavior: 'smooth' });
+  };
+
+  const scrollToChallengeSection = (sectionCode: string) => {
+    const sections: { [code: string]: number } = {
+      V: 0, // video
+      M: 500, // mission
+      P: 800, // prerequisite
+      C: 1400, // coding
+      S: 1600, // save
+    };
+    scrollContentBy(sections[sectionCode]);
+  };
+
   /**
    * Click challenge item to open challenge view
    *
@@ -61,10 +77,7 @@ export const useChallenges = () => {
     setChallenges(challengesCopy);
     setCurrentChallenge(doc);
     // FIXME: reset project page to top
-    setTimeout(() => {
-      const scrollable = document.querySelector('.project-content');
-      scrollable?.scrollTo({ top: 0, behavior: 'smooth' });
-    });
+    setTimeout(() => scrollContentBy(0));
   };
 
   /**
@@ -180,5 +193,6 @@ export const useChallenges = () => {
     /** open external web page by browser */
     openChallengeLearningPage,
     challengeSavedHandler,
+    scrollToChallengeSection,
   };
 };

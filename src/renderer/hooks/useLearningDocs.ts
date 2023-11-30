@@ -49,6 +49,7 @@ export const useLearningDocs = () => {
   };
 
   const fetchDocBy = async (url: string) => {
+    // scroll page to top at every time content loaded
     const markdownBox = document.querySelector('.markdown-container');
     markdownBox?.scrollTo({ top: 0, behavior: 'smooth' });
 
