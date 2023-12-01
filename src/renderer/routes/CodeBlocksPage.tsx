@@ -29,6 +29,12 @@ const CodeBlocksPage = () => {
     handleNodeExpand,
   } = useExampleTree(exampleTreeNodes);
 
+  const iframeOnLoadHandler = () => {
+    const iframBox = document.querySelector('.examples-container');
+    const iframBoxElmt = iframBox as HTMLDivElement;
+    iframBoxElmt && iframBoxElmt.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   useIframeFocus();
 
   return (
@@ -66,6 +72,7 @@ const CodeBlocksPage = () => {
                 height={height}
                 src={url}
                 className="my-1"
+                onLoad={iframeOnLoadHandler}
               />
             );
           })}

@@ -7,9 +7,9 @@ import { IpcEvents } from '../../ipc-events';
 import {
   sourceRepo,
   TSLIB,
-  MISSION_COMPLETED,
   MISSION_INCOMPLETED,
   Challenge,
+  MISSION_MARK_COMPLETED,
 } from '../config';
 import { useBPToast } from './useToast';
 import {
@@ -95,7 +95,7 @@ export const useChallenges = () => {
       notCompletedSound.play();
       return;
     }
-    addSuccessToast(MISSION_COMPLETED);
+    addSuccessToast(MISSION_MARK_COMPLETED);
     saveChallengeCompletion(currentChallenge.id);
     // play music!
     missionSavedSound.play();

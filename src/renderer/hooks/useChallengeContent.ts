@@ -7,7 +7,12 @@
 import JSConfetti from 'js-confetti';
 import { useState, useEffect, useRef } from 'react';
 import { useMonaco } from '@monaco-editor/react';
-import { sourceRepo, TSLIB, Challenge } from '../config';
+import {
+  sourceRepo,
+  TSLIB,
+  Challenge,
+  CHALLENGE_SUCCESS_MESSAGE,
+} from '../config';
 import { saveChallengeCompletion } from '../state/storage';
 import {
   ChallengeEvents,
@@ -188,7 +193,7 @@ export const useChallengeContent = (
     // - play sound
     // @2023/11/22
     const codeExecuteSuccessHandler = () => {
-      toggleCodeTips('Hooray! You completed this challenge! ', false, true);
+      toggleCodeTips(CHALLENGE_SUCCESS_MESSAGE, false, true);
       // fire confetti !
       jsConfetti.addConfetti();
       // make noise !
