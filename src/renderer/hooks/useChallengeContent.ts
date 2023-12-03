@@ -92,7 +92,7 @@ export const useChallengeContent = (
     if (!code) return console.warn('## got undefined code!');
     setRunningCode(code);
 
-    // count the `;` then add animation to run button
+    // using `Regular Expression` to count the `;` then add animation to run button
     const countOfSemicolon = (code.match(/;/g) || []).length;
     // FIREST: check if `;` count is more
     if (countOfSemicolon > semiColonCountRef.current) {

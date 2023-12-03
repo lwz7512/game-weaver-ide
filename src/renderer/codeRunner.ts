@@ -134,16 +134,18 @@ export const safeTestCode = (
 
   // assemble test code
   tests.forEach((t) => {
+    // FIXME: this is mock parameters, use `params` property in remote `cx_test.json`
     const params = ['red', 1, true];
     const { validator, expectation, description } = t;
     const testfunction = validator.join('\n');
     const paramsFormated =
       params.length === 0
-        ? '""'
+        ? pf(userCode) // previously empty string: '""' , check user code instead with validator
         : params.reduce((prev, curr) => {
             if (prev === '') return pf(curr);
             return `${prev}, ${pf(curr)}`;
-          }, ''); // empty params;
+          }, ''); // start with empty params;
+    // compose one test case code
     testLines.push(
       '  try { ',
       `    const validator = ${testfunction};`,
@@ -167,9 +169,9 @@ export const safeTestCode = (
 
   const safeCompleteCode = [
     '(function(){',
-    // step 1: initialize base code for user code & all the test cases
+    // STEP 1: initialize base code for user code & all the test cases
     `  ${baseCode}`,
-    // step 2: run user code first
+    // STEP 2: run user code first
     '  try { ',
     `  ${userCode}`,
     '  } catch (error) {',
@@ -178,10 +180,11 @@ export const safeTestCode = (
     `    const evt = new CustomEvent('${ChallengeEvents.EXCEPTION}', detail)`,
     `    document.dispatchEvent(evt)`,
     '  }',
-    // success count
+    // success count used in `testLines`
     ` const caseSuccess = [];`,
-    // step 3: run test cases
+    // STEP 3: run test cases
     ...testLines,
+    // STEP 4: check success of test cases
     `if(caseSuccess.length === ${tests.length}) {`,
     `   document.dispatchEvent(new Event('${ChallengeEvents.SUCCESS}'))`,
     `}`,
