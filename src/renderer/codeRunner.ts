@@ -129,24 +129,22 @@ export const safeTestCode = (
     if (typeof p === 'string') return `'${p}'`;
     return p;
   };
-  // total code lines for all the test cases
-  const testLines: string[] = [];
 
-  // assemble test code
-  tests.forEach((t) => {
+  // code reducer from remote validator
+  const testCaseReducer = (prevLines: string[], ct: TestCase) => {
     // FIXME: this is mock parameters, use `params` property in remote `cx_test.json`
     const params = ['red', 1, true];
-    const { validator, expectation, description } = t;
+    const { validator, expectation, description } = ct;
     const testfunction = validator.join('\n');
     const paramsFormated =
       params.length === 0
-        ? pf(userCode) // previously empty string: '""' , check user code instead with validator
+        ? pf(userCode) // previously empty string: '""' , check user code instead with validator - 2023/12/03
         : params.reduce((prev, curr) => {
             if (prev === '') return pf(curr);
             return `${prev}, ${pf(curr)}`;
           }, ''); // start with empty params;
     // compose one test case code
-    testLines.push(
+    prevLines.push(
       '  try { ',
       `    const validator = ${testfunction};`,
       `    const testResult = validator(${paramsFormated});`,
@@ -165,8 +163,12 @@ export const safeTestCode = (
       `    document.dispatchEvent(evt)`,
       '  }'
     );
-  }); // end of test case loop
+    return prevLines;
+  };
+  // assemble test code from validator
+  const testLines: string[] = tests.reduce(testCaseReducer, []);
 
+  // finaly code to be running in client
   const safeCompleteCode = [
     '(function(){',
     // STEP 1: initialize base code for user code & all the test cases
