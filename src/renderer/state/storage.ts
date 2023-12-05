@@ -1,16 +1,8 @@
-import { DOMEVENTS, SaveHistory } from '../config';
+import { DOMEVENTS, SaveHistory, ChallengeRecord } from '../config';
 
 const MISSION_KEY = 'challenges';
 const GWSPACE_KEY = 'workspace'; // DO NOT CHANGE
 const HISTORY_KEY = 'mapfiles'; // saved map source file list
-
-type ChallengeRecord = {
-  id: number;
-  /** completion date */
-  date: string;
-  /** status: completed | touched */
-  status: string;
-};
 
 export const getUserScore = () => {
   const savedMissions = localStorage.getItem(MISSION_KEY);

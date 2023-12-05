@@ -160,7 +160,8 @@ export const ChalllengeItem = ({
         <span className="level text-base">
           {new Array(doc.level).fill(0).map(() => `⭐ `)}
         </span>
-        {doc.completed && <Icon icon="endorsed" size={18} color="yellow" />}
+        {doc.completed && <Icon icon="endorsed" size={18} color="orange" />}
+        {doc.touched && <Icon icon="help" size={18} color="yellow" />}
       </div>
     </button>
   </li>

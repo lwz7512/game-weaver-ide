@@ -4,6 +4,14 @@ type PreLearnItem = {
   title: string;
 };
 
+export type ChallengeRecord = {
+  id: number;
+  /** completion date */
+  date: string;
+  /** status: completed | touched */
+  status: string;
+};
+
 export type Challenge = {
   /** challenge number */
   id: number;

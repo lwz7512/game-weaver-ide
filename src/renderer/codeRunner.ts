@@ -104,17 +104,6 @@ export const toggleCodeTips = (
   hCodeTips.dataset.scheduled = `${timeoutID}`;
 };
 
-const executeScript = (code: string, id = 'dynaCode') => {
-  const dynaCode = document.getElementById(id);
-  if (dynaCode) dynaCode.remove(); // remove self
-
-  // console.log(`>> to create script element ...`);
-  const script = document.createElement('script');
-  script.text = code;
-  script.id = id;
-  document.body.appendChild(script);
-};
-
 /**
  * Exectue test function for local user code input in editor
  *
@@ -130,16 +119,26 @@ export const safeTestCode = (
     return p;
   };
 
+  // remove comment lines
+  const sanitizedCode = (code: string) => {
+    const lines = code.split('\n');
+    const cleanLines = lines.map((l) =>
+      l.trim().startsWith('//') ? '' : l.trim()
+    );
+    return cleanLines.join('');
+  };
+
   // code reducer from remote validator
   const testCaseReducer = (prevLines: string[], ct: TestCase) => {
-    // FIXME: this is mock parameters, use `params` property in remote `cx_test.json`
-    const params = ['red', 1, true];
-    const { validator, expectation, description } = ct;
+    const { validator, expectation, description, params } = ct;
     const testfunction = validator.join('\n');
+    const cleanCode = sanitizedCode(userCode);
+    // console.log(cleanCode);
+    // compose parameters used in validator
     const paramsFormated =
       params.length === 0
-        ? pf(userCode) // previously empty string: '""' , check user code instead with validator - 2023/12/03
-        : params.reduce((prev, curr) => {
+        ? pf(cleanCode) // previously empty string: '""' , check user code instead with validator - 2023/12/03
+        : params.reduce((prev: string | number | boolean, curr) => {
             if (prev === '') return pf(curr);
             return `${prev}, ${pf(curr)}`;
           }, ''); // start with empty params;
@@ -147,7 +146,8 @@ export const safeTestCode = (
     prevLines.push(
       '  try { ',
       `    const validator = ${testfunction};`,
-      `    const testResult = validator(${paramsFormated});`,
+      `    const params = ${paramsFormated};`,
+      `    const testResult = validator(params);`,
       `    // validate with remote validator & assert function: `,
       `    assertEqual(testResult, ${expectation}, '${description}');`,
       `    // notify challeng playground: `,
@@ -186,6 +186,7 @@ export const safeTestCode = (
     ` const caseSuccess = [];`,
     // STEP 3: run test cases
     ...testLines,
+    `  console.log(caseSuccess)`,
     // STEP 4: check success of test cases
     `if(caseSuccess.length === ${tests.length}) {`,
     `   document.dispatchEvent(new Event('${ChallengeEvents.SUCCESS}'))`,
@@ -194,5 +195,17 @@ export const safeTestCode = (
     '})();', // semi colon is required here to end a closure call
     '', // end of one test case
   ];
+
+  const executeScript = (code: string, id = 'dynaCode') => {
+    const dynaCode = document.getElementById(id);
+    if (dynaCode) dynaCode.remove(); // remove self
+
+    // console.log(`>> to create script element ...`);
+    const script = document.createElement('script');
+    script.text = code;
+    script.id = id;
+    document.body.appendChild(script);
+  };
+
   executeScript(safeCompleteCode.join('\n'), 'assertCode');
 };

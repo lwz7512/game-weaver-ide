@@ -124,8 +124,18 @@ export const useChallenges = () => {
 
     const completions = getCompletedChallenges();
     const challengeCompletedEnhancer = (clg: Challenge) => {
-      const existing = completions.find((c) => c.id === clg.id);
-      return { ...clg, completed: !!existing };
+      const completedChallenge = completions.find(
+        (c) => c.id === clg.id && c.status === 'completed'
+      );
+      const touchedChallenge = completions.find(
+        (c) => c.id === clg.id && c.status === 'touched'
+      );
+      // get challenge with properties `completed` & `touched`
+      return {
+        ...clg,
+        completed: !!completedChallenge,
+        touched: !!touchedChallenge,
+      };
     };
 
     const fetchChallenges = async () => {
@@ -163,10 +173,12 @@ export const useChallenges = () => {
     const challengeCompletedHandler = (evt: Event) => {
       const { detail } = evt as CustomEvent;
       const chlgCopy = challenges.map((clg) =>
-        clg.id === detail ? { ...clg, completed: true } : clg
+        clg.id === detail ? { ...clg, completed: true, touched: false } : clg
       );
       setChallenges(chlgCopy);
-      // cache completed challenges, DO not update `currentChallenge`
+      // NOTE: cache completed challenges, RATHER THAN update `currentChallenge`
+      // Update `currentChallenge` will cause challenge content rerender unnecessaryly!
+      // @2023/12/05
       completionsRef.current.push(detail);
     };
 
