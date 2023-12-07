@@ -12,7 +12,7 @@ export const CodeResultStage = () => (
       className="code-presenter bg-slate-50 block"
     />
     <div className="coding-tips-panel slidein-from-bottom">
-      {/* dynamic `p` list */}
+      {/* dynamic `p` list here */}
     </div>
   </div>
 );

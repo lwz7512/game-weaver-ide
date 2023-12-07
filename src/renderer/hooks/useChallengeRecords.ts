@@ -27,7 +27,8 @@ export const useChallengeRecords = () => {
       const completedChallenges = results
         .map(challengeTouchedEnhancer)
         .filter(touchedFilter)
-        .reverse();
+        .reverse()
+        .slice(0, 4);
       setChallenges(completedChallenges);
     };
     // load challenges ....

@@ -6,6 +6,7 @@
 
 import JSConfetti from 'js-confetti';
 import { useState, useEffect, useRef } from 'react';
+import { editor } from 'monaco-editor';
 import { useMonaco } from '@monaco-editor/react';
 import {
   sourceRepo,
@@ -26,7 +27,7 @@ export const useChallengeContent = (
   challenge: Challenge,
   editorLib: string
 ) => {
-  // editor instance
+  // monaco instance
   const monaco = useMonaco();
 
   const { id } = challenge;
@@ -55,6 +56,11 @@ export const useChallengeContent = (
    * could meet the requirements of this challenge
    */
   const [testCases, setTestCases] = useState<TestCase[]>([]);
+
+  /**
+   * Detected error in code content
+   */
+  const [hasSyntaxError, setHasSyntaxError] = useState(false);
 
   /**
    * save the number of semicolon in the code
@@ -117,6 +123,22 @@ export const useChallengeContent = (
         editorLib,
         `ts:${TSLIB.GLOBAL}`
       );
+      // check editor markers
+      monaco.editor.onDidChangeMarkers(([uri]) => {
+        const markers: editor.IMarker[] = monaco.editor.getModelMarkers({
+          resource: uri,
+        });
+        if (!markers.length) {
+          // no error occured
+          return setHasSyntaxError(false);
+        }
+        const iterator = ({ message }: editor.IMarker) => {
+          // send message to playground ...
+          toggleCodeTips(message, true, true);
+        };
+        markers.forEach(iterator);
+        setHasSyntaxError(true);
+      });
     }
   }, [monaco, editorLib]);
 
@@ -239,6 +261,7 @@ export const useChallengeContent = (
     baseCode,
     runningCode,
     startRunning,
+    hasSyntaxError,
     editChangeChandler,
     runCodeHandler,
   };

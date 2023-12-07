@@ -46,9 +46,8 @@ export const DocButtonInList = ({
   <li
     key={doc.name}
     className={clsx(
-      'bg-slate-500',
-      'hover:bg-sky-500',
-      doc.selected ? 'bg-sky-600' : ''
+      'hover:bg-sky-600',
+      doc.selected ? 'bg-sky-600' : 'bg-sky-800'
     )}
   >
     <button

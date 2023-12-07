@@ -35,6 +35,7 @@ export const ChallengePlayground = ({
       <div className="running-code-button w-3 h-full flex relative">
         <button
           type="button"
+          disabled={ucc.hasSyntaxError}
           className="center-run-button bg-sky-600 border-2 border-sky-400 hover:drop-shadow-xl hover:bg-sky-500"
           onClick={ucc.runCodeHandler}
         >
