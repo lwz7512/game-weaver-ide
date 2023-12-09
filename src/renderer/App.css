@@ -3,8 +3,13 @@
 @tailwind utilities;
 
 @layer base {
+
+  blockquote {
+    @apply p-2 bg-amber-50 border-l-4 border-green-600 my-2 text-sm;
+  }
+
   pre {
-    @apply p-2 bg-gray-100 rounded-lg;
+    @apply p-2 bg-amber-50 rounded-lg border border-gray-300;
   }
 
   p {

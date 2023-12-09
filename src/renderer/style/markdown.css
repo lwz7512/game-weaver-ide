@@ -30,6 +30,11 @@
   font-size: 14px;
 }
 
+.markdown-container blockquote > p {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; /* 1 */
+  font-size: 1em; /* 2 */
+}
+
 .markdown-container a:hover {
   text-decoration: underline;
   color: blue;
