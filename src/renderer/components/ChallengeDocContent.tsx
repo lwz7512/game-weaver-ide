@@ -61,7 +61,7 @@ export const ChallengeContent = ({
       <div className="mx-4 my-10 h-96 relative">
         <div className="video-and-subtitle-row w-full flex">
           {/* place holder */}
-          <div className="left-box flex-1" />
+          <div className="left-box w-1/6" />
           {/* center video */}
           <div className="w-1/2 h-96 border border-gray-400 bg-slate-600 text-white">
             <h2 className="p-1 text-base">Video Introduction</h2>
@@ -69,7 +69,7 @@ export const ChallengeContent = ({
           {/* markdown subtitle content */}
           {showSubTitle ? (
             <div
-              className="markdown-container h-96 flex-1 px-2 py-1 w-1/4 bg-slate-100 border border-gray-400 overflow-y-scroll"
+              className="markdown-container h-96 flex-1 px-4 py-1 w-1/3 bg-slate-100 border border-gray-400 overflow-y-scroll"
               dangerouslySetInnerHTML={{ __html: subtitle }}
             />
           ) : (
@@ -77,7 +77,7 @@ export const ChallengeContent = ({
           )}
         </div>
         {/* add video subtitles tab and content loaded from remote md file */}
-        <div className="absolute w-3/4 z-10 bottom-0 flex justify-end py-2 px-4">
+        <div className="absolute w-2/3 z-10 bottom-0 flex justify-end py-2 px-4">
           <button
             type="button"
             className="orange text-xs text-gray-300 hover:underline focus:outline-none"
