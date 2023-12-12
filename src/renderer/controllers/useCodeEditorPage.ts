@@ -30,7 +30,7 @@ export const useCodeEditorPage = () => {
     restoreToNoGame,
   } = useWorkspaceGames();
 
-  const { isWVFullscreen, fullScreenOpenHandler, closeFullscreenGameHandler } =
+  const { isWVFullscreen, openGameInFullScreen, closeFullscreenGameHandler } =
     useFullscreenButton(gameLocalURL);
 
   // init editor and return sth sidebar used
@@ -71,7 +71,7 @@ export const useCodeEditorPage = () => {
     openDeleteGameDialog,
     handleNavbarTabChange,
     navbarTabId,
-    fullScreenOpenHandler,
+    openGameInFullScreen,
     gameLocalURL,
     isWVFullscreen,
     closeFullscreenGameHandler,

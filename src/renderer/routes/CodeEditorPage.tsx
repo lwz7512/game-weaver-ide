@@ -31,7 +31,7 @@ const CodeEditorPage = () => {
     handleOpen,
     openDeleteGameDialog,
     handleNavbarTabChange,
-    fullScreenOpenHandler,
+    openGameInFullScreen,
     closeFullscreenGameHandler,
     refreshPreview,
     saveMainJS,
@@ -93,7 +93,7 @@ const CodeEditorPage = () => {
         <div className="preview-output-panels bg-black h-60 ">
           <PreviewPanelHandleBar
             targeSelector=".preview-output-panels"
-            onFullScreen={fullScreenOpenHandler}
+            onFullScreen={openGameInFullScreen}
           />
           <iframe
             title="Game Preview"
