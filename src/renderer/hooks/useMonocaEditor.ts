@@ -143,6 +143,9 @@ const useMonocaEditor = (navbarTabId: TabId, mainJSCode: string) => {
     if (mainModel) {
       mainModel.setValue(mainJSCode);
     }
+
+    // FIXME: scroll top after new game source loaded - 2023/12/13
+    editorRef.current.setScrollTop(0);
   }, [mainJSCode]);
 
   // *** build phaser source lib ***

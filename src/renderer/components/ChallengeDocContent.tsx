@@ -1,4 +1,4 @@
-// import clsx from 'clsx';
+import clsx from 'clsx';
 import { useState, useEffect } from 'react';
 import { Button, Icon } from '@blueprintjs/core';
 import MarkdownIt from 'markdown-it';
@@ -61,7 +61,7 @@ export const ChallengeContent = ({
       <div className="mx-4 my-10 h-96 relative">
         <div className="video-and-subtitle-row w-full flex">
           {/* place holder */}
-          <div className="left-box w-1/6" />
+          <div className={clsx('left-box ', showSubTitle ? '' : 'flex-1')} />
           {/* center video */}
           <div className="w-1/2 h-96 border border-gray-400 bg-slate-600 text-white">
             <h2 className="p-1 text-base">Video Introduction</h2>
@@ -69,7 +69,7 @@ export const ChallengeContent = ({
           {/* markdown subtitle content */}
           {showSubTitle ? (
             <div
-              className="markdown-container h-96 flex-1 px-4 py-1 w-1/3 bg-slate-100 border border-gray-400 overflow-y-scroll"
+              className="markdown-container h-96 flex-1 px-4 py-1 bg-slate-100 border border-gray-400 overflow-y-scroll w-1/3"
               dangerouslySetInnerHTML={{ __html: subtitle }}
             />
           ) : (
@@ -77,7 +77,12 @@ export const ChallengeContent = ({
           )}
         </div>
         {/* add video subtitles tab and content loaded from remote md file */}
-        <div className="absolute w-2/3 z-10 bottom-0 flex justify-end py-2 px-4">
+        <div
+          className={clsx(
+            'absolute z-10 bottom-0 flex justify-end py-2 px-4',
+            showSubTitle ? 'w-1/2' : 'w-3/4'
+          )}
+        >
           <button
             type="button"
             className="orange text-xs text-gray-300 hover:underline focus:outline-none"
@@ -119,15 +124,17 @@ export const ChallengeContent = ({
         <h2 className="text-xl underline my-4">
           Checking points before Coding
         </h2>
-        <div className="py-4 px-8 text-slate-500 bg-white flex flex-wrap">
+        <div className="py-4 px-8 text-slate-500 bg-white flex flex-wrap gap-2">
           {selectedChallenge.keypoints.map((k) => (
-            <div className="relative bg-slate-300 w-72 h-72 text-lg" key={k}>
+            <div className="relative  w-72 h-72 text-lg" key={k}>
               <img
                 src={appCfg.baseURL + appCfg.stickyImage}
                 alt="banner"
-                className="absolute top-0 left-0 w-full object-cover z-0 h-full"
+                className="absolute top-0 left-0 w-full object-cover z-0 h-full opacity-80"
               />
-              <p className="absolute z-0 px-14 py-20">{k}</p>
+              <p className="absolute z-0 px-14 py-20 text-lg font-semibold">
+                {k}
+              </p>
             </div>
           ))}
         </div>
