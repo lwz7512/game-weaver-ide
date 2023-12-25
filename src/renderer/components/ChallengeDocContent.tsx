@@ -12,11 +12,13 @@ export const ChallengeContent = ({
   externalFunctions,
   openChallengeLearningPage,
   challengeSavedHandler,
+  challengeWarningHandler,
 }: {
   selectedChallenge: Challenge;
   externalFunctions: string;
   openChallengeLearningPage: (url: string) => void;
   challengeSavedHandler: () => void;
+  challengeWarningHandler: (message: string) => void;
 }) => {
   const [subtitle, setSubtitle] = useState('');
   const [showSubTitle, setshowSubTitle] = useState(false);
@@ -145,6 +147,7 @@ export const ChallengeContent = ({
         <ChallengePlayground
           challenge={selectedChallenge}
           editorLibSource={externalFunctions}
+          warningHandler={challengeWarningHandler}
         />
       </div>
       {/** === PART 6 === */}

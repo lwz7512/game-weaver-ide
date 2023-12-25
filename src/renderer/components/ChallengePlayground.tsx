@@ -12,11 +12,13 @@ import { useChallengeContent } from '../hooks/useChallengeContent';
 export const ChallengePlayground = ({
   challenge,
   editorLibSource,
+  warningHandler,
 }: {
   editorLibSource: string;
   challenge: Challenge;
+  warningHandler: (message: string) => void;
 }) => {
-  const ucc = useChallengeContent(challenge, editorLibSource);
+  const ucc = useChallengeContent(challenge, editorLibSource, warningHandler);
 
   return (
     <div className="flex h-96">

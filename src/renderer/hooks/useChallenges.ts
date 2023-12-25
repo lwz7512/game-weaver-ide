@@ -10,6 +10,7 @@ import {
   MISSION_INCOMPLETED,
   Challenge,
   MISSION_MARK_COMPLETED,
+  NO_TEST_CASES,
 } from '../config';
 import { useBPToast } from './useToast';
 import {
@@ -101,6 +102,10 @@ export const useChallenges = () => {
     missionSavedSound.play();
   };
 
+  const chanllengeWarningHandler = (message: string) => {
+    addWarningToast(message);
+    notCompletedSound.play();
+  };
   // fetching remote challenges data
   useEffect(() => {
     /**
@@ -207,6 +212,7 @@ export const useChallenges = () => {
     /** open external web page by browser */
     openChallengeLearningPage,
     challengeSavedHandler,
+    chanllengeWarningHandler,
     scrollToChallengeSection,
   };
 };

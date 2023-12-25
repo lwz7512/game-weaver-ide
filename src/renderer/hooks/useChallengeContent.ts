@@ -13,6 +13,7 @@ import {
   TSLIB,
   Challenge,
   CHALLENGE_SUCCESS_MESSAGE,
+  NO_TEST_CASES,
 } from '../config';
 import { saveChallengeCompletion } from '../state/storage';
 import {
@@ -25,7 +26,8 @@ import {
 
 export const useChallengeContent = (
   challenge: Challenge,
-  editorLib: string
+  editorLib: string,
+  warningHandler: (message: string) => void
 ) => {
   // monaco instance
   const monaco = useMonaco();
@@ -181,12 +183,15 @@ export const useChallengeContent = (
     if (!startRunning || !runningCode) return;
 
     // FIXME: to check empty validator in test case
-    console.log(`>>> start code test:`);
+    if (!testCases.length) {
+      warningHandler(NO_TEST_CASES);
+      return;
+    }
     // First, execute all the test case defined in challenge
     setTimeout(() => safeTestCode(baseCode, runningCode, testCases), 200);
 
     // end of code execution
-  }, [baseCode, runningCode, startRunning, testCases]);
+  }, [baseCode, runningCode, startRunning, testCases, warningHandler]);
 
   /**
    * Listening code testing and running sttus events

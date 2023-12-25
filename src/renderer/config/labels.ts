@@ -17,3 +17,4 @@ export const CHALLENGE_SUCCESS_MESSAGE =
   'Hooray! You completed this challenge! ';
 export const MISSION_MARK_COMPLETED = 'Congratulations, mission completed!';
 export const MISSION_INCOMPLETED = 'Not finished yet!';
+export const NO_TEST_CASES = 'No test cases attached!';

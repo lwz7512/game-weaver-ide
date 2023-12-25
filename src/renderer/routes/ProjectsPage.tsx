@@ -32,6 +32,7 @@ const ProjectsPage = () => {
     goBackChallengeHome,
     openChallengeLearningPage,
     challengeSavedHandler,
+    chanllengeWarningHandler,
     scrollToChallengeSection,
   } = useChallenges();
 
@@ -94,6 +95,7 @@ const ProjectsPage = () => {
             externalFunctions={globalFunctions}
             openChallengeLearningPage={openChallengeLearningPage}
             challengeSavedHandler={challengeSavedHandler}
+            challengeWarningHandler={chanllengeWarningHandler}
           />
         )}
       </div>
