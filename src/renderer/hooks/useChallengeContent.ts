@@ -22,7 +22,7 @@ import {
   TestCase,
   toggleCodeTips,
   stringLoader,
-} from '../codeRunner';
+} from '../helpers/codeRunner';
 
 export const useChallengeContent = (
   challenge: Challenge,

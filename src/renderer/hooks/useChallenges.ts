@@ -17,7 +17,7 @@ import {
   saveChallengeCompletion,
   getCompletedChallenges,
 } from '../state/storage';
-import { ChallengeEvents } from '../codeRunner';
+import { ChallengeEvents } from '../helpers/codeRunner';
 
 const nextLevelMP3 = `${sourceRepo}assets/sound/nextLevel.mp3`;
 const warningMP3 = `${sourceRepo}assets/sound/warning.mp3`;
