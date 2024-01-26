@@ -17,10 +17,11 @@ import {
 } from '../config';
 import { saveChallengeCompletion } from '../state/storage';
 import {
-  ChallengeEvents,
+  ChallengeEvents as CEVT,
   safeTestCode,
   TestCase,
   toggleCodeTips,
+  clearCodeTips,
   stringLoader,
 } from '../helpers/codeRunner';
 
@@ -201,9 +202,6 @@ export const useChallengeContent = (
     const hooraySound = new Audio(`${sourceRepo}assets/sound/hooray.mp3`);
     const warningSound = new Audio(`${sourceRepo}assets/sound/warning.mp3`);
 
-    const { EXCEPTION, SUCCESS, TESTFAILED, TESTPASSED, MISSION_COMPLETED } =
-      ChallengeEvents;
-
     /**
      * Caught Exception in code execution!
      *
@@ -226,7 +224,7 @@ export const useChallengeContent = (
       // make noise !
       hooraySound.play();
       // NOTIFY CHALLENGES HOOK SUCCES EVENT
-      const completionEvt = new CustomEvent(MISSION_COMPLETED, {
+      const completionEvt = new CustomEvent(CEVT.MISSION_COMPLETED, {
         detail: challenge.id,
       });
       document.dispatchEvent(completionEvt);
@@ -245,16 +243,23 @@ export const useChallengeContent = (
       toggleCodeTips(detail);
     };
 
-    document.addEventListener(TESTFAILED, codeTestFailedHandler);
-    document.addEventListener(TESTPASSED, codeTestSPassedHandler);
-    document.addEventListener(EXCEPTION, codeExecuteErrorHandler);
-    document.addEventListener(SUCCESS, codeExecuteSuccessHandler);
+    // code started handler
+    const codeTestStartHandler = () => {
+      clearCodeTips();
+    };
+
+    document.addEventListener(CEVT.TESTSTARTED, codeTestStartHandler);
+    document.addEventListener(CEVT.TESTFAILED, codeTestFailedHandler);
+    document.addEventListener(CEVT.TESTPASSED, codeTestSPassedHandler);
+    document.addEventListener(CEVT.EXCEPTION, codeExecuteErrorHandler);
+    document.addEventListener(CEVT.SUCCESS, codeExecuteSuccessHandler);
 
     return () => {
-      document.removeEventListener(TESTFAILED, codeTestFailedHandler);
-      document.removeEventListener(TESTPASSED, codeTestSPassedHandler);
-      document.removeEventListener(EXCEPTION, codeExecuteErrorHandler);
-      document.removeEventListener(SUCCESS, codeExecuteSuccessHandler);
+      document.removeEventListener(CEVT.TESTSTARTED, codeTestStartHandler);
+      document.removeEventListener(CEVT.TESTFAILED, codeTestFailedHandler);
+      document.removeEventListener(CEVT.TESTPASSED, codeTestSPassedHandler);
+      document.removeEventListener(CEVT.EXCEPTION, codeExecuteErrorHandler);
+      document.removeEventListener(CEVT.SUCCESS, codeExecuteSuccessHandler);
       // recycle confetti canvas
       const rootCanvas = document.querySelector('body > canvas');
       rootCanvas && rootCanvas.remove();

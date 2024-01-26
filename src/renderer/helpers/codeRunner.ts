@@ -3,10 +3,14 @@
  * File Created at 2023/11/19
  */
 
+const codeTipsSelector = '.coding-tips-panel';
+
 /**
  * Custom Script Events
  */
 export enum ChallengeEvents {
+  /** test started */
+  TESTSTARTED = 'testStarted',
   /** test function return `true` */
   TESTPASSED = 'testCasePassed',
   /** test function return `false` */
@@ -59,6 +63,12 @@ export const stringLoader = async (
   }
 };
 
+export const clearCodeTips = () => {
+  const codeTips = document.querySelector(codeTipsSelector);
+  if (!codeTips) return;
+  codeTips.innerHTML = '';
+};
+
 /**
  * Popup message panel, and close after 3 seconds
  *
@@ -72,7 +82,7 @@ export const toggleCodeTips = (
   isError = false,
   isSolo = false
 ) => {
-  const codeTips = document.querySelector('.coding-tips-panel');
+  const codeTips = document.querySelector(codeTipsSelector);
   if (!codeTips) return;
 
   // open panel
@@ -185,6 +195,9 @@ export const safeTestCode = (
     // success count used in `testLines`
     ` const caseSuccess = [];`,
     // STEP 3: run test cases
+    // start code testing...
+    ` const evt = new CustomEvent('${ChallengeEvents.TESTSTARTED}')`,
+    ` document.dispatchEvent(evt)`,
     ...testLines,
     `  console.log(caseSuccess)`,
     // STEP 4: check success of test cases
