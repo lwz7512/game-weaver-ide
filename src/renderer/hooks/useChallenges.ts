@@ -123,7 +123,9 @@ export const useChallenges = () => {
           Math.random() * bannerPaths.length
         );
         const bannerURL = sourceRepo + bannerPaths[randomBannerIndex];
-        return { ...clg, bannerURL };
+        // Add cover url from `cover` property at 2024/01/28
+        const coverURL = sourceRepo + clg.cover;
+        return { ...clg, bannerURL, coverURL };
       });
     };
 

@@ -62,7 +62,9 @@
 }
 
 .coding-tips-panel p {
-  line-height: 20px;
+  line-height: 18px;
+  /** FIXME: MAKE IT EXTRA SMALLER TO FULLY DISPLAY 4 LINES OF FAILURE INFO - 2024/01/28 */
+  font-size: 12px;
 }
 
 .coding-tips-panel p.success {

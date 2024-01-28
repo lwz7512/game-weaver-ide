@@ -139,7 +139,11 @@ export const safeTestCode = (
   };
 
   // code reducer from remote validator
-  const testCaseReducer = (prevLines: string[], ct: TestCase) => {
+  const testCaseReducer = (
+    prevLines: string[],
+    ct: TestCase,
+    index: number
+  ) => {
     const { validator, expectation, description, params } = ct;
     const testfunction = validator.join('\n');
     const cleanCode = sanitizedCode(userCode);
@@ -169,8 +173,8 @@ export const safeTestCode = (
       '  } catch (error) {',
       '    console.log(`## Got error:`)',
       '    const detail = { detail: error.message }',
-      `    const evt = new CustomEvent('${ChallengeEvents.TESTFAILED}', detail)`,
-      `    document.dispatchEvent(evt)`,
+      `    const evt_${index} = new CustomEvent('${ChallengeEvents.TESTFAILED}', detail)`,
+      `    document.dispatchEvent(evt_${index})`,
       '  }'
     );
     return prevLines;

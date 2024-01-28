@@ -65,8 +65,14 @@ export const ChallengeContent = ({
           {/* place holder */}
           <div className={clsx('left-box ', showSubTitle ? '' : 'flex-1')} />
           {/* center video */}
-          <div className="w-1/2 h-96 border border-gray-400 bg-slate-600 text-white">
-            <h2 className="p-1 text-base">Video Introduction</h2>
+          <div className="w-1/2 h-96 border border-gray-400 bg-slate-600 text-white overflow-hidden">
+            {/* <h2 className="p-1 text-base">Video Introduction</h2> */}
+            <img
+              src={selectedChallenge.coverURL}
+              alt="video-cover"
+              className=" w-full h-auto object-cover pt-1"
+            />
+            {/* TODO: add video tag after all the content done! - 2024/01/28 */}
           </div>
           {/* markdown subtitle content */}
           {showSubTitle ? (
@@ -87,7 +93,7 @@ export const ChallengeContent = ({
         >
           <button
             type="button"
-            className="orange text-xs text-gray-300 hover:underline focus:outline-none"
+            className=" text-xs text-black hover:underline focus:outline-none"
             onClick={toggleSubTitle}
           >
             SUBTITLE

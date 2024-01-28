@@ -27,6 +27,8 @@ export type Challenge = {
   keypoints: string[];
   /** difficulty degree */
   level: number;
+  /** video cover image relative path */
+  cover: string;
   /** video introduction path to this challenge */
   videoURL: string;
   /** video subtitle path with English/Chinse version  */
@@ -41,6 +43,9 @@ export type Challenge = {
   testCode: string;
   /** code snippet for challenge completion */
   finalCode: string;
+  /** project create date */
+  createDate: string;
+  /* ======  runtime properties ====== */
   /** if current challenge is in use */
   selected?: boolean;
   /** banner image path */
@@ -49,6 +54,8 @@ export type Challenge = {
   completed?: boolean;
   /** if touched, run button pressed */
   touched?: boolean;
+  /** full cover url */
+  coverURL?: string;
 };
 
 export type TileSheetImage = {
