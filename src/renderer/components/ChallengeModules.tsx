@@ -162,14 +162,15 @@ export const ChalllengeItem = ({
       )}
       onBlur={() => null}
       onFocus={() => null}
+      onKeyDown={() => null}
       onMouseOver={loadThumbnailImage}
       onMouseOut={closeThumbnailImage}
+      onClick={() => docLoadHandler(doc)}
     >
       <button
         type="button"
         className="game-item border-b w-full inline-block py-1"
         title={doc.description}
-        onClick={() => docLoadHandler(doc)}
       >
         <span className="block text-base">{doc.name}</span>
         <div className="flex justify-between">
@@ -183,7 +184,7 @@ export const ChalllengeItem = ({
       {/* == Thumbnail == */}
       {thumbnailLoaded && displayThumbnail && (
         <img
-          className=" w-full h-auto"
+          className=" w-full h-auto cursor-pointer"
           src={sourceRepo + doc.thumbnail}
           alt="challenge-thumbnail"
         />
