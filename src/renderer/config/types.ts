@@ -36,7 +36,7 @@ export type Challenge = {
   /** video subtitle path with English/Chinse version  */
   videoSubtitle: string;
   /** learning task before start coding */
-  prerequsite: PreLearnItem[];
+  prerequisite: PreLearnItem[];
   /** base code */
   baseCode: string;
   /** coding start point loaded from remote repository */

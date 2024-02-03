@@ -100,7 +100,7 @@ export const ChallengeContent = ({
           </button>
         </div>
       </div>
-      {/** === PART 2 === */}
+      {/** === PART 2: Mission Briefing === */}
       <div className="mx-4 my-16 h-48">
         <h2 className="text-xl underline my-8">Mission Briefing</h2>
         <p className="p-4 mx-8 my-16 text-lg border-l-4 border-green-500 pl-3 bg-gray-50 text-green-800  text-shadow-md">
@@ -109,11 +109,11 @@ export const ChallengeContent = ({
           {selectedChallenge.objective || 'no objective'}
         </p>
       </div>
-      {/** === PART 3 === */}
+      {/** === PART 3: References & Tutorials === */}
       <div className="mx-4 my-8 h-48">
         <h2 className="text-xl underline my-4">Prerequisite Reading Tasks</h2>
         <ul className="py-4 px-8 text-lg ">
-          {selectedChallenge.prerequsite.map((it) => (
+          {selectedChallenge.prerequisite.map((it) => (
             <li className=" leading-8 py-1" key={it.name}>
               <button
                 type="button"
@@ -127,7 +127,7 @@ export const ChallengeContent = ({
           ))}
         </ul>
       </div>
-      {/** === PART 4 === */}
+      {/** === PART 4: Questions before coding === */}
       <div className="mx-4 my-8 ">
         <h2 className="text-xl underline my-4">
           Checking points before Coding

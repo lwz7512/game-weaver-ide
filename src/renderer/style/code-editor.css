@@ -52,6 +52,18 @@
   border-width: 1px;
 }
 
+/* collaborate with .center-run-button */
+.heart {
+	animation: beat .25s 6 alternate;
+	transform-origin: center;
+}
+
+/* Heart beat animation for .heart */
+@keyframes beat{
+	to { transform: scale(1.4); }
+}
+
+
 .full-screen-webview {
   background-color: rgba(9, 2, 28, 0.8);
 }
@@ -88,16 +100,6 @@
   color: wheat;
   background-color:darkgrey;
   transform: none;
-}
-
-.heart {
-	animation: beat .25s 12 alternate;
-	transform-origin: center;
-}
-
-/* Heart beat animation */
-@keyframes beat{
-	to { transform: scale(1.4); }
 }
 
 

@@ -98,6 +98,15 @@ export const SideFixeModules = ({
   </ul>
 );
 
+const steps = [
+  'Step 1: Select one challenge from left side list to get started.',
+  'Step 2: Watch the introduction video, understand the mission of current challenge.',
+  'Step 3: Check the reference tutorial or document, learn the related concepts or methods.',
+  'Step 4: Use your newly learned knoledges to write mission required code.',
+  'Step 5: Test your code with trial and error approach, until your mission completed.',
+  'Step 6: Accept your achievement, and go on to the next challenge!',
+];
+
 export const ChallengeInstructions = ({
   challengeLoaded,
 }: {
@@ -105,40 +114,11 @@ export const ChallengeInstructions = ({
 }) => (
   <div className={clsx('px-2', challengeLoaded ? 'hidden' : '')}>
     <ul className="mx-12 px-4 py-2 text-slate-600 text-base leading-10 h-72">
-      <li className="challenge-step">
-        <span className="underline">
-          Step 1: Select one challenge from left side list to get started.
-        </span>
-      </li>
-      <li className="challenge-step">
-        <span className="underline">
-          Step 2: Watch the introduction video, understand the mission of
-          current challenge.
-        </span>
-      </li>
-      <li className="challenge-step">
-        <span className="underline">
-          Step 3: Check the reference tutorial or document, learn the related
-          concepts or methods.
-        </span>
-      </li>
-      <li className="challenge-step">
-        <span className="underline">
-          Step 4: Use your newly learned knoledges to write mission required
-          code.
-        </span>
-      </li>
-      <li className="challenge-step">
-        <span className="underline">
-          Step 5: Test your code with trial and error approach, until your
-          mission completed.
-        </span>
-      </li>
-      <li className="challenge-step">
-        <span className="underline">
-          Step 6: Accept your achievement, and go on to the next challenge!
-        </span>
-      </li>
+      {steps.map((stp) => (
+        <li className="challenge-step">
+          <span className="underline">{stp}</span>
+        </li>
+      ))}
     </ul>
     <img
       src={`${sourceRepo}images/challenge_steps.png`}
@@ -177,8 +157,8 @@ export const ChalllengeItem = ({
     <li
       key={doc.name}
       className={clsx(
-        'hover:bg-sky-600',
-        doc.selected ? 'bg-sky-600' : 'bg-sky-800'
+        'challenge-item [&:not(.selected):hover]:bg-sky-600',
+        doc.selected ? 'bg-blue-600 selected' : 'bg-sky-800'
       )}
       onBlur={() => null}
       onFocus={() => null}

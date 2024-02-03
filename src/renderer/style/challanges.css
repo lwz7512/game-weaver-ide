@@ -19,3 +19,7 @@
   font-size: x-large;
   content: '👉 ';
 }
+
+.challenge-item:hover > .game-item {
+  border-bottom: none;
+}

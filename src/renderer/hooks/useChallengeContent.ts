@@ -66,9 +66,18 @@ export const useChallengeContent = (
   const [hasSyntaxError, setHasSyntaxError] = useState(false);
 
   /**
-   * save the number of semicolon in the code
+   * Save the number of semicolon in the code
+   *
+   * FIXME: colon count need to be updated with starting code - @2024/02/03
    */
   const semiColonCountRef = useRef(0);
+
+  /**
+   * Colon counter
+   */
+  const colonCounter = (code: string) => {
+    return (code.match(/;/g) || []).length;
+  };
 
   /**
    * `Run` button press handler to open run flag
@@ -102,7 +111,7 @@ export const useChallengeContent = (
     setRunningCode(code);
 
     // using `Regular Expression` to count the `;` then add animation to run button
-    const countOfSemicolon = (code.match(/;/g) || []).length;
+    const countOfSemicolon = colonCounter(code);
     // FIREST: check if `;` count is more
     if (countOfSemicolon > semiColonCountRef.current) {
       // add animation to button
@@ -162,7 +171,11 @@ export const useChallengeContent = (
       await stringLoader(
         sourceRepo + challenge.startCode,
         'txt',
-        (code) => setRunningCode(code),
+        (code) => {
+          setRunningCode(code);
+          // FIXME: save the colon count at start - @2024/02/03
+          semiColonCountRef.current = colonCounter(code);
+        },
         () => setRunningCode('')
       );
 
