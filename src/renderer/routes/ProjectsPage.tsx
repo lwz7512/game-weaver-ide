@@ -51,18 +51,18 @@ const ProjectsPage = () => {
           )}
         >
           <h1 className=" text-lg bg-slate-600 m-0 p-4 text-white text-center">
-            Challenge explorer
+            Challenge Explorer
           </h1>
           {/* loading indicator.. */}
           {challenges.length === 0 && (
             <p className="text-base p-2 text-white">loading challenges...</p>
           )}
-          {/* challenge list */}
+          {/* === Challenge List === */}
           <ul className=" text-sm list-none text-gray-800 leading-7">
-            {challenges.map((doc) => (
+            {challenges.map((clg) => (
               <ChalllengeItem
-                key={doc.name}
-                doc={doc}
+                key={clg.name}
+                doc={clg}
                 docLoadHandler={openChallenge}
               />
             ))}

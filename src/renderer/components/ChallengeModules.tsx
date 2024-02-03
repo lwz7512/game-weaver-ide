@@ -2,6 +2,7 @@
  * Created at 2023/09/29
  */
 import clsx from 'clsx';
+import { useState } from 'react';
 import { IconName, Icon } from '@blueprintjs/core';
 import { CHALLENGES_WELCOME } from '../config/labels';
 import { Challenge, sourceRepo } from '../config';
@@ -103,28 +104,40 @@ export const ChallengeInstructions = ({
   challengeLoaded: boolean;
 }) => (
   <div className={clsx('px-2', challengeLoaded ? 'hidden' : '')}>
-    <ul className="mx-12 px-4 py-2 text-slate-700 text-lg leading-10">
-      <li className=" underline">
-        👉 Step 1: Select one challenge from left side list to get started.
+    <ul className="mx-12 px-4 py-2 text-slate-600 text-base leading-10 h-72">
+      <li className="challenge-step">
+        <span className="underline">
+          Step 1: Select one challenge from left side list to get started.
+        </span>
       </li>
-      <li className=" underline">
-        👉 Step 2: Watch the introduction video, understand the mission of
-        current challenge.
+      <li className="challenge-step">
+        <span className="underline">
+          Step 2: Watch the introduction video, understand the mission of
+          current challenge.
+        </span>
       </li>
-      <li className=" underline">
-        👉 Step 3: Check the reference tutorial or document, learn the related
-        concepts or methods.
+      <li className="challenge-step">
+        <span className="underline">
+          Step 3: Check the reference tutorial or document, learn the related
+          concepts or methods.
+        </span>
       </li>
-      <li className=" underline">
-        👉 Step 4: Use your newly learned knoledges to write mission required
-        code.
+      <li className="challenge-step">
+        <span className="underline">
+          Step 4: Use your newly learned knoledges to write mission required
+          code.
+        </span>
       </li>
-      <li className=" underline">
-        👉 Step 5: Test your code with trial and error approach, until your
-        mission completed.
+      <li className="challenge-step">
+        <span className="underline">
+          Step 5: Test your code with trial and error approach, until your
+          mission completed.
+        </span>
       </li>
-      <li className=" underline">
-        👉 Step 6: Accept your achievement, and go on to the next challenge!
+      <li className="challenge-step">
+        <span className="underline">
+          Step 6: Accept your achievement, and go on to the next challenge!
+        </span>
       </li>
     </ul>
     <img
@@ -141,28 +154,60 @@ export const ChalllengeItem = ({
 }: {
   doc: Challenge;
   docLoadHandler: (doc: Challenge) => void;
-}) => (
-  <li
-    key={doc.name}
-    className={clsx(
-      'hover:bg-sky-600',
-      doc.selected ? 'bg-sky-600' : 'bg-sky-800'
-    )}
-  >
-    <button
-      type="button"
-      className="game-item border-b w-full inline-block py-1"
-      title={doc.description}
-      onClick={() => docLoadHandler(doc)}
+}) => {
+  const [thumbnailLoaded, setThumbnailLoaded] = useState(false);
+  const [displayThumbnail, setDisplayThumbnail] = useState(false);
+
+  const loadThumbnailImage = () => {
+    setDisplayThumbnail(true);
+    if (thumbnailLoaded) return;
+
+    const img = new Image();
+    img.onload = () => {
+      setThumbnailLoaded(true);
+    };
+    img.src = sourceRepo + doc.thumbnail;
+  };
+
+  const closeThumbnailImage = () => {
+    setDisplayThumbnail(false);
+  };
+
+  return (
+    <li
+      key={doc.name}
+      className={clsx(
+        'hover:bg-sky-600',
+        doc.selected ? 'bg-sky-600' : 'bg-sky-800'
+      )}
+      onBlur={() => null}
+      onFocus={() => null}
+      onMouseOver={loadThumbnailImage}
+      onMouseOut={closeThumbnailImage}
     >
-      <span className="block text-base">{doc.name}</span>
-      <div className="flex justify-between">
-        <span className="level text-base">
-          {new Array(doc.level).fill(0).map(() => `⭐ `)}
-        </span>
-        {doc.completed && <Icon icon="endorsed" size={18} color="orange" />}
-        {doc.touched && <Icon icon="help" size={18} color="yellow" />}
-      </div>
-    </button>
-  </li>
-);
+      <button
+        type="button"
+        className="game-item border-b w-full inline-block py-1"
+        title={doc.description}
+        onClick={() => docLoadHandler(doc)}
+      >
+        <span className="block text-base">{doc.name}</span>
+        <div className="flex justify-between">
+          <span className="level text-base">
+            {new Array(doc.level).fill(0).map(() => `⭐ `)}
+          </span>
+          {doc.completed && <Icon icon="endorsed" size={18} color="orange" />}
+          {doc.touched && <Icon icon="help" size={18} color="yellow" />}
+        </div>
+      </button>
+      {/* == Thumbnail == */}
+      {thumbnailLoaded && displayThumbnail && (
+        <img
+          className=" w-full h-auto"
+          src={sourceRepo + doc.thumbnail}
+          alt="challenge-thumbnail"
+        />
+      )}
+    </li>
+  );
+};

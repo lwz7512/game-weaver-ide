@@ -29,6 +29,8 @@ export type Challenge = {
   level: number;
   /** video cover image relative path */
   cover: string;
+  /** challenge item thumbnail path in sidebard disaplayed on hover */
+  thumbnail: string;
   /** video introduction path to this challenge */
   videoURL: string;
   /** video subtitle path with English/Chinse version  */
