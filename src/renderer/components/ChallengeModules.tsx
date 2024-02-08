@@ -114,8 +114,8 @@ export const ChallengeInstructions = ({
 }) => (
   <div className={clsx('px-2', challengeLoaded ? 'hidden' : '')}>
     <ul className="mx-12 px-4 py-2 text-slate-600 text-base leading-10 h-72">
-      {steps.map((stp) => (
-        <li className="challenge-step">
+      {steps.map((stp, i) => (
+        <li key={i} className="challenge-step">
           <span className="underline">{stp}</span>
         </li>
       ))}

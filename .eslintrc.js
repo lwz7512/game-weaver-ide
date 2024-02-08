@@ -28,6 +28,7 @@ module.exports = {
     'consistent-return': 'off',
     'class-methods-use-this': 'off',
     'jsx-a11y/no-noninteractive-element-interactions': 'off',
+    'react/no-array-index-key': 'off',
   },
   parserOptions: {
     ecmaVersion: 2020,

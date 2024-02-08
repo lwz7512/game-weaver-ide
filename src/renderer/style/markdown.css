@@ -20,6 +20,10 @@
   padding: 0 12px ;
 }
 
+.markdown-container ul > li {
+  list-style: disc;
+}
+
 .markdown-container a {
   font-size: 14px;
   color:dodgerblue;
