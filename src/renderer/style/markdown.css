@@ -17,7 +17,8 @@
 }
 
 .markdown-container ul {
-  padding: 0 12px ;
+  padding: 0 16px ;
+  margin: 8px 0;
 }
 
 .markdown-container ul > li {
@@ -32,6 +33,11 @@
 
 .markdown-container p {
   font-size: 14px;
+}
+
+.markdown-container code {
+  font-size: 12px;
+  color: black;
 }
 
 .markdown-container blockquote > p {

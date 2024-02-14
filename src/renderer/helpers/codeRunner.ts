@@ -158,10 +158,12 @@ export const safeTestCode = (
           }, ''); // start with empty params;
     // compose one test case code
     prevLines.push(
-      '  try { ',
+      `// === RUNNING TEST CASE - ${index} :`,
+      `  try { `,
       `    const validator = ${testfunction};`,
       `    const params = ${paramsFormated};`,
       `    const testResult = validator(params);`,
+      `    console.log(testResult)`,
       `    // validate with remote validator & assert function: `,
       `    assertEqual(testResult, ${expectation}, '${description}');`,
       `    // notify challeng playground: `,
@@ -171,7 +173,7 @@ export const safeTestCode = (
       `    // record one case success`,
       `    caseSuccess.push(1)`,
       '  } catch (error) {',
-      '    console.log(`## Got error:`)',
+      '    console.log(`## Got error for test case:`)',
       '    const detail = { detail: error.message }',
       `    const evt_${index} = new CustomEvent('${ChallengeEvents.TESTFAILED}', detail)`,
       `    document.dispatchEvent(evt_${index})`,
@@ -193,7 +195,7 @@ export const safeTestCode = (
     // if base code incude debug function, use it after user code:
     `  if(debug) debug();`,
     '  } catch (error) {',
-    '    console.log(`## Got error:`)',
+    '    console.log(`## Got error in base code and user code:`)',
     '    const detail = {detail: error.message}',
     `    const evt = new CustomEvent('${ChallengeEvents.EXCEPTION}', detail)`,
     `    document.dispatchEvent(evt)`,
