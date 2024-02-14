@@ -190,6 +190,8 @@ export const safeTestCode = (
     // STEP 2: run user code first
     '  try { ',
     `  ${userCode}`,
+    // if base code incude debug function, use it after user code:
+    `  if(debug) debug();`,
     '  } catch (error) {',
     '    console.log(`## Got error:`)',
     '    const detail = {detail: error.message}',
