@@ -17,12 +17,16 @@
 }
 
 .markdown-container ul {
-  padding: 0 16px ;
+  padding: 4px 16px ;
   margin: 8px 0;
+  border-top: 1px solid gainsboro;
+  border-bottom: 1px solid gainsboro;
+  background-color:floralwhite;
 }
 
 .markdown-container ul > li {
   list-style: disc;
+  line-height: 24px;
 }
 
 .markdown-container a {

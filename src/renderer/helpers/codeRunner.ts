@@ -117,6 +117,8 @@ export const toggleCodeTips = (
 /**
  * Exectue test function for local user code input in editor
  *
+ * @log Revised on Feb 14 2024 for validator function params
+ *
  * @param tests all the test cases for this challenge
  */
 export const safeTestCode = (
@@ -161,8 +163,7 @@ export const safeTestCode = (
       `// === RUNNING TEST CASE - ${index} :`,
       `  try { `,
       `    const validator = ${testfunction};`,
-      `    const params = ${paramsFormated};`,
-      `    const testResult = validator(params);`,
+      `    const testResult = validator(${paramsFormated});`,
       `    console.log(testResult)`,
       `    // validate with remote validator & assert function: `,
       `    assertEqual(testResult, ${expectation}, '${description}');`,
