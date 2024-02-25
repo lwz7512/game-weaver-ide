@@ -83,6 +83,13 @@
   color: green;
   padding: 2px;
 }
+
+.coding-tips-panel p.success.solo {
+  /** for solo hooray text! */
+  font-size: 16px;
+  font-weight: bold;
+}
+
 .coding-tips-panel p.failure {
   color: red;
   padding: 2px;

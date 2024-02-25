@@ -98,6 +98,8 @@ export const toggleCodeTips = (
   info.innerHTML = message;
   const theme = isError ? 'failure' : 'success';
   info.classList.add(theme);
+  // FIXME: make the single line bigger! - @2024/02/18
+  isSolo && info.classList.add('solo');
   codeTips.appendChild(info);
 
   const hCodeTips = codeTips as HTMLElement;
