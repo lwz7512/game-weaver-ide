@@ -39,7 +39,14 @@ export const useChallenges = () => {
   const { toastState, toasterCallback, addSuccessToast, addWarningToast } =
     useBPToast();
 
-  const goBackChallengeHome = () => setChallengeLoaded(false);
+  const goBackChallengeHome = () => {
+    setChallengeLoaded(false);
+    // FIXME: stop game if its running!
+    // @2024/02/29
+    if (Object.hasOwn(window, 'stopGame')) {
+      (window as any).stopGame();
+    }
+  };
 
   const openChallengeLearningPage = async (url: string) => {
     await ipcRenderer.invoke(IpcEvents.OPEN_EXTERNAL_URL, url);

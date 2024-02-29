@@ -178,8 +178,8 @@ export const safeTestCode = (
       '  } catch (error) {',
       '    console.log(`## Got error for test case:`)',
       '    const detail = { detail: error.message }',
-      `    const evt_${index} = new CustomEvent('${ChallengeEvents.TESTFAILED}', detail)`,
-      `    document.dispatchEvent(evt_${index})`,
+      `    const evt${index} = new CustomEvent('${ChallengeEvents.TESTFAILED}', detail)`,
+      `    document.dispatchEvent(evt${index})`,
       '  }'
     );
     return prevLines;
@@ -189,6 +189,7 @@ export const safeTestCode = (
 
   // finaly code to be running in client
   const safeCompleteCode = [
+    '',
     '(function(){',
     // STEP 1: initialize base code for user code & all the test cases
     `  ${baseCode}`,
