@@ -3,7 +3,7 @@
     "incremental": true,
     "target": "ES2021",
     "module": "commonjs",
-    "lib": ["dom", "ES2022"],
+    "lib": ["dom", "ES2021", "ES2022.Object"],
     "declaration": true,
     "declarationMap": true,
     "jsx": "react-jsx",
