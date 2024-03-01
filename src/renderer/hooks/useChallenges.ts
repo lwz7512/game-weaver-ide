@@ -41,11 +41,6 @@ export const useChallenges = () => {
 
   const goBackChallengeHome = () => {
     setChallengeLoaded(false);
-    // FIXME: stop game if its running!
-    // @2024/02/29
-    if (Object.hasOwn(window, 'stopGame')) {
-      (window as any).stopGame();
-    }
   };
 
   const openChallengeLearningPage = async (url: string) => {

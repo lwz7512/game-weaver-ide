@@ -202,7 +202,7 @@ export const safeTestCode = (
     // if base code incude debug function, use it after user code:
     `  if(debug) debug();`,
     '  } catch (error) {',
-    '    console.log(`## Got error in base code and user code:`)',
+    '    console.log(`## Caught error from code runner!`)',
     '    const detail = {detail: error.message}',
     `    const evt = new CustomEvent('${ChallengeEvents.EXCEPTION}', detail)`,
     `    document.dispatchEvent(evt)`,
@@ -214,7 +214,6 @@ export const safeTestCode = (
     ` const evt = new CustomEvent('${ChallengeEvents.TESTSTARTED}')`,
     ` document.dispatchEvent(evt)`,
     ...testLines,
-    `  console.log(caseSuccess)`,
     // STEP 4: check success of test cases
     `if(caseSuccess.length === ${tests.length}) {`,
     `   document.dispatchEvent(new Event('${ChallengeEvents.SUCCESS}'))`,

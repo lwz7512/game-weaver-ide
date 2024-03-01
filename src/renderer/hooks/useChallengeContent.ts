@@ -279,6 +279,17 @@ export const useChallengeContent = (
     };
   }, [challenge]);
 
+  useEffect(() => {
+    // FIXME: clean up game resources after playground closed!
+    // @2024/03/01
+    return () => {
+      if (Object.hasOwn(window, 'stopGame')) {
+        // stop game if its running!
+        (window as any).stopGame();
+      }
+    };
+  }, []);
+
   return {
     id,
     baseCode,
