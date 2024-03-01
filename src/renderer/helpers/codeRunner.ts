@@ -34,6 +34,8 @@ export type TestCase = {
   expectation: boolean | number;
   /** params from remote end, if validator functions are implemented by user, this is a must */
   params: (number | string)[];
+  /** userCode to validate in validate function */
+  userCode?: string;
 };
 
 export const stringLoader = async (
@@ -116,6 +118,60 @@ export const toggleCodeTips = (
   hCodeTips.dataset.scheduled = `${timeoutID}`;
 };
 
+// remove comment lines
+const sanitizedCode = (code: string | undefined) => {
+  if (!code) return '';
+  const lines = code.split('\n');
+  const cleanLines = lines.map((l) =>
+    l.trim().startsWith('//') ? '' : l.trim()
+  );
+  return cleanLines.join('');
+};
+
+const paramFormat = (p: string | number | boolean) => {
+  if (typeof p === 'string') return `'${p}'`;
+  return p;
+};
+
+// code reducer from remote validator
+const testCaseReducer = (prevLines: string[], ct: TestCase, index: number) => {
+  const { validator, expectation, description, params } = ct;
+  const testfunction = validator.join('\n');
+  const cleanCode = sanitizedCode(ct.userCode);
+  // console.log(cleanCode);
+  // compose parameters used in validator
+  const paramsFormated =
+    params.length === 0
+      ? paramFormat(cleanCode) // previously empty string: '""' , check user code instead with validator - 2023/12/03
+      : params.reduce((prev: string | number | boolean, curr) => {
+          if (prev === '') return paramFormat(curr);
+          return `${prev}, ${paramFormat(curr)}`;
+        }, ''); // start with empty params;
+  // compose one test case code
+  prevLines.push(
+    `// === RUNNING TEST CASE - ${index} :`,
+    `  try { `,
+    `    const validator = ${testfunction};`,
+    `    const testResult = validator(${paramsFormated});`,
+    `    console.log(testResult)`,
+    `    // validate with remote validator & assert function: `,
+    `    assertEqual(testResult, ${expectation}, '${description}');`,
+    `    // notify challeng playground: `,
+    `    const payload = { detail: '${description}'};`,
+    `    const event = new CustomEvent('${ChallengeEvents.TESTPASSED}', payload);`,
+    `    document.dispatchEvent(event);`,
+    `    // record one case success`,
+    `    caseSuccess.push(1)`,
+    `  } catch (error) {`,
+    `    console.log('## Got error for test case:')`,
+    `    const detail = { detail: error.message }`,
+    `    const evt${index} = new CustomEvent('${ChallengeEvents.TESTFAILED}', detail)`,
+    `    document.dispatchEvent(evt${index})`,
+    `  }`
+  );
+  return prevLines;
+};
+
 /**
  * Exectue test function for local user code input in editor
  *
@@ -128,64 +184,11 @@ export const safeTestCode = (
   userCode: string,
   tests: TestCase[]
 ) => {
-  const pf = (p: string | number | boolean) => {
-    if (typeof p === 'string') return `'${p}'`;
-    return p;
-  };
-
-  // remove comment lines
-  const sanitizedCode = (code: string) => {
-    const lines = code.split('\n');
-    const cleanLines = lines.map((l) =>
-      l.trim().startsWith('//') ? '' : l.trim()
-    );
-    return cleanLines.join('');
-  };
-
-  // code reducer from remote validator
-  const testCaseReducer = (
-    prevLines: string[],
-    ct: TestCase,
-    index: number
-  ) => {
-    const { validator, expectation, description, params } = ct;
-    const testfunction = validator.join('\n');
-    const cleanCode = sanitizedCode(userCode);
-    // console.log(cleanCode);
-    // compose parameters used in validator
-    const paramsFormated =
-      params.length === 0
-        ? pf(cleanCode) // previously empty string: '""' , check user code instead with validator - 2023/12/03
-        : params.reduce((prev: string | number | boolean, curr) => {
-            if (prev === '') return pf(curr);
-            return `${prev}, ${pf(curr)}`;
-          }, ''); // start with empty params;
-    // compose one test case code
-    prevLines.push(
-      `// === RUNNING TEST CASE - ${index} :`,
-      `  try { `,
-      `    const validator = ${testfunction};`,
-      `    const testResult = validator(${paramsFormated});`,
-      `    console.log(testResult)`,
-      `    // validate with remote validator & assert function: `,
-      `    assertEqual(testResult, ${expectation}, '${description}');`,
-      `    // notify challeng playground: `,
-      `    const payload = { detail: '${description}'};`,
-      `    const event = new CustomEvent('${ChallengeEvents.TESTPASSED}', payload);`,
-      `    document.dispatchEvent(event);`,
-      `    // record one case success`,
-      `    caseSuccess.push(1)`,
-      '  } catch (error) {',
-      '    console.log(`## Got error for test case:`)',
-      '    const detail = { detail: error.message }',
-      `    const evt${index} = new CustomEvent('${ChallengeEvents.TESTFAILED}', detail)`,
-      `    document.dispatchEvent(evt${index})`,
-      '  }'
-    );
-    return prevLines;
-  };
+  // FIXME: feed userCode to test cases to use in code reducer
+  // @2024/02/29
+  const testsWithUserCode = tests.map((t) => ({ ...t, userCode }));
   // assemble test code from validator
-  const testLines: string[] = tests.reduce(testCaseReducer, []);
+  const testLines: string[] = testsWithUserCode.reduce(testCaseReducer, []);
 
   // finaly code to be running in client
   const safeCompleteCode = [
