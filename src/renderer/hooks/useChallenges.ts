@@ -2,6 +2,7 @@
  * Created at @2023/09/20
  */
 import { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { IpcEvents } from '../../ipc-events';
 import {
@@ -10,7 +11,7 @@ import {
   MISSION_INCOMPLETED,
   Challenge,
   MISSION_MARK_COMPLETED,
-  NO_TEST_CASES,
+  // NO_TEST_CASES,
 } from '../config';
 import { useBPToast } from './useToast';
 import {
@@ -26,6 +27,8 @@ export const useChallenges = () => {
   const { ipcRenderer } = window.electron;
   const missionSavedSound = new Audio(nextLevelMP3);
   const notCompletedSound = new Audio(warningMP3);
+
+  const [params] = useSearchParams();
 
   /** cache all the completed challenges in memory */
   const completionsRef = useRef<number[]>([]);
@@ -156,7 +159,7 @@ export const useChallenges = () => {
       const challengesWithCompleted = challengesWithBanner.map(
         challengeCompletedEnhancer
       );
-      // udpate challenge with `completed` & `bannerURL`
+      // FIXME: udpate challenge with `completed` & `bannerURL`
       // lazy udpate for better UE
       // @2023/11/30
       setTimeout(() => setChallenges(challengesWithCompleted), 300);
@@ -191,6 +194,17 @@ export const useChallenges = () => {
       completionsRef.current.push(detail);
     };
 
+    // FIXME: open the last challenge from welcome page
+    // DO NOT reset `challenges` or cause dead-loop rendering!
+    // @2024/03/04
+    const challengeId = params.get('challengeId');
+    if (challengeId && challenges.length) {
+      const doc = challenges.find((c) => c.id === Number(challengeId));
+      if (!doc) return;
+      setCurrentChallenge(doc);
+      setChallengeLoaded(true);
+    }
+
     document.addEventListener(
       ChallengeEvents.MISSION_COMPLETED,
       challengeCompletedHandler
@@ -202,7 +216,7 @@ export const useChallenges = () => {
         challengeCompletedHandler
       );
     };
-  }, [challenges]);
+  }, [challenges, params]);
 
   return {
     toastState,

@@ -200,7 +200,7 @@ export const safeTestCode = (
     '  try { ',
     `  ${userCode}`,
     // if base code incude debug function, use it after user code:
-    `  if(debug) debug();`,
+    `  // if(window.debug) window.debug();`,
     '  } catch (error) {',
     '    console.log(`## Caught error from code runner!`)',
     '    const detail = {detail: error.message}',
