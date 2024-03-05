@@ -2,7 +2,7 @@
  * Created at @2023/09/20
  */
 import { useState, useEffect, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 
 import { IpcEvents } from '../../ipc-events';
 import {
@@ -11,7 +11,7 @@ import {
   MISSION_INCOMPLETED,
   Challenge,
   MISSION_MARK_COMPLETED,
-  // NO_TEST_CASES,
+  ROUTES,
 } from '../config';
 import { useBPToast } from './useToast';
 import {
@@ -29,6 +29,7 @@ export const useChallenges = () => {
   const notCompletedSound = new Audio(warningMP3);
 
   const [params] = useSearchParams();
+  const navigate = useNavigate();
 
   /** cache all the completed challenges in memory */
   const completionsRef = useRef<number[]>([]);
@@ -44,6 +45,10 @@ export const useChallenges = () => {
 
   const goBackChallengeHome = () => {
     setChallengeLoaded(false);
+    // FIXME: change route to reflect current page state
+    // @2024/03/04
+    const challengeRoute = ROUTES.PROJECTS;
+    navigate(challengeRoute);
   };
 
   const openChallengeLearningPage = async (url: string) => {
@@ -87,6 +92,7 @@ export const useChallenges = () => {
   };
 
   /**
+   * Press `Done` button handler:
    * Save `completed` challenge to local cache
    * @returns
    */
@@ -178,9 +184,6 @@ export const useChallenges = () => {
     fetchLibCode();
   }, []);
 
-  /**
-   * listen one challenge completed, and enable a mark on the list item
-   */
   useEffect(() => {
     const challengeCompletedHandler = (evt: Event) => {
       const { detail } = evt as CustomEvent;
@@ -194,17 +197,6 @@ export const useChallenges = () => {
       completionsRef.current.push(detail);
     };
 
-    // FIXME: open the last challenge from welcome page
-    // DO NOT reset `challenges` or cause dead-loop rendering!
-    // @2024/03/04
-    const challengeId = params.get('challengeId');
-    if (challengeId && challenges.length) {
-      const doc = challenges.find((c) => c.id === Number(challengeId));
-      if (!doc) return;
-      setCurrentChallenge(doc);
-      setChallengeLoaded(true);
-    }
-
     document.addEventListener(
       ChallengeEvents.MISSION_COMPLETED,
       challengeCompletedHandler
@@ -216,7 +208,25 @@ export const useChallenges = () => {
         challengeCompletedHandler
       );
     };
-  }, [challenges, params]);
+  }, [challenges]);
+
+  /**
+   * listen one challenge completed, and enable a mark on the list item
+   */
+  useEffect(() => {
+    if (challengeLoaded) return;
+    // FIXME: open the last challenge from welcome page
+    // DO NOT reset `challenges` or cause dead-loop rendering!
+    // @2024/03/04
+    const challengeId = params.get('challengeId');
+
+    if (challengeId && challenges.length) {
+      const doc = challenges.find((c) => c.id === Number(challengeId));
+      if (!doc) return;
+      setCurrentChallenge(doc);
+      setChallengeLoaded(true);
+    }
+  }, [challenges, params, challengeLoaded]);
 
   return {
     toastState,
