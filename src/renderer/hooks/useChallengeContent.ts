@@ -144,6 +144,14 @@ export const useChallengeContent = (
           // no error occured
           return setHasSyntaxError(false);
         }
+        // FIXME: IF the error is some variable/constants not in use, ignore it
+        // @2024/03/07
+        const { message: errMsg } = markers[0];
+        if (errMsg.includes('never')) {
+          console.log(`## Ignore never read error!`);
+          return;
+        }
+
         const iterator = ({ message }: editor.IMarker) => {
           // send message to playground ...
           toggleCodeTips(message, true, true);

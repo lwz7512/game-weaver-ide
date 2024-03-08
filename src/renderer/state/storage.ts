@@ -20,6 +20,12 @@ export const saveChallengeCompletion = (id: number, status = 'completed') => {
   const missionList: ChallengeRecord[] = savedMissions
     ? JSON.parse(savedMissions)
     : [];
+  const hasCompleted = missionList.find(
+    (c) => c.id === id && c.status === 'completed'
+  );
+  // already completed, do nothing! - 2024/03/06
+  if (hasCompleted) return;
+
   const newMission = {
     id,
     date: new Date().toISOString(),

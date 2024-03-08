@@ -71,18 +71,22 @@ Game Weaver is a lightweight web game  development environment designed for begi
 - docs & tutorials ... --- v0.3 GW completion
 - ...
 
-### v0.4 tile-editor plus
+## v0.4 challlenges first season - Whac-A-Mole
+
+- 10 challenges
+
+### v1.1 tile-editor plus
 
 - sample game challenges ... --- v0.4 GW completion
 - ...
 
-### v0.5 classic 2D games 1st season
+### v1.2 classic 2D games 1st season
 
 - paint using multiple tilesheet ... --- v0.3 GW completion
 - ...
 
 
-### v0.6 ...
+### v1.3 ...
 
 - paint object layer ... --- v0.4 GW completion
 - ...
