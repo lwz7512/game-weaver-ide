@@ -229,6 +229,7 @@ export const useChallengeContent = (
      * @param err
      */
     const codeExecuteErrorHandler = (err: Event) => {
+      if (window.DEBUG) return;
       const { detail } = err as CustomEvent;
       toggleCodeTips(detail, true);
       warningSound.play();
@@ -239,6 +240,7 @@ export const useChallengeContent = (
     // - play sound
     // @2023/11/22
     const codeExecuteSuccessHandler = () => {
+      if (window.DEBUG) return;
       toggleCodeTips(CHALLENGE_SUCCESS_MESSAGE, false, true);
       // fire confetti !
       jsConfetti.addConfetti();
@@ -253,6 +255,7 @@ export const useChallengeContent = (
 
     // one test case FAILED
     const codeTestFailedHandler = (event: Event) => {
+      if (window.DEBUG) return;
       const { detail } = event as CustomEvent;
       toggleCodeTips(detail, true);
       warningSound.play();
@@ -260,12 +263,14 @@ export const useChallengeContent = (
 
     // one test case SUCCESS
     const codeTestSPassedHandler = (event: Event) => {
+      if (window.DEBUG) return;
       const { detail } = event as CustomEvent;
       toggleCodeTips(detail);
     };
 
     // code started handler
     const codeTestStartHandler = () => {
+      if (window.DEBUG) return;
       clearCodeTips();
     };
 
