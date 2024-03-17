@@ -119,13 +119,15 @@ export const toggleCodeTips = (
 };
 
 // remove comment lines
+// FIXME: replace single quote ' with double quote " as well!
+// @2024/03/17
 const sanitizedCode = (code: string | undefined) => {
   if (!code) return '';
   const lines = code.split('\n');
   const cleanLines = lines.map((l) =>
     l.trim().startsWith('//') ? '' : l.trim()
   );
-  return cleanLines.join('');
+  return cleanLines.join('').replaceAll("'", '"');
 };
 
 const paramFormat = (p: string | number | boolean) => {

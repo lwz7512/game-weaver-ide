@@ -140,24 +140,41 @@ export const useChallengeContent = (
         const markers: editor.IMarker[] = monaco.editor.getModelMarkers({
           resource: uri,
         });
+        // console.log(`>>> got errors in code editor!: ${markers.length}`);
         if (!markers.length) {
           // no error occured
           return setHasSyntaxError(false);
         }
-        // FIXME: IF the error is some variable/constants not in use, ignore it
-        // @2024/03/07
-        const { message: errMsg } = markers[0];
-        if (errMsg.includes('never')) {
-          console.log(`## Ignore never read error!`);
+        // two types of errors ignored for now
+        // @2024/03/17
+        const errors: { [code: string]: string } = {
+          7027: 'Unreachable code detected.',
+          6133: '? is declared but its value is never read.',
+        };
+
+        // FIXME: check two kinds of error to ignore
+        // @2024/03/17
+        const checkUnReachError = !!markers.find(
+          (err) => !!errors[`${err.code}`]
+        );
+        if (checkUnReachError) {
+          // console.log('## Ignore minor error 7027|6133 ...');
           return;
         }
 
-        const iterator = ({ message }: editor.IMarker) => {
+        // disable the run button!
+        setHasSyntaxError(true);
+
+        // show tips in popup panel
+        const iterator = (err: editor.IMarker) => {
+          // console.log(`>>> editor error message:`);
+          const { message, code } = err;
+          // console.log(message);
+          // console.log(code);
           // send message to playground ...
           toggleCodeTips(message, true, true);
         };
         markers.forEach(iterator);
-        setHasSyntaxError(true);
       });
     }
   }, [monaco, editorLib]);
