@@ -6,7 +6,7 @@
 
 import JSConfetti from 'js-confetti';
 import { useState, useEffect, useRef } from 'react';
-import { editor } from 'monaco-editor';
+import { Uri, editor } from 'monaco-editor';
 import { useMonaco } from '@monaco-editor/react';
 import {
   sourceRepo,
@@ -129,54 +129,55 @@ export const useChallengeContent = (
    * add external lib for editor to enable code completion(hint)
    */
   useEffect(() => {
-    if (monaco) {
-      // console.log('here is the monaco instance:', monaco);
-      monaco.languages.typescript.javascriptDefaults.addExtraLib(
-        editorLib,
-        `ts:${TSLIB.GLOBAL}`
-      );
-      // check editor markers
-      monaco.editor.onDidChangeMarkers(([uri]) => {
-        const markers: editor.IMarker[] = monaco.editor.getModelMarkers({
-          resource: uri,
-        });
-        // console.log(`>>> got errors in code editor!: ${markers.length}`);
-        if (!markers.length) {
-          // no error occured
-          return setHasSyntaxError(false);
-        }
-        // two types of errors ignored for now
-        // @2024/03/17
-        const errors: { [code: string]: string } = {
-          7027: 'Unreachable code detected.',
-          6133: '? is declared but its value is never read.',
-        };
+    if (!monaco) return;
 
-        // FIXME: check two kinds of error to ignore
-        // @2024/03/17
-        const checkUnReachError = !!markers.find(
-          (err) => !!errors[`${err.code}`]
-        );
-        if (checkUnReachError) {
-          // console.log('## Ignore minor error 7027|6133 ...');
-          return;
-        }
-
-        // disable the run button!
-        setHasSyntaxError(true);
-
-        // show tips in popup panel
-        const iterator = (err: editor.IMarker) => {
-          // console.log(`>>> editor error message:`);
-          const { message, code } = err;
-          // console.log(message);
-          // console.log(code);
-          // send message to playground ...
-          toggleCodeTips(message, true, true);
-        };
-        markers.forEach(iterator);
+    const markerIterator = ([uri]: readonly Uri[]) => {
+      const markers: editor.IMarker[] = monaco.editor.getModelMarkers({
+        resource: uri,
       });
-    }
+      // console.log(`>>> got errors in code editor!: ${markers.length}`);
+      if (!markers.length) {
+        // no error occured
+        return setHasSyntaxError(false);
+      }
+      // two types of errors ignored for now
+      // @2024/03/17
+      const errors: { [code: string]: string } = {
+        7027: 'Unreachable code detected.',
+        6133: '? is declared but its value is never read.',
+      };
+
+      // FIXME: check two kinds of error to ignore
+      // @2024/03/17
+      const checkUnReachError = !!markers.find(
+        (err) => !!errors[`${err.code}`]
+      );
+      if (checkUnReachError) {
+        // console.log('## Ignore minor error 7027|6133 ...');
+        return;
+      }
+
+      // disable the run button!
+      setHasSyntaxError(true);
+
+      // show tips in popup panel
+      const iterator = (err: editor.IMarker) => {
+        // console.log(`>>> editor error message:`);
+        const { message, code } = err;
+        // console.log(message);
+        // console.log(code);
+        // send message to playground ...
+        toggleCodeTips(message, true, true);
+      };
+      markers.forEach(iterator);
+    };
+    // console.log('here is the monaco instance:', monaco);
+    monaco.languages.typescript.javascriptDefaults.addExtraLib(
+      editorLib,
+      `ts:${TSLIB.GLOBAL}`
+    );
+    // check editor markers
+    monaco.editor.onDidChangeMarkers(markerIterator);
   }, [monaco, editorLib]);
 
   /**

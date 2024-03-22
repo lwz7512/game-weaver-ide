@@ -6,6 +6,10 @@
 
 Created @2022/08/16
 
+# Recent Update
+
+> The project has stopped the active development(without motivation), wish to come back at some day!
+
 ## What it is:
 
 ```
