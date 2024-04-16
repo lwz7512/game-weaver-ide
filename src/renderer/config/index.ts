@@ -71,6 +71,7 @@ export enum ROUTES {
   TILED = '/tiled',
   LEARN = '/learn',
   PROJECTS = '/projects',
+  CHALLENGE = '/challenge/:id',
   USER = '/user',
   SETTING = '/settings',
 }

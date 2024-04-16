@@ -1,16 +1,13 @@
-import clsx from 'clsx';
-import { Toaster, Spinner } from '@blueprintjs/core';
+import { Toaster } from '@blueprintjs/core';
 import LeftSideBar from '../components/LeftSideBar';
-import { ChallengeContent } from '../components/ChallengeDocContent';
 import {
   ChalllengeItem,
   ChallengeInstructions,
   ChallengeContentHeader,
-  SideFixeModules,
 } from '../components/ChallengeModules';
 import { MODULETYPES, CHALLENGE_AWARD_SLOGAN } from '../config';
 import useLeftSideBar from '../hooks/useLeftSideBar';
-import { useChallenges } from '../hooks/useChallenges';
+import { useChallenges } from '../controllers/useProjectsPage';
 
 /**
  * Coding Challenges Module
@@ -21,20 +18,8 @@ import { useChallenges } from '../hooks/useChallenges';
  */
 const ProjectsPage = () => {
   const { onModuleChanged } = useLeftSideBar();
-  const {
-    toastState,
-    challenges,
-    currentChallenge,
-    challengeLoaded,
-    globalFunctions,
-    toasterCallback,
-    openChallenge,
-    goBackChallengeHome,
-    openChallengeLearningPage,
-    challengeSavedHandler,
-    chanllengeWarningHandler,
-    scrollToChallengeSection,
-  } = useChallenges();
+  const { toastState, challenges, toasterCallback, openChallenge } =
+    useChallenges();
 
   return (
     <div className="challenges-page w-full h-screen flex relative">
@@ -44,12 +29,7 @@ const ProjectsPage = () => {
           onModuleChanged={onModuleChanged}
         />
         {/* === left panel to list all the challenges === */}
-        <div
-          className={clsx(
-            'file-explorer bg-sky-800 w-60 overflow-y-scroll',
-            challengeLoaded ? 'hidden' : ''
-          )}
-        >
+        <div className="file-explorer bg-sky-800 w-60 overflow-y-scroll">
           <h1 className=" text-lg bg-slate-600 m-0 p-4 text-white text-center">
             Challenge Explorer
           </h1>
@@ -71,33 +51,13 @@ const ProjectsPage = () => {
       </div>
       {/* === right part content === */}
       <div className="project-content flex-1 bg-white overflow-y-scroll">
-        <ChallengeContentHeader
-          isChallengeOpen={challengeLoaded}
-          goWelcomeHandler={goBackChallengeHome}
-        />
+        <ChallengeContentHeader isChallengeOpen={false} />
         {/* fixed right menu */}
-        {challengeLoaded && (
-          <SideFixeModules sectionScrollHander={scrollToChallengeSection} />
-        )}
-        <h2
-          className={clsx(
-            'm-12 mt-36 p-4 text-slate-700 text-xl border-l-8 border-green-600 bg-gray-100 rounded-r-lg',
-            challengeLoaded ? 'hidden' : ''
-          )}
-        >
+        {/* <SideFixeModules sectionScrollHander={scrollToChallengeSection} /> */}
+        <h2 className="m-12 mt-36 p-4 text-slate-700 text-xl border-l-8 border-green-600 bg-gray-100 rounded-r-lg">
           {CHALLENGE_AWARD_SLOGAN}
         </h2>
-        <ChallengeInstructions challengeLoaded={challengeLoaded} />
-        {/* === Challenge content area === */}
-        {challengeLoaded && currentChallenge && (
-          <ChallengeContent
-            selectedChallenge={currentChallenge}
-            externalFunctions={globalFunctions}
-            openChallengeLearningPage={openChallengeLearningPage}
-            challengeSavedHandler={challengeSavedHandler}
-            challengeWarningHandler={chanllengeWarningHandler}
-          />
-        )}
+        <ChallengeInstructions challengeLoaded={false} />
       </div>
       {/* floating webview ...use shell to open browser instead - 2023/10/02 */}
       {/* <WebDocViewer /> */}

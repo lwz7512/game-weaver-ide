@@ -25,7 +25,7 @@ import {
   stringLoader,
 } from '../helpers/codeRunner';
 
-export const useChallengeContent = (
+export const useChallengePlayground = (
   challenge: Challenge,
   editorLib: string,
   warningHandler: (message: string) => void

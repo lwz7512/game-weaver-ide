@@ -2,7 +2,7 @@ import { Spinner } from '@blueprintjs/core';
 import Editor from '@monaco-editor/react';
 import { codeEditorOptions, Challenge } from '../config';
 import { CodeResultStage } from './CodeResultStage';
-import { useChallengeContent } from '../hooks/useChallengeContent';
+import { useChallengePlayground } from '../hooks/useChallengeContent';
 
 /**
  * Code editor & Running result, as well as error console
@@ -18,7 +18,11 @@ export const ChallengePlayground = ({
   challenge: Challenge;
   warningHandler: (message: string) => void;
 }) => {
-  const ucc = useChallengeContent(challenge, editorLibSource, warningHandler);
+  const ucc = useChallengePlayground(
+    challenge,
+    editorLibSource,
+    warningHandler
+  );
 
   return (
     <div className="flex h-96">

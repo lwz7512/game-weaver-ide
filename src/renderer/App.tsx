@@ -5,6 +5,7 @@ import CodeEditorPage from './routes/CodeEditorPage';
 import CodeBlocksPage from './routes/CodeBlocksPage';
 import LearningPage from './routes/LearningPage';
 import ProjectsPage from './routes/ProjectsPage';
+import ChallengePage from './routes/ChallengePage';
 import SettingsPage from './routes/SettingsPage';
 import TiledEditorPage from './routes/TileEditorPage';
 import UserPage from './routes/UserPage';
@@ -21,6 +22,7 @@ export default function App() {
         <Route path={ROUTES.BLOCKS} element={<CodeBlocksPage />} />
         <Route path={ROUTES.LEARN} element={<LearningPage />} />
         <Route path={ROUTES.PROJECTS} element={<ProjectsPage />} />
+        <Route path={ROUTES.CHALLENGE} element={<ChallengePage />} />
         <Route path={ROUTES.SETTING} element={<SettingsPage />} />
         <Route path={ROUTES.TILED} element={<TiledEditorPage />} />
         <Route path={ROUTES.USER} element={<UserPage />} />

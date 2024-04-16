@@ -1,44 +1,37 @@
+/**
+ * Challenge details page
+ * @date 2024/04/16
+ */
+
 import clsx from 'clsx';
-import { useState, useEffect } from 'react';
-import { Button, Icon } from '@blueprintjs/core';
-import MarkdownIt from 'markdown-it';
 
-import { ChallengePlayground } from './ChallengePlayground';
+import { Button, Icon, Toaster } from '@blueprintjs/core';
+
+import { ChallengePlayground } from '../components/ChallengePlayground';
+import { ChallengeContentHeader } from '../components/ChallengeModules';
 import appCfg from '../assets/app.json';
-import { sourceRepo, Challenge } from '../config';
+import { useChallengePage } from '../controllers/useChallengePage';
 
-export const ChallengeContent = ({
-  selectedChallenge,
-  externalFunctions,
-  openChallengeLearningPage,
-  challengeSavedHandler,
-  challengeWarningHandler,
-}: {
-  selectedChallenge: Challenge;
-  externalFunctions: string;
-  openChallengeLearningPage: (url: string) => void;
-  challengeSavedHandler: () => void;
-  challengeWarningHandler: (message: string) => void;
-}) => {
-  const [subtitle, setSubtitle] = useState('');
-  const [showSubTitle, setshowSubTitle] = useState(false);
-
-  const toggleSubTitle = () => setshowSubTitle(!showSubTitle);
-
-  useEffect(() => {
-    const mdRenderer = MarkdownIt();
-    const mdURL = sourceRepo + selectedChallenge.videoSubtitle;
-    const fetchSubTitle = async () => {
-      const mdResp = await fetch(mdURL);
-      const mdFileContent = await mdResp.text();
-      const htmlFromMD = mdRenderer.render(mdFileContent);
-      setSubtitle(htmlFromMD);
-    };
-    fetchSubTitle();
-  }, [selectedChallenge]);
+const ChallengePage = () => {
+  const {
+    challengeWarningHandler,
+    goBackChallengeHome,
+    challengeSavedHandler,
+    toggleSubTitle,
+    toasterCallback,
+    selectedChallenge,
+    showSubTitle,
+    globalFunctions,
+    subtitle,
+    toastState,
+  } = useChallengePage();
 
   return (
-    <div className="w-full ">
+    <div className="challenges-page w-full h-screen relative overflow-y-scroll">
+      <ChallengeContentHeader
+        isChallengeOpen
+        goWelcomeHandler={goBackChallengeHome}
+      />
       {/* === header === */}
       <div className="challenge-content-header relative bg-slate-300 ">
         <h1
@@ -101,7 +94,7 @@ export const ChallengeContent = ({
         </div>
       </div>
       {/** === PART 2: Mission Briefing === */}
-      <div className="mx-4 my-16 h-48">
+      <div className="mx-4 my-16 h-48 px-2">
         <h2 className="text-xl underline my-8">Mission Briefing</h2>
         <p className="p-4 mx-8 my-16 text-lg border-l-4 border-green-500 pl-3 bg-gray-50 text-green-800  text-shadow-md">
           {selectedChallenge.description || 'coming soon...'}
@@ -110,7 +103,7 @@ export const ChallengeContent = ({
         </p>
       </div>
       {/** === PART 3: References & Tutorials === */}
-      <div className="mx-4 my-8 h-48">
+      <div className="mx-4 my-8 px-2">
         <h2 className="text-xl underline my-4">Prerequisite Reading Tasks</h2>
         <ul className="py-4 px-8 text-lg ">
           {selectedChallenge.prerequisite.map((it) => (
@@ -119,7 +112,7 @@ export const ChallengeContent = ({
                 type="button"
                 title={it.title}
                 className=" text-slate-500 hover:text-green-600 focus:outline-none"
-                onClick={() => openChallengeLearningPage(it.url)}
+                onClick={() => console.log(`TODO:`)}
               >
                 👉 {it.name}
               </button>
@@ -128,7 +121,7 @@ export const ChallengeContent = ({
         </ul>
       </div>
       {/** === PART 4: Questions before coding === */}
-      <div className="mx-4 my-8 ">
+      <div className="mx-4 my-8 px-2">
         <h2 className="text-xl underline my-4">
           Checking points before Coding
         </h2>
@@ -148,18 +141,18 @@ export const ChallengeContent = ({
         </div>
       </div>
       {/** === PART 5: Coding area === */}
-      <div className="mx-4 my-8 ">
+      <div className="mx-4 my-8 px-2">
         <h2 className="text-xl underline my-8">Lets Coding Now </h2>
         <ChallengePlayground
           challenge={selectedChallenge}
-          editorLibSource={externalFunctions}
+          editorLibSource={globalFunctions}
           warningHandler={challengeWarningHandler}
         />
       </div>
       {/** === PART 6 === */}
-      <div className="mx-4 my-16 h-48">
+      <div className="mx-4 my-16 h-48 px-2">
         <h2 className="text-xl underline my-4">Save Your Achievement:</h2>
-        <div className="button-row h-32 w-full p-8 flex">
+        <div className="button-row h-32 w-full p-8 flex  mt-20">
           <div className="left-part flex-1 px-6 flex justify-end">
             <span className="border-b border-gray-400 w-44 h-1 p-3" />
           </div>
@@ -178,6 +171,11 @@ export const ChallengeContent = ({
           </div>
         </div>
       </div>
+      {/* end of challenge content */}
+      {/* toaster */}
+      <Toaster {...toastState} ref={toasterCallback} />
     </div>
   );
 };
+
+export default ChallengePage;

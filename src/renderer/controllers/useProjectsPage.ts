@@ -5,19 +5,9 @@ import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 
 import { IpcEvents } from '../../ipc-events';
-import {
-  sourceRepo,
-  TSLIB,
-  MISSION_INCOMPLETED,
-  Challenge,
-  MISSION_MARK_COMPLETED,
-  ROUTES,
-} from '../config';
-import { useBPToast } from './useToast';
-import {
-  saveChallengeCompletion,
-  getCompletedChallenges,
-} from '../state/storage';
+import { sourceRepo, TSLIB, Challenge } from '../config';
+import { useBPToast } from '../hooks/useToast';
+import { getCompletedChallenges } from '../state/storage';
 import { ChallengeEvents } from '../helpers/codeRunner';
 
 const nextLevelMP3 = `${sourceRepo}assets/sound/nextLevel.mp3`;
@@ -34,22 +24,9 @@ export const useChallenges = () => {
   /** cache all the completed challenges in memory */
   const completionsRef = useRef<number[]>([]);
   const [challenges, setChallenges] = useState<Challenge[]>([]);
-  const [challengeLoaded, setChallengeLoaded] = useState(false);
-  const [currentChallenge, setCurrentChallenge] = useState<Challenge | null>(
-    null
-  );
   const [globalFunctions, setGlobalFunctions] = useState('');
 
-  const { toastState, toasterCallback, addSuccessToast, addWarningToast } =
-    useBPToast();
-
-  const goBackChallengeHome = () => {
-    setChallengeLoaded(false);
-    // FIXME: change route to reflect current page state
-    // @2024/03/04
-    const challengeRoute = ROUTES.PROJECTS;
-    navigate(challengeRoute);
-  };
+  const { toastState, toasterCallback, addWarningToast } = useBPToast();
 
   const openChallengeLearningPage = async (url: string) => {
     await ipcRenderer.invoke(IpcEvents.OPEN_EXTERNAL_URL, url);
@@ -78,39 +55,10 @@ export const useChallenges = () => {
    * @returns
    */
   const openChallenge = (doc: Challenge) => {
-    setChallengeLoaded(true);
-    if (doc.id === currentChallenge?.id) return;
-    // change selection
-    const challengesCopy = challenges.map((clg) => ({
-      ...clg,
-      selected: clg.id === doc.id,
-    }));
-    setChallenges(challengesCopy);
-    setCurrentChallenge(doc);
+    navigate(`/challenge/${doc.id}`, { state: doc });
+
     // FIXME: reset project page to top
     setTimeout(() => scrollContentBy(0));
-  };
-
-  /**
-   * Press `Done` button handler:
-   * Save `completed` challenge to local cache
-   * @returns
-   */
-  const challengeSavedHandler = () => {
-    if (!currentChallenge) return;
-    const { id } = currentChallenge;
-    const completions = completionsRef.current;
-    if (!completions.includes(id)) {
-      // console.warn(`## current challenge not completed!`);
-      addWarningToast(MISSION_INCOMPLETED);
-      // play warning!
-      notCompletedSound.play();
-      return;
-    }
-    addSuccessToast(MISSION_MARK_COMPLETED);
-    saveChallengeCompletion(currentChallenge.id);
-    // play music!
-    missionSavedSound.play();
   };
 
   const chanllengeWarningHandler = (message: string) => {
@@ -214,32 +162,28 @@ export const useChallenges = () => {
    * listen one challenge completed, and enable a mark on the list item
    */
   useEffect(() => {
-    if (challengeLoaded) return;
+    if (!challenges.length) return;
+
     // FIXME: open the last challenge from welcome page
     // DO NOT reset `challenges` or cause dead-loop rendering!
     // @2024/03/04
     const challengeId = params.get('challengeId');
+    if (!challengeId) return;
 
-    if (challengeId && challenges.length) {
-      const doc = challenges.find((c) => c.id === Number(challengeId));
-      if (!doc) return;
-      setCurrentChallenge(doc);
-      setChallengeLoaded(true);
-    }
-  }, [challenges, params, challengeLoaded]);
+    const doc = challenges.find((c) => c.id === Number(challengeId));
+    if (!doc) return;
+
+    navigate(`/challenge/${doc.id}`, { state: doc });
+  }, [challenges, params, navigate]);
 
   return {
     toastState,
     toasterCallback,
-    challengeLoaded,
-    currentChallenge,
     challenges,
     globalFunctions,
     openChallenge,
-    goBackChallengeHome,
     /** open external web page by browser */
     openChallengeLearningPage,
-    challengeSavedHandler,
     chanllengeWarningHandler,
     scrollToChallengeSection,
   };

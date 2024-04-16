@@ -108,12 +108,12 @@ export const toggleCodeTips = (
   // check repeated call
   if (hCodeTips.dataset.scheduled) return;
 
-  // auto close
+  // auto close after 6 seconds
   const timeoutID = setTimeout(() => {
     style.remove('animate', 'red');
     codeTips.innerHTML = '';
     hCodeTips.dataset.scheduled = '';
-  }, 10000);
+  }, 6000);
   // mark scheduled close
   hCodeTips.dataset.scheduled = `${timeoutID}`;
 };

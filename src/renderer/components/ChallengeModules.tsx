@@ -31,7 +31,7 @@ export const ChallengeContentHeader = ({
   goWelcomeHandler,
 }: {
   isChallengeOpen: boolean;
-  goWelcomeHandler: () => void;
+  goWelcomeHandler?: () => void;
 }) => (
   <div
     className={clsx(
