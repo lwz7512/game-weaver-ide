@@ -18,10 +18,7 @@ import {
 } from '../config';
 import { useBPToast } from '../hooks/useToast';
 
-import {
-  saveChallengeCompletion,
-  // getCompletedChallenges,
-} from '../state/storage';
+import { saveChallengeCompletion } from '../state/storage';
 
 export const useChallengePage = () => {
   const { id } = useParams();

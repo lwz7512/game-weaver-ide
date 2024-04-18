@@ -35,7 +35,7 @@ const ProjectsPage = () => {
           </h1>
           {/* loading indicator.. */}
           {challenges.length === 0 && (
-            <p className="text-base p-2 text-white">loading challenges...</p>
+            <p className="text-base p-2 text-white">Loading Challenges...</p>
           )}
           {/* === Challenge List === */}
           <ul className=" text-sm list-none text-gray-800 leading-7">

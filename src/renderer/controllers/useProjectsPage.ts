@@ -10,13 +10,8 @@ import { useBPToast } from '../hooks/useToast';
 import { getCompletedChallenges } from '../state/storage';
 import { ChallengeEvents } from '../helpers/codeRunner';
 
-const nextLevelMP3 = `${sourceRepo}assets/sound/nextLevel.mp3`;
-const warningMP3 = `${sourceRepo}assets/sound/warning.mp3`;
-
 export const useChallenges = () => {
   const { ipcRenderer } = window.electron;
-  const missionSavedSound = new Audio(nextLevelMP3);
-  const notCompletedSound = new Audio(warningMP3);
 
   const [params] = useSearchParams();
   const navigate = useNavigate();
@@ -61,10 +56,6 @@ export const useChallenges = () => {
     setTimeout(() => scrollContentBy(0));
   };
 
-  const chanllengeWarningHandler = (message: string) => {
-    addWarningToast(message);
-    notCompletedSound.play();
-  };
   // fetching remote challenges data
   useEffect(() => {
     /**
@@ -184,7 +175,6 @@ export const useChallenges = () => {
     openChallenge,
     /** open external web page by browser */
     openChallengeLearningPage,
-    chanllengeWarningHandler,
     scrollToChallengeSection,
   };
 };
