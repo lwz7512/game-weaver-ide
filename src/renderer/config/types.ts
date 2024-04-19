@@ -4,6 +4,13 @@ type PreLearnItem = {
   title: string;
 };
 
+type Decoration = {
+  /** todo|mark */
+  type: string;
+  /** line start, line end */
+  position: number[];
+};
+
 export type ChallengeRecord = {
   id: number;
   /** completion date */
@@ -12,6 +19,9 @@ export type ChallengeRecord = {
   status: string;
 };
 
+/**
+ * Coding Game Challenge Project
+ */
 export type Challenge = {
   /** challenge number */
   id: number;
@@ -58,6 +68,8 @@ export type Challenge = {
   touched?: boolean;
   /** full cover url */
   coverURL?: string;
+  /** code hightlights */
+  codeDecorations: Decoration[];
 };
 
 export type TileSheetImage = {

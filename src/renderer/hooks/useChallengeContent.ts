@@ -36,6 +36,11 @@ export const useChallengePlayground = (
   const { id } = challenge;
 
   /**
+   * remote code load flag for `startCode`
+   */
+  const [codeLoaded, setCodeLoaded] = useState(false);
+
+  /**
    * user code in editor, start from remoted `startCode` in challenge definition
    */
   const [runningCode, setRunningCode] = useState('');
@@ -201,6 +206,9 @@ export const useChallengePlayground = (
           setRunningCode(code);
           // FIXME: save the colon count at start - @2024/02/03
           semiColonCountRef.current = colonCounter(code);
+          // FIXME: USE A FLAG to let editor know its time to decorate codes
+          // @2024/04/19
+          setCodeLoaded(true);
         },
         () => setRunningCode('')
       );
@@ -327,6 +335,7 @@ export const useChallengePlayground = (
     runningCode,
     startRunning,
     hasSyntaxError,
+    codeLoaded,
     editChangeChandler,
     runCodeHandler,
   };

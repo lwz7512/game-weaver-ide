@@ -1,7 +1,7 @@
 {
   "name": "electoron-game-weaver",
   "productName": "Game Weaver",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Javascript Coding Education Kit for kids through game challenges",
   "keywords": [
     "electron",

@@ -109,6 +109,22 @@
   transform: none;
 }
 
+/* for `TODO:` text highlight in code line */
+.todo-decoration {
+	color: black !important;
+  background: yellow;
+	cursor: pointer;
+	text-decoration: underline;
+	font-weight: bold;
+	font-style: oblique;
+}
+/* for line highlight when mentioned code line in start code */
+.mark-decoration {
+	background: green;
+	width: 4px !important;
+	margin-left: 4px;
+}
+
 
 @media only screen and (max-width: 1024px) {
   /* FIXME: cause horizontal scroll bar while resize the window */

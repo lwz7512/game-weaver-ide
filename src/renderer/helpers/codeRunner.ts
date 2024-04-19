@@ -45,7 +45,7 @@ export const stringLoader = async (
   onError?: (error: any) => void
 ) => {
   try {
-    console.log(`>>> loading start code: ${url}`);
+    // console.log(`>>> loading start code: ${url}`);
     const resp4File = await fetch(url);
     const { status } = resp4File;
     if (status === 200) {

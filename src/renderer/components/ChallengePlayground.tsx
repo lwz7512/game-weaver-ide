@@ -1,8 +1,10 @@
 import { Spinner } from '@blueprintjs/core';
 import Editor from '@monaco-editor/react';
+
 import { codeEditorOptions, Challenge } from '../config';
 import { CodeResultStage } from './CodeResultStage';
 import { useChallengePlayground } from '../hooks/useChallengeContent';
+import { useEditorDecorations } from '../hooks/useEditorDecorations';
 
 /**
  * Code editor & Running result, as well as error console
@@ -24,6 +26,11 @@ export const ChallengePlayground = ({
     warningHandler
   );
 
+  const { handleEditorDidMount } = useEditorDecorations(
+    challenge,
+    ucc.codeLoaded
+  );
+
   return (
     <div className="flex h-96">
       {/* js coding area */}
@@ -35,6 +42,7 @@ export const ChallengePlayground = ({
           value={ucc.runningCode}
           options={codeEditorOptions}
           onChange={ucc.editChangeChandler}
+          onMount={handleEditorDidMount}
         />
       </div>
       {/* === Run button === */}

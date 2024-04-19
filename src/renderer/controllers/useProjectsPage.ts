@@ -59,7 +59,7 @@ export const useChallenges = () => {
   // fetching remote challenges data
   useEffect(() => {
     /**
-     * Add random banner path to challenge
+     * Add random banner path & cover url to challenge obj
      * @param clgs
      * @param bannerPaths
      * @returns
