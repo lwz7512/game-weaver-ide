@@ -6,7 +6,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import { IpcEvents } from '../../ipc-events';
 import LeftSideBar from '../components/LeftSideBar';
 import {
-  MODULETYPES,
+  ROUTES,
   port,
   WORKSPACE_ASSIGNED,
   WORKSPACE_UNDEFINED,
@@ -50,7 +50,7 @@ const SettingsPage = () => {
       <div className="left-sidepanel flex">
         <LeftSideBar
           workspace={spacePath}
-          activeModule={MODULETYPES.SETTING}
+          activeModule={ROUTES.SETTING}
           onModuleChanged={onModuleChanged}
         />
         <div className="file-explorer bg-gray-300 w-60 p-2">

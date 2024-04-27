@@ -5,7 +5,7 @@ import {
   ChallengeInstructions,
   ChallengeContentHeader,
 } from '../components/ChallengeModules';
-import { MODULETYPES, CHALLENGE_AWARD_SLOGAN } from '../config';
+import { ROUTES, CHALLENGE_AWARD_SLOGAN } from '../config';
 import useLeftSideBar from '../hooks/useLeftSideBar';
 import { useChallenges } from '../controllers/useProjectsPage';
 
@@ -25,7 +25,7 @@ const ProjectsPage = () => {
     <div className="challenges-page w-full h-screen flex relative">
       <div className="left-sidepanel flex">
         <LeftSideBar
-          activeModule={MODULETYPES.PROJECTS}
+          activeModule={ROUTES.PROJECTS}
           onModuleChanged={onModuleChanged}
         />
         {/* === left panel to list all the challenges === */}

@@ -1,6 +1,6 @@
 import { Tab, Tabs, Toaster } from '@blueprintjs/core';
 
-import { MODULETYPES } from '../config';
+import { ROUTES } from '../config';
 import LeftSideBar from '../components/LeftSideBar';
 import { IconToolButton } from '../components/Buttons';
 import { WorkspaceGames } from '../components/WorkspaceGames';
@@ -49,7 +49,7 @@ const CodeEditorPage = () => {
     <div className="editor-page w-full h-screen flex focus:outline-none">
       <div className="left-sidepanel flex">
         <LeftSideBar
-          activeModule={MODULETYPES.CODE}
+          activeModule={ROUTES.CODE}
           onModuleChanged={onModuleChanged}
         />
         <WorkspaceGames

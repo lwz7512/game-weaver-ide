@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import LeftSideBar from '../components/LeftSideBar';
-import { MODULETYPES, badgeImages } from '../config';
+import { ROUTES, badgeImages } from '../config';
 import useLeftSideBar from '../hooks/useLeftSideBar';
 import { getUserScore } from '../state/storage';
 
@@ -11,7 +11,7 @@ const UserPage = () => {
     <div className="w-full h-screen flex">
       <div className="left-sidepanel flex">
         <LeftSideBar
-          activeModule={MODULETYPES.USER}
+          activeModule={ROUTES.USER}
           onModuleChanged={onModuleChanged}
         />
         {/* <div className="file-explorer bg-gray-300 w-60 p-2">file explorer</div> */}

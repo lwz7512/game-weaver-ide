@@ -9,6 +9,7 @@ import ChallengePage from './routes/ChallengePage';
 import SettingsPage from './routes/SettingsPage';
 import TiledEditorPage from './routes/TileEditorPage';
 import UserPage from './routes/UserPage';
+import OSGamePage from './routes/OSGamesPage';
 import { ROUTES } from './config';
 
 import './App.css';
@@ -23,6 +24,7 @@ export default function App() {
         <Route path={ROUTES.LEARN} element={<LearningPage />} />
         <Route path={ROUTES.PROJECTS} element={<ProjectsPage />} />
         <Route path={ROUTES.CHALLENGE} element={<ChallengePage />} />
+        <Route path={ROUTES.GAMES} element={<OSGamePage />} />
         <Route path={ROUTES.SETTING} element={<SettingsPage />} />
         <Route path={ROUTES.TILED} element={<TiledEditorPage />} />
         <Route path={ROUTES.USER} element={<UserPage />} />

@@ -5,7 +5,7 @@
  */
 import { ToastContainer, toast } from 'react-toastify';
 import {
-  MODULETYPES,
+  ROUTES,
   WORKSPACE_GONE_WARNING as WG,
   WORKSPACE_UNDEFINED as WU,
 } from '../config';
@@ -31,7 +31,7 @@ const WelcomePage = () => {
     <div className="welcome-page w-full h-screen flex">
       <div className="left-sidepanel flex">
         <LeftSideBar
-          activeModule={MODULETYPES.WELCOME}
+          activeModule={ROUTES.WELCOME}
           onModuleChanged={onModuleChanged}
         />
       </div>

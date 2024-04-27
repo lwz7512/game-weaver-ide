@@ -1,12 +1,11 @@
 import { useNavigate } from 'react-router-dom';
-import { MODULEROUTES, ROUTES } from '../config';
+import { ROUTES } from '../config';
 
 const useLeftSideBar = () => {
   const navigate = useNavigate();
 
-  const onModuleChanged = (module: string) => {
-    // console.log(module);
-    navigate(MODULEROUTES[module]);
+  const onModuleChanged = (modulePath: string) => {
+    navigate(modulePath);
   };
 
   const gotoChallengePage = (challengeId: number) => {

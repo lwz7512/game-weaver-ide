@@ -96,7 +96,7 @@ type ModuleButtonProps = {
   currentModule: string;
   disabled?: boolean;
   title?: string;
-  onModuleChanged: (module: string) => void;
+  onModuleChanged: (modulePath: string) => void;
 };
 
 export const ModuleToolButton = ({

@@ -1,6 +1,6 @@
 import { Toaster, Spinner } from '@blueprintjs/core';
 
-import { MODULETYPES } from '../config';
+import { ROUTES } from '../config';
 import { TiledEditor } from '../tiled/Editor';
 
 import { useTileEditorPage } from '../controllers/useTileEditorPage';
@@ -46,7 +46,7 @@ const TiledEditorPage = () => {
       {/* === left side bar === */}
       <div className="left-sidepanel flex">
         <LeftSideBar
-          activeModule={MODULETYPES.TILED}
+          activeModule={ROUTES.TILED}
           onModuleChanged={onModuleChanged}
         />
       </div>

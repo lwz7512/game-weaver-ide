@@ -6,7 +6,7 @@ import {
   LearningDocHeader,
 } from '../components/LearningDocItem';
 import useLeftSideBar from '../hooks/useLeftSideBar';
-import { MODULETYPES } from '../config';
+import { ROUTES } from '../config';
 import { useLearningDocs } from '../hooks/useLearningDocs';
 
 /**
@@ -29,7 +29,7 @@ const LearningPage = () => {
     <div className="w-full h-screen flex">
       <div className="left-sidepanel flex">
         <LeftSideBar
-          activeModule={MODULETYPES.LEARN}
+          activeModule={ROUTES.LEARN}
           onModuleChanged={onModuleChanged}
         />
         {/* === left panel === */}

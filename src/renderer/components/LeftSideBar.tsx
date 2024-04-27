@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { MODULETYPES } from '../config';
+import { ROUTES } from '../config';
 import { ModuleToolButton } from './Buttons';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 
 type SidebarProps = {
   activeModule: string;
   workspace?: string;
-  onModuleChanged: (module: string) => void;
+  onModuleChanged: (modulePath: string) => void;
 };
 
 const LeftSideBar = ({
@@ -30,7 +30,7 @@ const LeftSideBar = ({
       {/* === HOME MODULE === */}
       <ModuleToolButton
         icon="home"
-        module={MODULETYPES.WELCOME}
+        module={ROUTES.WELCOME}
         currentModule={currentModule}
         title="Welcome"
         onModuleChanged={changeModuleType}
@@ -39,7 +39,7 @@ const LeftSideBar = ({
       <ModuleToolButton
         icon="code"
         disabled={codeMenuDisabled}
-        module={MODULETYPES.CODE}
+        module={ROUTES.CODE}
         currentModule={currentModule}
         title="Game Coding Environment"
         onModuleChanged={changeModuleType}
@@ -47,7 +47,7 @@ const LeftSideBar = ({
       {/* === TILED MODULE === */}
       <ModuleToolButton
         icon="style"
-        module={MODULETYPES.TILED}
+        module={ROUTES.TILED}
         currentModule={currentModule}
         title="Game Map Editor"
         onModuleChanged={changeModuleType}
@@ -55,7 +55,7 @@ const LeftSideBar = ({
       {/* === LEARNING MODULE === */}
       <ModuleToolButton
         icon="learning"
-        module={MODULETYPES.LEARN}
+        module={ROUTES.LEARN}
         currentModule={currentModule}
         title="Tutorial and Docs"
         onModuleChanged={changeModuleType}
@@ -63,15 +63,22 @@ const LeftSideBar = ({
       {/* === CHALLENGES MODULE === */}
       <ModuleToolButton
         icon="badge"
-        module={MODULETYPES.PROJECTS}
+        module={ROUTES.PROJECTS}
         currentModule={currentModule}
         title="Coding Challenges"
+        onModuleChanged={changeModuleType}
+      />
+      <ModuleToolButton
+        icon="playbook"
+        module={ROUTES.GAMES}
+        currentModule={currentModule}
+        title="Open source Javascrit games"
         onModuleChanged={changeModuleType}
       />
       {/* === CODE BLOCK === */}
       <ModuleToolButton
         icon="code-block"
-        module={MODULETYPES.BLOCKS}
+        module={ROUTES.BLOCKS}
         currentModule={currentModule}
         title="Phaser Game Examples"
         onModuleChanged={changeModuleType}
@@ -81,7 +88,7 @@ const LeftSideBar = ({
       {/* === USER MODULE === */}
       <ModuleToolButton
         icon="user"
-        module={MODULETYPES.USER}
+        module={ROUTES.USER}
         currentModule={currentModule}
         title="User Profile"
         onModuleChanged={changeModuleType}
@@ -89,7 +96,7 @@ const LeftSideBar = ({
       {/* === SETTINGS MODULE === */}
       <ModuleToolButton
         icon="cog"
-        module={MODULETYPES.SETTING}
+        module={ROUTES.SETTING}
         currentModule={currentModule}
         title="Settings"
         onModuleChanged={changeModuleType}

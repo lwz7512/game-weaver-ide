@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Tree, TreeNodeInfo } from '@blueprintjs/core';
 
 import LeftSideBar from '../components/LeftSideBar';
-import { MODULETYPES } from '../config';
+import { ROUTES } from '../config';
 import useLeftSideBar from '../hooks/useLeftSideBar';
 import { useExampleTree, createTreeNodeInfo } from '../hooks/useExampleTree';
 import { useIframeFocus } from '../hooks/useIframeContext';
@@ -41,7 +41,7 @@ const CodeBlocksPage = () => {
     <div className="w-full h-screen flex">
       <div className="left-sidepanel flex">
         <LeftSideBar
-          activeModule={MODULETYPES.BLOCKS}
+          activeModule={ROUTES.BLOCKS}
           onModuleChanged={onModuleChanged}
         />
         <div className="file-explorer bg-gray-100 w-60 overflow-y-scroll">
