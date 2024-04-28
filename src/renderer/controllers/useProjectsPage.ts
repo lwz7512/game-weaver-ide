@@ -6,11 +6,11 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 
 import { IpcEvents } from '../../ipc-events';
 import { sourceRepo, TSLIB, Challenge } from '../config';
-import { useBPToast } from '../hooks/useToast';
+// import { useBPToast } from '../hooks/useToast';
 import { getCompletedChallenges } from '../state/storage';
 import { ChallengeEvents } from '../helpers/codeRunner';
 
-export const useChallenges = () => {
+export const useProjectsPage = () => {
   const { ipcRenderer } = window.electron;
 
   const [params] = useSearchParams();
@@ -20,8 +20,6 @@ export const useChallenges = () => {
   const completionsRef = useRef<number[]>([]);
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [globalFunctions, setGlobalFunctions] = useState('');
-
-  const { toastState, toasterCallback, addWarningToast } = useBPToast();
 
   const openChallengeLearningPage = async (url: string) => {
     await ipcRenderer.invoke(IpcEvents.OPEN_EXTERNAL_URL, url);
@@ -168,8 +166,6 @@ export const useChallenges = () => {
   }, [challenges, params, navigate]);
 
   return {
-    toastState,
-    toasterCallback,
     challenges,
     globalFunctions,
     openChallenge,

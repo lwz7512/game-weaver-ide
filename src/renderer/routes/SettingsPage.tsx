@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react';
 
 import { Button } from '@blueprintjs/core';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
+import { Layout } from './Layout';
 
 import { IpcEvents } from '../../ipc-events';
-import LeftSideBar from '../components/LeftSideBar';
 import {
   ROUTES,
   port,
@@ -46,17 +46,15 @@ const SettingsPage = () => {
   }, [spacePath]);
 
   return (
-    <div className="w-full h-screen flex">
-      <div className="left-sidepanel flex">
-        <LeftSideBar
-          workspace={spacePath}
-          activeModule={ROUTES.SETTING}
-          onModuleChanged={onModuleChanged}
-        />
+    <Layout
+      pageName="settings"
+      modulePath={ROUTES.SETTING}
+      sidePanel={
         <div className="file-explorer bg-gray-300 w-60 p-2">
           Setting explorer
         </div>
-      </div>
+      }
+    >
       <div className="flex-1 py-2 px-4 bg-white">
         <h1 className="text-lg text-center p-8 border-b-2 mb-8 font-semibold text-slate-600">
           Welcome to setting page!
@@ -76,9 +74,7 @@ const SettingsPage = () => {
           <h2 className="quote-in-panel">Workspace Path: {spacePath}</h2>
         </div>
       </div>
-      {/* toast container ... */}
-      <ToastContainer theme="dark" autoClose={6000} />
-    </div>
+    </Layout>
   );
 };
 

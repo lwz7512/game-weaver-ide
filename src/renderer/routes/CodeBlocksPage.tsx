@@ -1,9 +1,7 @@
-import React, { useEffect } from 'react';
 import { Tree, TreeNodeInfo } from '@blueprintjs/core';
+import { Layout } from './Layout';
 
-import LeftSideBar from '../components/LeftSideBar';
 import { ROUTES } from '../config';
-import useLeftSideBar from '../hooks/useLeftSideBar';
 import { useExampleTree, createTreeNodeInfo } from '../hooks/useExampleTree';
 import { useIframeFocus } from '../hooks/useIframeContext';
 
@@ -18,8 +16,6 @@ import examples from '../assets/examples.json';
  * @returns
  */
 const CodeBlocksPage = () => {
-  const { onModuleChanged } = useLeftSideBar();
-
   const exampleTreeNodes = createTreeNodeInfo(examples) as TreeNodeInfo[];
   const {
     nodes,
@@ -38,12 +34,10 @@ const CodeBlocksPage = () => {
   useIframeFocus();
 
   return (
-    <div className="w-full h-screen flex">
-      <div className="left-sidepanel flex">
-        <LeftSideBar
-          activeModule={ROUTES.BLOCKS}
-          onModuleChanged={onModuleChanged}
-        />
+    <Layout
+      pageName="examples"
+      modulePath={ROUTES.BLOCKS}
+      sidePanel={
         <div className="file-explorer bg-gray-100 w-60 overflow-y-scroll">
           <h1 className="p-4 bg-slate-600 text-white text-base">
             Phaserjs Game Examples
@@ -55,7 +49,9 @@ const CodeBlocksPage = () => {
             onNodeCollapse={handleNodeCollapse}
           />
         </div>
-      </div>
+      }
+    >
+      {/* right part content */}
       <div className="flex-1 bg-white">
         <h1 className="text-2xl text-center p-8 border-b-2 font-semibold text-slate-600">
           Welcome to code examples!
@@ -91,7 +87,7 @@ const CodeBlocksPage = () => {
           </div>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 

@@ -3,7 +3,6 @@
  * @2023/05/02
  */
 
-import useLeftSideBar from '../hooks/useLeftSideBar';
 import useMonocaEditor from '../hooks/useMonocaEditor';
 import { useIframeContext } from '../hooks/useIframeContext';
 import useTabsBar from '../hooks/useTabsBar';
@@ -16,7 +15,6 @@ import { useRightSideBar } from '../hooks/useRightSideBar';
 
 export const useCodeEditorPage = () => {
   useWindowEvents();
-  const { onModuleChanged } = useLeftSideBar();
   const { navbarTabId, handleNavbarTabChange } = useTabsBar();
   // read folders under selected gmspace folder
   const {
@@ -62,7 +60,6 @@ export const useCodeEditorPage = () => {
   } = useDeleteGameDialog(restoreToNoGame);
 
   return {
-    onModuleChanged,
     games,
     selectedGame,
     gameSelectedHandler,

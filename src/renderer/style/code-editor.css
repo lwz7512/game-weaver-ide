@@ -16,11 +16,11 @@
   height: 99%;
 }
 
-.tile-editor .object-explorer {
+.editor-page .object-explorer {
   min-width: 240px;
 }
 
-.tile-editor .map-attributes-group {
+.editor-page .map-attributes-group {
   display: flex;
   flex-direction: column;
   align-items: center;

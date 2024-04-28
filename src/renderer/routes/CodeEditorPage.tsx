@@ -1,7 +1,6 @@
 import { Tab, Tabs, Toaster } from '@blueprintjs/core';
-
+import { Layout } from './Layout';
 import { ROUTES } from '../config';
-import LeftSideBar from '../components/LeftSideBar';
 import { IconToolButton } from '../components/Buttons';
 import { WorkspaceGames } from '../components/WorkspaceGames';
 import { NewGameDialog } from '../components/NewGameDialog';
@@ -25,7 +24,6 @@ const CodeEditorPage = () => {
     isDeleteOpen,
     isLoading,
     toastState,
-    onModuleChanged,
     gameSelectedHandler,
     openWorkspaceFolder,
     handleOpen,
@@ -46,12 +44,10 @@ const CodeEditorPage = () => {
   } = useCodeEditorPage();
 
   return (
-    <div className="editor-page w-full h-screen flex focus:outline-none">
-      <div className="left-sidepanel flex">
-        <LeftSideBar
-          activeModule={ROUTES.CODE}
-          onModuleChanged={onModuleChanged}
-        />
+    <Layout
+      pageName="editor"
+      modulePath={ROUTES.CODE}
+      sidePanel={
         <WorkspaceGames
           folders={games}
           selectedGame={selectedGame}
@@ -60,7 +56,8 @@ const CodeEditorPage = () => {
           openNewGameDialog={handleOpen}
           openDeleteGameConfirmation={openDeleteGameDialog}
         />
-      </div>
+      }
+    >
       <div className="main-part flex-1 text-black flex flex-col">
         <div className="tabs-bar h-9 bg-gray-200 p-1">
           <Tabs
@@ -140,7 +137,7 @@ const CodeEditorPage = () => {
       )}
       {/* toaster */}
       <Toaster {...toastState} ref={toasterCallback} />
-    </div>
+    </Layout>
   );
 };
 

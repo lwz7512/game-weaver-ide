@@ -3,13 +3,12 @@
  *
  * - Added refactered `useHTTPServer` to detect workspace existance @2022/09/30
  */
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import {
   ROUTES,
   WORKSPACE_GONE_WARNING as WG,
   WORKSPACE_UNDEFINED as WU,
 } from '../config';
-import LeftSideBar from '../components/LeftSideBar';
 import { HeroBanner } from '../components/HeroBanner';
 import useLeftSideBar from '../hooks/useLeftSideBar';
 import { useHTTPServer } from '../hooks/useHTTPServer';
@@ -18,8 +17,10 @@ import { useChallengeRecords } from '../hooks/useChallengeRecords';
 import placeHolderImg from '../assets/global-preloader.jpg';
 import appCfg from '../assets/app.json';
 
+import { Layout } from './Layout';
+
 const WelcomePage = () => {
-  const { onModuleChanged, gotoChallengePage } = useLeftSideBar();
+  const { gotoChallengePage } = useLeftSideBar();
   const checkGoneHandler = () => toast.error(WG);
   const saySomething = () => toast.warn(WU);
 
@@ -28,13 +29,7 @@ const WelcomePage = () => {
   const { challenges } = useChallengeRecords();
 
   return (
-    <div className="welcome-page w-full h-screen flex">
-      <div className="left-sidepanel flex">
-        <LeftSideBar
-          activeModule={ROUTES.WELCOME}
-          onModuleChanged={onModuleChanged}
-        />
-      </div>
+    <Layout pageName="welcome" modulePath={ROUTES.WELCOME}>
       <div className="flex-1">
         <HeroBanner
           slogan={appCfg.slogan}
@@ -82,9 +77,7 @@ const WelcomePage = () => {
           </div>
         </div>
       </div>
-      {/* toast container ... */}
-      <ToastContainer theme="dark" autoClose={6000} />
-    </div>
+    </Layout>
   );
 };
 

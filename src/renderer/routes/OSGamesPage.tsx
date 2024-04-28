@@ -3,32 +3,28 @@
  * @date 2024/04/27
  */
 
-import {
-  ROUTES,
-} from '../config';
-import LeftSideBar from '../components/LeftSideBar';
-import useLeftSideBar from '../hooks/useLeftSideBar';
+import { ROUTES } from '../config';
+import { Layout } from './Layout';
 
 const OSGamePage = () => {
-  const { onModuleChanged } = useLeftSideBar();
-
   return (
-    <div className="games-page w-full h-screen flex">
-      {/* left part */}
-      <div className="left-sidepanel flex">
-        <LeftSideBar
-          activeModule={ROUTES.GAMES}
-          onModuleChanged={onModuleChanged}
-        />
-      </div>
+    <Layout
+      pageName="games"
+      modulePath={ROUTES.GAMES}
+      sidePanel={
+        <div className="file-explorer bg-gray-300 w-60 p-2">Game Explorer</div>
+      }
+    >
       {/* right part */}
-      <div className="flex-1 py-2 px-4 bg-white">
-        <h1 className="text-lg text-center p-8 border-b-2 mb-8 font-semibold text-slate-600">
+      <div className="flex-1 bg-white">
+        <h1 className="text-lg text-center p-8 border-b-2 mb-8 font-semibold text-slate-600 bg-slate-50">
           Welcome to Open source Javascript Games Center!
         </h1>
-        <p>comming soon...</p>
+        <div className="px-4">
+          <p>comming soon...</p>
+        </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 

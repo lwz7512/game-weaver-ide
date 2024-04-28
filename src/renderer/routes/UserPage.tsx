@@ -1,21 +1,12 @@
 import clsx from 'clsx';
-import LeftSideBar from '../components/LeftSideBar';
+import { Layout } from './Layout';
 import { ROUTES, badgeImages } from '../config';
-import useLeftSideBar from '../hooks/useLeftSideBar';
 import { getUserScore } from '../state/storage';
 
 const UserPage = () => {
-  const { onModuleChanged } = useLeftSideBar();
   const userScore = getUserScore();
   return (
-    <div className="w-full h-screen flex">
-      <div className="left-sidepanel flex">
-        <LeftSideBar
-          activeModule={ROUTES.USER}
-          onModuleChanged={onModuleChanged}
-        />
-        {/* <div className="file-explorer bg-gray-300 w-60 p-2">file explorer</div> */}
-      </div>
+    <Layout pageName="user" modulePath={ROUTES.USER}>
       <div className="flex-1 w-full">
         <h1 className="text-2xl text-center p-8 border-b-2 font-semibold text-white bg-slate-800">
           Welcome to Achivement Center!
@@ -119,7 +110,7 @@ const UserPage = () => {
           {/* end of badges */}
         </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 

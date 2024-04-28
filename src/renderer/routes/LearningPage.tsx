@@ -1,11 +1,10 @@
 import clsx from 'clsx';
-import LeftSideBar from '../components/LeftSideBar';
+import { Layout } from './Layout';
 import {
   DocButtonInList,
   DocCardInList,
   LearningDocHeader,
 } from '../components/LearningDocItem';
-import useLeftSideBar from '../hooks/useLeftSideBar';
 import { ROUTES } from '../config';
 import { useLearningDocs } from '../hooks/useLearningDocs';
 
@@ -15,7 +14,6 @@ import { useLearningDocs } from '../hooks/useLearningDocs';
  * @returns
  */
 const LearningPage = () => {
-  const { onModuleChanged } = useLeftSideBar();
   const {
     learningContent,
     learningDocs,
@@ -26,13 +24,10 @@ const LearningPage = () => {
   } = useLearningDocs();
 
   return (
-    <div className="w-full h-screen flex">
-      <div className="left-sidepanel flex">
-        <LeftSideBar
-          activeModule={ROUTES.LEARN}
-          onModuleChanged={onModuleChanged}
-        />
-        {/* === left panel === */}
+    <Layout
+      pageName="learn"
+      modulePath={ROUTES.LEARN}
+      sidePanel={
         <div className="file-explorer bg-gray-300 w-60 p-0">
           <h1 className="text-lg bg-slate-600 m-0 p-4 text-white text-center">
             Learning Paths
@@ -47,7 +42,8 @@ const LearningPage = () => {
             ))}
           </ul>
         </div>
-      </div>
+      }
+    >
       {/* === right panel === */}
       <div className="flex-1 bg-slate-50 ">
         <LearningDocHeader
@@ -83,7 +79,7 @@ const LearningPage = () => {
           onClick={markdownLinkHandler}
         />
       </div>
-    </div>
+    </Layout>
   );
 };
 

@@ -1,13 +1,11 @@
-import { Toaster } from '@blueprintjs/core';
-import LeftSideBar from '../components/LeftSideBar';
+import { Layout } from './Layout';
 import {
   ChalllengeItem,
   ChallengeInstructions,
   ChallengeContentHeader,
 } from '../components/ChallengeModules';
 import { ROUTES, CHALLENGE_AWARD_SLOGAN } from '../config';
-import useLeftSideBar from '../hooks/useLeftSideBar';
-import { useChallenges } from '../controllers/useProjectsPage';
+import { useProjectsPage } from '../controllers/useProjectsPage';
 
 /**
  * Coding Challenges Module
@@ -17,18 +15,13 @@ import { useChallenges } from '../controllers/useProjectsPage';
  * @returns
  */
 const ProjectsPage = () => {
-  const { onModuleChanged } = useLeftSideBar();
-  const { toastState, challenges, toasterCallback, openChallenge } =
-    useChallenges();
+  const { challenges, openChallenge } = useProjectsPage();
 
   return (
-    <div className="challenges-page w-full h-screen flex relative">
-      <div className="left-sidepanel flex">
-        <LeftSideBar
-          activeModule={ROUTES.PROJECTS}
-          onModuleChanged={onModuleChanged}
-        />
-        {/* === left panel to list all the challenges === */}
+    <Layout
+      pageName="challenges"
+      modulePath={ROUTES.PROJECTS}
+      sidePanel={
         <div className="file-explorer bg-sky-800 w-60 overflow-y-scroll">
           <h1 className=" text-lg bg-slate-600 m-0 p-4 text-white text-center">
             Challenge Explorer
@@ -48,7 +41,8 @@ const ProjectsPage = () => {
             ))}
           </ul>
         </div>
-      </div>
+      }
+    >
       {/* === right part content === */}
       <div className="project-content flex-1 bg-white overflow-y-scroll">
         <ChallengeContentHeader isChallengeOpen={false} />
@@ -61,9 +55,7 @@ const ProjectsPage = () => {
       </div>
       {/* floating webview ...use shell to open browser instead - 2023/10/02 */}
       {/* <WebDocViewer /> */}
-      {/* toaster */}
-      <Toaster {...toastState} ref={toasterCallback} />
-    </div>
+    </Layout>
   );
 };
 

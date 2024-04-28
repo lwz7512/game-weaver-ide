@@ -1,11 +1,10 @@
 import { Toaster, Spinner } from '@blueprintjs/core';
-
+import { Layout } from './Layout';
 import { ROUTES } from '../config';
 import { TiledEditor } from '../tiled/Editor';
 
 import { useTileEditorPage } from '../controllers/useTileEditorPage';
 
-import LeftSideBar from '../components/LeftSideBar';
 import { MiniIconButton } from '../components/Buttons';
 import { LayerHistoryTabs } from '../components/Tabs';
 import { MapCreateWidget } from '../components/MapCreateWidget';
@@ -26,7 +25,6 @@ const TiledEditorPage = () => {
     isLoadingTilesheet,
     selectedMap,
     toastState,
-    onModuleChanged,
     tileMapEditorSetter,
     openFileDialog,
     loadRemoteTilesheets,
@@ -42,14 +40,7 @@ const TiledEditorPage = () => {
   } = useTileEditorPage();
 
   return (
-    <div className="tile-editor w-full h-screen flex">
-      {/* === left side bar === */}
-      <div className="left-sidepanel flex">
-        <LeftSideBar
-          activeModule={ROUTES.TILED}
-          onModuleChanged={onModuleChanged}
-        />
-      </div>
+    <Layout pageName="editor" modulePath={ROUTES.TILED}>
       {/* === center map editor === */}
       <TiledEditor
         mapHeight={+mapHeight}
@@ -115,7 +106,7 @@ const TiledEditorPage = () => {
       </div>
       {/* toaster */}
       <Toaster {...toastState} ref={toasterCallback} />
-    </div>
+    </Layout>
   );
 };
 
