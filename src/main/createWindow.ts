@@ -47,6 +47,7 @@ export const createWindow = async (isDebug: boolean) => {
   };
 
   const mainWindow = new BrowserWindow({
+    resizable: false, // @2024/05/11
     show: false,
     width: 1280,
     height: 760,

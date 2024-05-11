@@ -23,7 +23,7 @@ const ProjectsPage = () => {
       modulePath={ROUTES.PROJECTS}
       sidePanel={
         <div className="file-explorer bg-sky-800 w-60 overflow-y-scroll">
-          <h1 className=" text-lg bg-slate-600 m-0 p-4 text-white text-center">
+          <h1 className="text-lg bg-slate-600 m-0 p-4 text-white text-center">
             Challenge Explorer
           </h1>
           {/* loading indicator.. */}

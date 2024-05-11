@@ -61,7 +61,7 @@ export const ChallengePlayground = ({
         </button>
       </div>
       {/* result result & error console */}
-      <CodeResultStage />
+      <CodeResultStage hideCursor />
     </div>
   );
 };

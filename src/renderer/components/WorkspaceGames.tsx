@@ -34,7 +34,7 @@ export const WorkspaceGames = ({
   return (
     <div className="file-explorer bg-gray-200 w-60">
       <h1 className="p-4 bg-gray-800 text-slate-400 text-sm text-center select-none">
-        <span className="inline-block pr-8 pl-2">Games in Worksppace</span>
+        <span className="inline-block pr-8 pl-2">Code Editor Page</span>
         <Popover2
           content={exampleMenu}
           placement="left-start"

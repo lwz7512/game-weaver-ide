@@ -23,3 +23,7 @@
 .challenge-item:hover > .game-item {
   border-bottom: none;
 }
+
+.coding-result-box .hide-cursor {
+  cursor: none;
+}

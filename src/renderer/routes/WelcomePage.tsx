@@ -48,7 +48,7 @@ const WelcomePage = () => {
             </ul>
           </div>
           <div className="section">
-            <h2 className="text-lg font-semibold">Recent Challenge</h2>
+            <h2 className="text-lg font-semibold">Recent Challenges</h2>
             <ul className="py-4 px-4 text-gray-200 text-sm leading-6">
               {challenges.map((clg) => (
                 <li className="home-card-item" key={clg.id}>

@@ -1,0 +1,82 @@
+:root {
+  --gw-wheat: rgb(75, 50, 2); /* wheat */
+  --gw-yellow: rgb(215, 198, 160);
+  --gw-dark-slate: rgb(71 85 105);
+  --gw-logo-silver: rgb(167, 192, 217);
+  --gw-fancy-blue: #1099bb;
+}
+
+/*
+ * @NOTE: Prepend a `~` to css file paths that are in your node_modules
+ * See https://github.com/webpack-contrib/sass-loader#imports
+ */
+body {
+  position: relative;
+  /* color: white; */
+  height: 100vh;
+  /* background: linear-gradient(
+    200.96deg,
+    #fedc2a -29.09%,
+    #dd5789 51.77%,
+    #7a2c9e 129.35%
+  ); */
+  background-color:whitesmoke;
+  font-family: sans-serif;
+  overflow-y: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+li {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+.list-item li {
+  list-style-type: disc;
+  text-decoration: underline;
+}
+
+a:hover {
+  opacity: 1;
+  text-decoration: none;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+/* disable focus line while popover showing up */
+.bp4-overlay-start-focus-trap:focus {
+  outline: none;
+}
+
+.bp4-menu-item {
+  padding: 8px 12px;
+  outline: none;
+}
+
+.bp4-tree-node-content {
+  height: 36px;
+}
+
+.flying-bar {
+  /* background-color: #337FCE; */
+  /* height: 6px; */
+  background-color: rgb(37 99 235);
+  position: absolute;
+  z-index: 10;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.examples-container {
+  width: 100%;
+  height: calc(100% - 100px);
+}
+

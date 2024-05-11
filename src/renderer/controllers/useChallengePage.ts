@@ -7,7 +7,7 @@
 import { useState, useEffect, useRef } from 'react';
 import MarkdownIt from 'markdown-it';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-// import appCfg from '../assets/app.json';
+
 import {
   sourceRepo,
   Challenge,
@@ -47,6 +47,12 @@ export const useChallengePage = () => {
     notCompletedSound.play();
   };
 
+  /**
+   * FIXME: Open projects page rather than go back last page!
+   * Because current project may come from homepage `Recent Challenges` list
+   * So, do not use `navigate(-1)`!
+   * @2024/05/11
+   */
   const goBackChallengeHome = () => {
     const challengeRoute = ROUTES.PROJECTS;
     navigate(challengeRoute);

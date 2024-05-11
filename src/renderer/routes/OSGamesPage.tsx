@@ -12,7 +12,12 @@ const OSGamePage = () => {
       pageName="games"
       modulePath={ROUTES.GAMES}
       sidePanel={
-        <div className="file-explorer bg-gray-300 w-60 p-2">Game Explorer</div>
+        <div className="game-explorer bg-sky-800 w-60 overflow-y-scroll">
+          <h1 className="text-lg bg-slate-600 m-0 p-4 text-white text-center">
+            Game Explorer
+          </h1>
+          {/* TODO: add OS-JS games ... */}
+        </div>
       }
     >
       {/* right part */}
@@ -21,7 +26,7 @@ const OSGamePage = () => {
           Welcome to Open source Javascript Games Center!
         </h1>
         <div className="px-4">
-          <p>comming soon...</p>
+          <p>Comming soon...</p>
         </div>
       </div>
     </Layout>

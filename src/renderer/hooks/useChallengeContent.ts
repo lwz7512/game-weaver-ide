@@ -18,7 +18,7 @@ import {
 import { saveChallengeCompletion } from '../state/storage';
 import {
   ChallengeEvents as CEVT,
-  safeTestCode,
+  safeTestCode as runMyCode,
   TestCase,
   toggleCodeTips,
   clearCodeTips,
@@ -41,7 +41,8 @@ export const useChallengePlayground = (
   const [codeLoaded, setCodeLoaded] = useState(false);
 
   /**
-   * user code in editor, start from remoted `startCode` in challenge definition
+   * == User Code in code editor ==
+   * start from remoted `startCode` in challenge definition
    */
   const [runningCode, setRunningCode] = useState('');
 
@@ -236,7 +237,7 @@ export const useChallengePlayground = (
       return;
     }
     // First, execute all the test case defined in challenge
-    setTimeout(() => safeTestCode(baseCode, runningCode, testCases), 200);
+    setTimeout(() => runMyCode(baseCode, runningCode, testCases), 200);
 
     // end of code execution
   }, [baseCode, runningCode, startRunning, testCases, warningHandler]);
