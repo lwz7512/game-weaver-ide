@@ -174,6 +174,17 @@ const testCaseReducer = (prevLines: string[], ct: TestCase, index: number) => {
   return prevLines;
 };
 
+const executeScript = (code: string, id = 'dynaCode') => {
+  const dynaCode = document.getElementById(id);
+  if (dynaCode) dynaCode.remove(); // remove self
+
+  // console.log(`>> to create script element ...`);
+  const script = document.createElement('script');
+  script.text = code;
+  script.id = id;
+  document.body.appendChild(script);
+};
+
 /**
  * Exectue test function for local user code input in editor
  *
@@ -192,7 +203,7 @@ export const safeTestCode = (
   // assemble test code from validator
   const testLines: string[] = testsWithUserCode.reduce(testCaseReducer, []);
 
-  // finaly code to be running in client
+  // == STEP-1: compose injectable challenge code to be running in client
   const safeCompleteCode = [
     '',
     '(function(){',
@@ -224,17 +235,6 @@ export const safeTestCode = (
     '})();', // semi colon is required here to end a closure call
     '', // end of one test case
   ];
-
-  const executeScript = (code: string, id = 'dynaCode') => {
-    const dynaCode = document.getElementById(id);
-    if (dynaCode) dynaCode.remove(); // remove self
-
-    // console.log(`>> to create script element ...`);
-    const script = document.createElement('script');
-    script.text = code;
-    script.id = id;
-    document.body.appendChild(script);
-  };
-
+  // == STEP-2: create script tag with code and inject it to client!
   executeScript(safeCompleteCode.join('\n'), 'assertCode');
 };
