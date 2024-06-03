@@ -4,15 +4,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 
-import { IpcEvents } from '../../ipc-events';
 import { sourceRepo, TSLIB, Challenge } from '../config';
 // import { useBPToast } from '../hooks/useToast';
 import { getCompletedChallenges } from '../state/storage';
 import { ChallengeEvents } from '../helpers/codeRunner';
 
 export const useProjectsPage = () => {
-  const { ipcRenderer } = window.electron;
-
   const [params] = useSearchParams();
   const navigate = useNavigate();
 
@@ -20,10 +17,6 @@ export const useProjectsPage = () => {
   const completionsRef = useRef<number[]>([]);
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [globalFunctions, setGlobalFunctions] = useState('');
-
-  const openChallengeLearningPage = async (url: string) => {
-    await ipcRenderer.invoke(IpcEvents.OPEN_EXTERNAL_URL, url);
-  };
 
   const scrollContentBy = (offset: number) => {
     const scrollable = document.querySelector('.project-content');
@@ -169,8 +162,6 @@ export const useProjectsPage = () => {
     challenges,
     globalFunctions,
     openChallenge,
-    /** open external web page by browser */
-    openChallengeLearningPage,
     scrollToChallengeSection,
   };
 };

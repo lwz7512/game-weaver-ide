@@ -19,6 +19,7 @@ const ChallengePage = () => {
     challengeSavedHandler,
     toggleSubTitle,
     toasterCallback,
+    openChallengeLearningPage,
     selectedChallenge,
     showSubTitle,
     globalFunctions,
@@ -112,7 +113,7 @@ const ChallengePage = () => {
                 type="button"
                 title={it.title}
                 className=" text-slate-500 hover:text-green-600 focus:outline-none"
-                onClick={() => console.log(`TODO:`)}
+                onClick={() => openChallengeLearningPage(it.url)}
               >
                 👉 {it.name}
               </button>

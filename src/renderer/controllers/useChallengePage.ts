@@ -8,6 +8,7 @@ import { useState, useEffect, useRef } from 'react';
 import MarkdownIt from 'markdown-it';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 
+import { IpcEvents } from '../../ipc-events';
 import {
   sourceRepo,
   Challenge,
@@ -21,6 +22,7 @@ import { useBPToast } from '../hooks/useToast';
 import { saveChallengeCompletion } from '../state/storage';
 
 export const useChallengePage = () => {
+  const { ipcRenderer } = window.electron;
   const { id } = useParams();
   const { state } = useLocation();
   const navigate = useNavigate();
@@ -38,6 +40,10 @@ export const useChallengePage = () => {
   const warningMP3 = `${sourceRepo}assets/sound/warning.mp3`;
   const notCompletedSound = new Audio(warningMP3);
   const missionSavedSound = new Audio(nextLevelMP3);
+
+  const openChallengeLearningPage = async (url: string) => {
+    await ipcRenderer.invoke(IpcEvents.OPEN_EXTERNAL_URL, url);
+  };
 
   const { addWarningToast, addSuccessToast, toastState, toasterCallback } =
     useBPToast();
@@ -111,6 +117,8 @@ export const useChallengePage = () => {
     challengeSavedHandler,
     toggleSubTitle,
     toasterCallback,
+    /** open external web page by browser */
+    openChallengeLearningPage,
     selectedChallenge,
     showSubTitle,
     globalFunctions,
