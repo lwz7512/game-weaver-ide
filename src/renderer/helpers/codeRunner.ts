@@ -9,6 +9,8 @@ const codeTipsSelector = '.coding-tips-panel';
  * Custom Script Events
  */
 export enum ChallengeEvents {
+  /** game to start running */
+  PREGAMERUNING = 'preGameRunning',
   /** test started */
   TESTSTARTED = 'testStarted',
   /** test function return `true` */
@@ -155,7 +157,7 @@ const testCaseReducer = (prevLines: string[], ct: TestCase, index: number) => {
     `  try { `,
     `    const validator = ${testfunction};`,
     `    const testResult = validator(${paramsFormated});`,
-    `    console.log(testResult)`,
+    `    // console.log(testResult)`,
     `    // validate with remote validator & assert function: `,
     `    assertEqual(testResult, ${expectation}, '${description}');`,
     `    // notify challeng playground: `,
@@ -165,7 +167,7 @@ const testCaseReducer = (prevLines: string[], ct: TestCase, index: number) => {
     `    // record one case success`,
     `    caseSuccess.push(1)`,
     `  } catch (error) {`,
-    `    console.log('## Got error for test case:')`,
+    `    // console.log('## Got error for test case:')`,
     `    const detail = { detail: error.message }`,
     `    const evt${index} = new CustomEvent('${ChallengeEvents.TESTFAILED}', detail)`,
     `    document.dispatchEvent(evt${index})`,
@@ -207,6 +209,9 @@ export const safeTestCode = (
   const safeCompleteCode = [
     '',
     '(function(){',
+    // STEP 0: prepare to run game code: - @2024/06/08
+    ` const evt0 = new CustomEvent('${ChallengeEvents.PREGAMERUNING}')`,
+    ` document.dispatchEvent(evt0)`,
     // STEP 1: initialize base code for user code & all the test cases
     `  ${baseCode}`,
     // STEP 2: run user code first
@@ -217,15 +222,15 @@ export const safeTestCode = (
     '  } catch (error) {',
     '    console.log(`## Caught error from code runner!`)',
     '    const detail = {detail: error.message}',
-    `    const evt = new CustomEvent('${ChallengeEvents.EXCEPTION}', detail)`,
-    `    document.dispatchEvent(evt)`,
+    `    const evt1 = new CustomEvent('${ChallengeEvents.EXCEPTION}', detail)`,
+    `    document.dispatchEvent(evt1)`,
     '  }',
     // success count used in `testLines`
     ` const caseSuccess = [];`,
     // STEP 3: run test cases
     // start code testing...
-    ` const evt = new CustomEvent('${ChallengeEvents.TESTSTARTED}')`,
-    ` document.dispatchEvent(evt)`,
+    ` const evt2 = new CustomEvent('${ChallengeEvents.TESTSTARTED}')`,
+    ` document.dispatchEvent(evt2)`,
     ...testLines,
     // STEP 4: check success of test cases
     `if(caseSuccess.length === ${tests.length}) {`,

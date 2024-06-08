@@ -23,7 +23,6 @@ const CodeEditorPage = () => {
     isNewOpen,
     isDeleteOpen,
     isLoading,
-    toastState,
     gameSelectedHandler,
     openWorkspaceFolder,
     handleOpen,
@@ -40,7 +39,6 @@ const CodeEditorPage = () => {
     refreshGamesInSpace,
     handleDeleteClose,
     handleDeleteConfirm,
-    toasterCallback,
   } = useCodeEditorPage();
 
   return (
@@ -136,7 +134,7 @@ const CodeEditorPage = () => {
         />
       )}
       {/* toaster */}
-      <Toaster {...toastState} ref={toasterCallback} />
+      {/* <Toaster {...toastState} ref={toasterCallback} /> */}
     </Layout>
   );
 };

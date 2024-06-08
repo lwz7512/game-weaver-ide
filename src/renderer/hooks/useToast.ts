@@ -6,36 +6,26 @@
  */
 
 import { useRef } from 'react';
-import {
-  Intent,
-  IToasterProps,
-  Position,
-  Toaster,
-  ToasterPosition,
-  ToastProps,
-} from '@blueprintjs/core';
+import { Intent, Toaster, ToastProps } from '@blueprintjs/core';
+import { toast } from 'react-toastify';
 
 export const useBPToast = () => {
   const toasterRef = useRef<Toaster | null>(null);
 
-  const addToast = (toast: ToastProps) => {
-    if (!toasterRef.current) return;
-    // toast.className = '';
-    toast.timeout = 3000;
-    toasterRef.current.show(toast);
+  const addToast = (props: ToastProps) => {
+    if (props.intent === Intent.WARNING) {
+      toast.warn(props.message);
+      return;
+    }
+    if (props.intent === Intent.SUCCESS) {
+      toast.success(props.message);
+      return;
+    }
+    toast(props.message);
   };
 
   const toasterCallback = (ref: Toaster) => {
     toasterRef.current = ref;
-  };
-
-  // toast properties
-  const toastState: IToasterProps = {
-    autoFocus: false,
-    canEscapeKeyClear: true,
-    position: Position.RIGHT_TOP as ToasterPosition,
-    usePortal: true,
-    maxToasts: 1,
   };
 
   const addSuccessToast = (message: string) => {
@@ -58,7 +48,7 @@ export const useBPToast = () => {
     addToast,
     addSuccessToast,
     addWarningToast,
-    toastState,
+    // toastState,
     toasterCallback,
   };
 };

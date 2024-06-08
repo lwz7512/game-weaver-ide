@@ -6,9 +6,18 @@
 
 Created @2022/08/16
 
-# Recent Update
+## Recent Update
 
 > The project has stopped the active development(without motivation), wish to come back at some day!
+
+
+## Dev logs:
+
+- Upgrade `@blueprintjs/core` to `^5.10.3` on 2024/06/08
+- Upgrade `@blueprintjs/popover2` to `^2.1.5` on 2024/06/08
+- Install new package `cursor-effects` to achieve cursor following effect in code stage,
+- And implement `fairyDustCursor` cursor effect on code result stage on 2024/06/08
+
 
 ## What it is:
 

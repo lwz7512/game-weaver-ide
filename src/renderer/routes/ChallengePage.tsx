@@ -24,7 +24,6 @@ const ChallengePage = () => {
     showSubTitle,
     globalFunctions,
     subtitle,
-    toastState,
   } = useChallengePage();
 
   return (
@@ -174,7 +173,7 @@ const ChallengePage = () => {
       </div>
       {/* end of challenge content */}
       {/* toaster */}
-      <Toaster {...toastState} ref={toasterCallback} />
+      {/* <Toaster {...toastState} ref={toasterCallback} /> */}
     </div>
   );
 };

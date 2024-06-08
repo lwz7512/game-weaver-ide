@@ -36,8 +36,11 @@ export const useCodeEditorPage = () => {
     navbarTabId,
     mainJSCode
   );
-  const { toastState, toasterCallback, saveMainJS, toggleDevTools } =
-    useRightSideBar(selectedGame, currentFile, getCurrentCode);
+  const { saveMainJS, toggleDevTools } = useRightSideBar(
+    selectedGame,
+    currentFile,
+    getCurrentCode
+  );
 
   // save the latest game and refresh!
   const refreshPreview = useIframeContext(gameLocalURL, saveMainJS);
@@ -85,7 +88,5 @@ export const useCodeEditorPage = () => {
     isLoading,
     handleDeleteClose,
     handleDeleteConfirm,
-    toastState,
-    toasterCallback,
   };
 };

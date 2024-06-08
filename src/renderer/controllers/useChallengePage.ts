@@ -45,8 +45,7 @@ export const useChallengePage = () => {
     await ipcRenderer.invoke(IpcEvents.OPEN_EXTERNAL_URL, url);
   };
 
-  const { addWarningToast, addSuccessToast, toastState, toasterCallback } =
-    useBPToast();
+  const { addWarningToast, addSuccessToast, toasterCallback } = useBPToast();
 
   const challengeWarningHandler = (message: string) => {
     addWarningToast(message);
@@ -123,6 +122,5 @@ export const useChallengePage = () => {
     showSubTitle,
     globalFunctions,
     subtitle,
-    toastState,
   };
 };

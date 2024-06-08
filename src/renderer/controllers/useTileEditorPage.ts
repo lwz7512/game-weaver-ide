@@ -17,13 +17,8 @@ export const useTileEditorPage = () => {
   const { onModuleChanged } = useLeftSideBar();
   const { spacePath } = useLocalStorage();
   const { gameFolders: games } = useGMSpaceFolders();
-  const {
-    toastState,
-    toasterCallback,
-    addToast,
-    addSuccessToast,
-    addWarningToast,
-  } = useBPToast();
+  const { toasterCallback, addToast, addSuccessToast, addWarningToast } =
+    useBPToast();
 
   // define tilemap parameters
   const mapDimensions = useMapDimension();
@@ -124,7 +119,6 @@ export const useTileEditorPage = () => {
     layerNameChangeHandler,
     toggleAvailabilityHandler,
     toggleVisibilityHandler,
-    toastState,
     toasterCallback,
   };
 };

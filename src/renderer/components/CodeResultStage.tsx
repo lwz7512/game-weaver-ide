@@ -1,5 +1,7 @@
 import clsx from 'clsx';
 
+import { useCodeResultStage } from 'renderer/hooks/useCodeResultStage';
+
 /**
  * Display Code running result with `canvas`
  * @2023/11/11
@@ -13,11 +15,14 @@ type CanvasProps = {
 };
 
 export const CodeResultStage = ({ hideCursor }: CanvasProps) => {
-  // TODO: BY default to draw mouse following torch animation ...
-  // until event `TESTSTARTED` captured!
+  useCodeResultStage();
 
   return (
-    <div className="coding-result-box ">
+    <div
+      id="gameStage"
+      className="coding-result-box "
+      style={{ width: 440, height: 378 }}
+    >
       <canvas
         id="codePresenter"
         width="440"

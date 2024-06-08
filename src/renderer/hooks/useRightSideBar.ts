@@ -1,11 +1,6 @@
 import { useRef } from 'react';
-import {
-  Intent,
-  IToasterProps,
-  Position,
-  Toaster,
-  ToastProps,
-} from '@blueprintjs/core';
+import { Intent, ToastProps } from '@blueprintjs/core';
+import { toast } from 'react-toastify';
 
 import { IpcEvents } from '../../ipc-events';
 import { useLocalStorage } from './useLocalStorage';
@@ -17,28 +12,11 @@ export const useRightSideBar = (
   getSourceCode: () => string
 ) => {
   const { ipcRenderer } = window.electron;
-  const toasterRef = useRef<Toaster | null>(null);
+
   const { spacePath } = useLocalStorage();
 
-  // toast properties
-  const toastState: IToasterProps = {
-    autoFocus: false,
-    canEscapeKeyClear: true,
-    position: Position.TOP,
-    usePortal: true,
-    maxToasts: 1,
-  };
-
-  const toasterCallback = (ref: Toaster) => {
-    toasterRef.current = ref;
-  };
-
-  const addToast = (toast: ToastProps) => {
-    if (!toasterRef.current) return;
-
-    // toast.className = '';
-    toast.timeout = 2000;
-    toasterRef.current.show(toast);
+  const addToast = (props: ToastProps) => {
+    toast.success(props.message);
   };
 
   const saveMainJS = async () => {
@@ -68,8 +46,6 @@ export const useRightSideBar = (
   };
 
   return {
-    toastState,
-    toasterCallback,
     saveMainJS,
     toggleDevTools,
   };

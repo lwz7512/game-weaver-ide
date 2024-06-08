@@ -1,4 +1,4 @@
-import { Toaster, Spinner } from '@blueprintjs/core';
+import { Spinner } from '@blueprintjs/core';
 import { Layout } from './Layout';
 import { ROUTES } from '../config';
 import { TiledEditor } from '../tiled/Editor';
@@ -24,7 +24,6 @@ const TiledEditorPage = () => {
     selectedImage,
     isLoadingTilesheet,
     selectedMap,
-    toastState,
     tileMapEditorSetter,
     openFileDialog,
     loadRemoteTilesheets,
@@ -105,7 +104,7 @@ const TiledEditorPage = () => {
         />
       </div>
       {/* toaster */}
-      <Toaster {...toastState} ref={toasterCallback} />
+      {/* <Toaster {...toastState} ref={toasterCallback} /> */}
     </Layout>
   );
 };
