@@ -41,7 +41,3 @@ export const HeroBanner = ({
     </div>
   );
 };
-
-HeroBanner.defaultProps = {
-  delay: 0,
-};

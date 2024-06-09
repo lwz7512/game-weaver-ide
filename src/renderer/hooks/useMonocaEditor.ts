@@ -21,6 +21,8 @@ import {
   getEditorState,
 } from '../state/template';
 
+import { debounce } from '../utils';
+
 /**
  * Runtime add editor model(some js file) to enable intellisense of code in other module
  * Do not create duplicated model with same uri! @2022/10/03
@@ -118,8 +120,11 @@ const useMonocaEditor = (navbarTabId: TabId, mainJSCode: string) => {
       // focus at last!
       editor.focus();
     };
+    // TODO: review this later... to accelerate animation
+    // @2024/06/09
+    const [lazyRelayout] = debounce(relayoutEditor, 50);
 
-    const observer = new ResizeObserver(relayoutEditor);
+    const observer = new ResizeObserver(lazyRelayout);
     observer.observe(editorParent);
 
     // clearup when destroy

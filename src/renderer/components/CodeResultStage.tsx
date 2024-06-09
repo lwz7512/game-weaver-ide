@@ -2,19 +2,17 @@ import clsx from 'clsx';
 
 import { useCodeResultStage } from 'renderer/hooks/useCodeResultStage';
 
-/**
- * Display Code running result with `canvas`
- * @2023/11/11
- *
- * TODO: listening event `TESTSTARTED` to stop demo mode of stage canvas!
- *
- */
-
 type CanvasProps = {
   hideCursor?: boolean;
 };
 
+/**
+ * Display Code running result with `canvas`
+ *
+ * @date 2023/11/11
+ */
 export const CodeResultStage = ({ hideCursor }: CanvasProps) => {
+  // show `fairyDustCursor` on `#gameStage`
   useCodeResultStage();
 
   return (

@@ -11,6 +11,9 @@ import { fairyDustCursor } from 'cursor-effects';
 
 import { ChallengeEvents as EVT } from 'renderer/helpers/codeRunner';
 
+/**
+ * listening event `PREGAMERUNING` to show `fairyDustCursor` effect
+ */
 export const useCodeResultStage = () => {
   useEffect(() => {
     const targetElement = document.getElementById('gameStage');

@@ -19,6 +19,7 @@ Created @2022/08/16
 - Upgrade `ts-node` to `^10.9.1` to enable `skipLibCheck` on 2024/06/09
 - Install new package `cursor-effects` to achieve cursor following effect in code stage,
 - And implement `fairyDustCursor` cursor effect on code result stage on 2024/06/08
+- Upgrade `monaco-editor` to `^0.49.0` to eliminate the error: `getDocumentHighlights` not a function on 2024/06/09 
 
 
 ## What it is:
