@@ -15,6 +15,8 @@ Created @2022/08/16
 
 - Upgrade `@blueprintjs/core` to `^5.10.3` on 2024/06/08
 - Upgrade `@blueprintjs/popover2` to `^2.1.5` on 2024/06/08
+- Upgrade `typescript` to `^4.9.4` to enable `skipLibCheck` on 2024/06/09
+- Upgrade `ts-node` to `^10.9.1` to enable `skipLibCheck` on 2024/06/09
 - Install new package `cursor-effects` to achieve cursor following effect in code stage,
 - And implement `fairyDustCursor` cursor effect on code result stage on 2024/06/08
 
