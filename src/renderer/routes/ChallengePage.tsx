@@ -5,7 +5,7 @@
 
 import clsx from 'clsx';
 
-import { Button, Icon, Toaster } from '@blueprintjs/core';
+import { Button, Icon } from '@blueprintjs/core';
 
 import { ChallengePlayground } from '../components/ChallengePlayground';
 import { ChallengeContentHeader } from '../components/ChallengeModules';
@@ -18,7 +18,6 @@ const ChallengePage = () => {
     goBackChallengeHome,
     challengeSavedHandler,
     toggleSubTitle,
-    toasterCallback,
     openChallengeLearningPage,
     selectedChallenge,
     showSubTitle,
@@ -57,7 +56,7 @@ const ChallengePage = () => {
         <div className="video-and-subtitle-row w-full flex">
           {/* place holder */}
           <div className={clsx('left-box ', showSubTitle ? '' : 'flex-1')} />
-          {/* center video */}
+          {/* === Center Video === */}
           <div className="w-1/2 h-96 border border-gray-400 bg-slate-600 text-white overflow-hidden">
             {/* <h2 className="p-1 text-base">Video Introduction</h2> */}
             <img
@@ -70,7 +69,7 @@ const ChallengePage = () => {
           {/* markdown subtitle content */}
           {showSubTitle ? (
             <div
-              className="markdown-container h-96 flex-1 px-4 py-1 bg-slate-100 border border-gray-400 overflow-y-scroll w-1/3"
+              className="markdown-container h-96 flex-1 px-4 py-1 bg-white border border-gray-400 overflow-y-scroll w-1/3"
               dangerouslySetInnerHTML={{ __html: subtitle }}
             />
           ) : (
@@ -172,8 +171,6 @@ const ChallengePage = () => {
         </div>
       </div>
       {/* end of challenge content */}
-      {/* toaster */}
-      {/* <Toaster {...toastState} ref={toasterCallback} /> */}
     </div>
   );
 };

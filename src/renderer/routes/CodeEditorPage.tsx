@@ -1,4 +1,4 @@
-import { Tab, Tabs, Toaster } from '@blueprintjs/core';
+import { Tab, Tabs } from '@blueprintjs/core';
 import { Layout } from './Layout';
 import { ROUTES } from '../config';
 import { IconToolButton } from '../components/Buttons';
@@ -133,8 +133,6 @@ const CodeEditorPage = () => {
           handleDeleteGame={handleDeleteConfirm}
         />
       )}
-      {/* toaster */}
-      {/* <Toaster {...toastState} ref={toasterCallback} /> */}
     </Layout>
   );
 };

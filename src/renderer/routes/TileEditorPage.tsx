@@ -103,8 +103,6 @@ const TiledEditorPage = () => {
           }}
         />
       </div>
-      {/* toaster */}
-      {/* <Toaster {...toastState} ref={toasterCallback} /> */}
     </Layout>
   );
 };

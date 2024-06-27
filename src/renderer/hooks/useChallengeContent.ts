@@ -101,6 +101,14 @@ export const useChallengePlayground = (
 
     // add history cache
     saveChallengeCompletion(challenge.id, 'touched');
+
+    // FIXME: to check empty validator in test case
+    if (!testCases.length) {
+      warningHandler(NO_TEST_CASES);
+      return;
+    }
+    // First, execute all the test case defined in challenge
+    setTimeout(() => runMyCode(baseCode, runningCode, testCases), 200);
   };
 
   /**
@@ -224,23 +232,6 @@ export const useChallengePlayground = (
     };
     fetchChallengeCodes();
   }, [challenge]);
-
-  /**
-   * Waiting for running state change, then test/run code
-   */
-  useEffect(() => {
-    if (!startRunning || !runningCode) return;
-
-    // FIXME: to check empty validator in test case
-    if (!testCases.length) {
-      warningHandler(NO_TEST_CASES);
-      return;
-    }
-    // First, execute all the test case defined in challenge
-    setTimeout(() => runMyCode(baseCode, runningCode, testCases), 200);
-
-    // end of code execution
-  }, [baseCode, runningCode, startRunning, testCases, warningHandler]);
 
   /**
    * Listening code testing and running sttus events
