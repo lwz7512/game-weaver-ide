@@ -316,7 +316,7 @@ export const useChallengePlayground = (
     return () => {
       if (Object.hasOwn(window, 'stopGame')) {
         // stop game if its running!
-        (window as any).stopGame();
+        window.stopGame();
       }
     };
   }, []);
