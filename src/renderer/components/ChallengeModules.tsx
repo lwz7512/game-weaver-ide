@@ -167,6 +167,14 @@ export const ChalllengeItem = ({
       onMouseOut={closeThumbnailImage}
       onClick={() => docLoadHandler(doc)}
     >
+      {/* == Thumbnail == */}
+      {thumbnailLoaded && displayThumbnail && (
+        <img
+          className=" w-full h-auto cursor-pointer"
+          src={sourceRepo + doc.thumbnail}
+          alt="challenge-thumbnail"
+        />
+      )}
       <button
         type="button"
         className="game-item border-b w-full inline-block py-1"
@@ -181,14 +189,6 @@ export const ChalllengeItem = ({
           {doc.touched && <Icon icon="help" size={18} color="yellow" />}
         </div>
       </button>
-      {/* == Thumbnail == */}
-      {thumbnailLoaded && displayThumbnail && (
-        <img
-          className=" w-full h-auto cursor-pointer"
-          src={sourceRepo + doc.thumbnail}
-          alt="challenge-thumbnail"
-        />
-      )}
     </li>
   );
 };
