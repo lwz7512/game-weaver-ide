@@ -146,8 +146,9 @@ const testCaseReducer = (prevLines: string[], ct: TestCase, index: number) => {
   // compose parameters used in validator
   const paramsFormated =
     params.length === 0
-      ? paramFormat(cleanCode) // previously empty string: '""' , check user code instead with validator - 2023/12/03
-      : params.reduce((prev: string | number | boolean, curr) => {
+      ? '""' // Although previously made a change here: check user code instead with validator - 2023/12/03,
+      : // but inject user code into validator not a good idea! so restore to empty string - 2024/07/07
+        params.reduce((prev: string | number | boolean, curr) => {
           if (prev === '') return paramFormat(curr);
           return `${prev}, ${paramFormat(curr)}`;
         }, ''); // start with empty params;
