@@ -31,7 +31,7 @@ export const useEditorDecorations = (
         range: new monaco.Range(sl, sc, el, ec),
         options: {},
       };
-      if (type === 'todo') {
+      if (type === 'todo' || type === 'note') {
         decoration.options = {
           inlineClassName: 'todo-decoration',
         };
